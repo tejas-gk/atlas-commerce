@@ -1,0 +1,13 @@
+{
+  "name": "@repo/middleware",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "@repo/db": "workspace:*",
+    "error-handler": "workspace:*",
+    "@workspace/typescript-config": "workspace:*"
+  },
+  "exports": {
+    ".": "./isAuthenticated.ts"
+  }
+}
