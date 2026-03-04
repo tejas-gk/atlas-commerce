@@ -1,15 +1,19 @@
+import HeroBanner from "@/components/banners/HeroBanner"
+import PromoGrid from "@/components/banners/PromoGrid"
+import CategoryRow from "@/components/category/CategoryRow"
+import { HeroCarousel } from "@/components/hero-carousel"
+import Navbar from "@/components/navbar"
+import ProductSection from "@/components/product/ProductSection"
 import { Button } from "@workspace/ui/components/button"
 
 export default function Page() {
   return (
-    <div className="flex items-center justify-center min-h-svh">
-      <div className="flex flex-col items-center justify-center gap-4">
-        <h1 className="text-2xl font-bold">Hello World</h1>
-        <div className="flex gap-2">
-          <Button>Button</Button>
-          <Button variant="outline">Outline</Button>
-        </div>
-      </div>
-    </div>
+    <main className="max-w-[1400px] mx-auto px-6 py-6">
+      <HeroBanner />
+      <HeroCarousel/>
+      <PromoGrid />
+      <CategoryRow />
+      <ProductSection />
+    </main>
   )
 }

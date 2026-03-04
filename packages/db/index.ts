@@ -1,22 +1,16 @@
 import { PrismaClient } from "@prisma/client";
-
+console.log("Initializing Prisma Client...");
 declare global {
-    namespace globalThis {
-        var prismadb: PrismaClient | undefined;
-    }
+    var prisma: PrismaClient | undefined;
 }
 
-console.log("Initializing Prisma Client", process.env.NODE_ENV);
+console.log("Prisma Client initialized.",process.env.DATABASE_URL);
+console.log("Prisma Client URL:", process.env.REDIS_DATABASE_URI);
+const prisma =
+    global.prisma ?? new PrismaClient();
 
-const getPrismaClient = () => {
-    if (process.env.NODE_ENV === "production") {
-        if (!global.prismadb) {
-            global.prismadb = new PrismaClient();
-        }
-        return global.prismadb;
-    } else {
-        return new PrismaClient();
-    }
-};
+if (process.env.NODE_ENV !== "production") {
+    global.prisma = prisma;
+}
 
-export default getPrismaClient();
+export default prisma;

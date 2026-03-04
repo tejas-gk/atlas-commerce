@@ -6,7 +6,12 @@
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "generate": "prisma generate",
+    "studio": "prisma studio"
+  },
+  "prisma": {
+    "schema": "prisma/schema.prisma"
   },
   "devDependencies": {
     "@turbo/gen": "^2.8.1",
@@ -16,8 +21,10 @@
     "@types/express-http-proxy": "^1.6.7",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/morgan": "^1.9.10",
+    "@types/swagger-ui-express": "^4.1.8",
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
+    "dotenv-cli": "^11.0.0",
     "jsonwebtoken": "^9.0.3",
     "prettier": "^3.8.1",
     "tsx": "^4.21.0",
@@ -29,9 +36,13 @@
     "node": ">=20"
   },
   "dependencies": {
-    "@prisma/client": "^7.4.1",
+    "@types/ejs": "^3.1.5",
+    "@types/node": "^25.3.3",
+    "@types/nodemailer": "^7.0.11",
+    "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "express-http-proxy": "^2.1.2",
     "express-rate-limit": "^8.2.1",
@@ -39,6 +50,7 @@
     "ioredis": "^5.9.3",
     "kafkajs": "^2.2.4",
     "morgan": "^1.10.1",
-    "prisma": "^7.4.1"
+    "prisma": "6.19.0",
+    "swagger-ui-express": "^5.0.1"
   }
 }

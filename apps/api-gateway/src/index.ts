@@ -1,21 +1,75 @@
-import express from "express";
-import cors from "cors";
+import express from "express"
+import * as path from "path"
+import cors from "cors"
+import proxy from "express-http-proxy"
+import morgan from "morgan"
+import rateLimit from "express-rate-limit"
+import cookieParser from "cookie-parser"
+import initializeSiteConfig from "./libs/initializeSiteConfig";
 
-const app = express();
+const app = express()
 
-app.use(cors());
-app.use(express.json());
+app.use(
+    cors({
+        origin: ["http://localhost:3000", "http://localhost:3001"],
+        allowedHeaders: ["Authorization", "Content-Type"],
+        credentials: true,
+    }),
+)
 
-app.get("/", (_, res) => {
-    res.json({ message: "API Gateway running 🚀" });
+const isProduction = process.env.NODE_ENV === "production";
+
+
+const allowedOrigins = isProduction
+    ? [
+        "https://shondhane.com",
+        "https://sellers.shondhane.com",
+        "https://admin.shondhane.com",
+        "http://nginx",
+        "http://localhost",
+    ]
+    : ["http://localhost:3000", "http://localhost:3001", "http://localhost:3002"];
+
+app.use(morgan("dev"))
+app.use(express.json({ limit: "100mb" }))
+app.use(express.urlencoded({ limit: "100mb", extended: true }))
+app.use(cookieParser())
+app.set("trust proxy", 1)
+
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 1000,
+    message: { error: "Too many requests, please try again later!" },
+    standardHeaders: true,
+    legacyHeaders: false,
+    keyGenerator: (req: any) => req.ip
+})
+
+app.use(limiter)
+
+app.get("/gateway-health", (req, res) => {
+    res.status(200).json({ ok: true, service: "api-gateway" })
+})
+
+app.use("/auth", proxy("http://localhost:6001"))
+app.use("/product", proxy("http://localhost:6002"))
+app.use("/recommendation", proxy("http://localhost:6007"))
+
+app.use("/assets", express.static(path.join(__dirname, "assets")))
+
+const port = process.env.PORT || 8080;
+const host = isProduction ? "0.0.0.0" : "localhost";
+const server = app.listen(Number(port), host, () => {
+    console.log(`🚀 API Gateway listening at http://${host}:${port}`);
+    console.log(`🌍 Environment: ${process.env.NODE_ENV || "development"}`);
+    console.log(`🔗 CORS Origins: ${JSON.stringify(allowedOrigins)}`);
+
+    try {
+        // initializeSiteConfig();
+        console.log("✅ Site config initialized successfully!");
+    } catch (error) {
+        console.error("❌ Failed to initialize site config:", error);
+    }
 });
 
-app.get("/health", (_, res) => {
-    res.send("OK");
-});
-
-const PORT = 3001;
-
-app.listen(PORT, () => {
-    console.log(`API Gateway running on port ${PORT}`);
-});
+server.on("error", console.error)
