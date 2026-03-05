@@ -1,104 +1,57 @@
 import ProductCard from "./ProductCard";
 
+export const products = [
+    {
+        id: "1",
+        image: "/milk.png",
+        name: "Nandini Cow Milk",
+        weight: "500 ml",
+        price: 26,
+    },
+    {
+            id: "2",
+        image: "/curd.png",
+        name: "Nandini Pouch Curd",
+        weight: "415 g",
+        price: 27,
+    },
+    {
+        id: "3",
+        image: "/curd.png",
+        name: "Nandini Pouch Curd",
+        weight: "415 g",
+        price: 27,
+    },
+    {
+        id: "4",
+        image: "/curd.png",
+        name: "Nandini Pouch Curd",
+        weight: "415 g",
+        price: 27,
+    },
+    {
+        id: "5",
+        image: "/curd.png",
+        name: "Nandini Pouch Curd",
+        weight: "415 g",
+        price: 27,
+    },
+    {
+        id: "6",
+        image: "/curd.png",
+        name: "Nandini Pouch Curd",
+        weight: "415 g",
+        price: 27,
+    },
+    {
+        id: "7",
+        image: "/curd.png",
+        name: "Nandini Pouch Curd",
+        weight: "415 g",
+        price: 27,
+    },
+];
 export default function ProductSection() {
-    const products = [
-        {
-            image: "/milk.png",
-            name: "Nandini Cow Milk",
-            weight: "500 ml",
-            price: 26,
-        },
-        {
-            image: "/curd.png",
-            name: "Nandini Pouch Curd",
-            weight: "415 g",
-            price: 27,
-        },
-        {
-            image: "/curd.png",
-            name: "Nandini Pouch Curd",
-            weight: "415 g",
-            price: 27,
-        },
-        {
-            image: "/curd.png",
-            name: "Nandini Pouch Curd",
-            weight: "415 g",
-            price: 27,
-        },
-        {
-            image: "/curd.png",
-            name: "Nandini Pouch Curd",
-            weight: "415 g",
-            price: 27,
-        },
-        {
-            image: "/curd.png",
-            name: "Nandini Pouch Curd",
-            weight: "415 g",
-            price: 27,
-        },
-        {
-            image: "/curd.png",
-            name: "Nandini Pouch Curd",
-            weight: "415 g",
-            price: 27,
-        },
-        {
-            image: "/curd.png",
-            name: "Nandini Pouch Curd",
-            weight: "415 g",
-            price: 27,
-        },
-        {
-            image: "/curd.png",
-            name: "Nandini Pouch Curd",
-            weight: "415 g",
-            price: 27,
-        },
-        {
-            image: "/curd.png",
-            name: "Nandini Pouch Curd",
-            weight: "415 g",
-            price: 27,
-        },
-        {
-            image: "/curd.png",
-            name: "Nandini Pouch Curd",
-            weight: "415 g",
-            price: 27,
-        },
-        {
-            image: "/curd.png",
-            name: "Nandini Pouch Curd",
-            weight: "415 g",
-            price: 27,
-        },
-        {
-            image: "/curd.png",
-            name: "Nandini Pouch Curd",
-            weight: "415 g",
-            price: 27,
-        },
-        {
-            image: "/curd.png",
-            name: "Nandini Pouch Curd",
-            weight: "415 g",
-            price: 27,
-        },
-        {
-            image: "/curd.png",
-            name: "Nandini Pouch Curd",
-            weight: "415 g",
-            price: 27,
-        },
-        {
-            image: "/curd.png",
-            name: "Nandini Pouch Curd",
-            weight: "415 g",
-            price: 27,
-        },
-    ];
 
     return (
         <div className="mt-10">

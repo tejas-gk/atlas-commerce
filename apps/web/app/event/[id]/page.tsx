@@ -1,7 +1,10 @@
-import { events } from "@/lib/data"
-import EventPage from "@/components/event/EventPage"
+import { EventDetail } from "@/components/event/event-detail";
 
-export default function Page({ params }: { params: { id: string } }) {
-    const event = events.find(e => e.id === params.id)!
-    return <EventPage event={event} />
+export default function EventPage() {
+    return (
+        <div className="min-h-screen bg-background">
+
+            <EventDetail />
+        </div>
+    )
 }

@@ -1,6 +1,11 @@
-// app/product/[id]/page.tsx
 import ProductDetailsPage from "@/components/product-details/ProductDetailsPage";
 
-export default function Page() {
-    return <ProductDetailsPage />;
+interface PageProps {
+    params: {
+        id: string;
+    };
+}
+
+export default function Page({ params }: PageProps) {
+    return <ProductDetailsPage productId={params.id} />;
 }

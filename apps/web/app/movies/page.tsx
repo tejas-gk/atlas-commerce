@@ -1,7 +1,8 @@
 import { HeroCarousel } from "@/components/hero-carousel"
 import { MovieCard } from "@/components/movie-card"
 import { MoviesFilterSection } from "@/components/movies-filter-section"
-import Navbar from "@/components/navbar"
+import { Navbars } from "@/components/navbar"
+// import Navbar from "@/components/navbar"
 
 import { movies, theatreMovies } from "@/lib/data"
 
@@ -9,7 +10,7 @@ export default function HomePage() {
     return (
         <div className="min-h-screen bg-background">
             <HeroCarousel />
-            <Navbar />
+            <Navbars />
 
             <main className="mx-auto max-w-7xl px-4 py-8">
                 {/* Recommended Movies */}
