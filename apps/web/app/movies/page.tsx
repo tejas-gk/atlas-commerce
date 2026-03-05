@@ -1,6 +1,6 @@
 import { HeroCarousel } from "@/components/hero-carousel"
-import { MovieCard } from "@/components/movie-card"
-import { MoviesFilterSection } from "@/components/movies-filter-section"
+import { MovieCard } from "@/components/movie/movie-card"
+import { MoviesFilterSection } from "@/components/movie/movies-filter-section"
 import { Navbars } from "@/components/navbar"
 // import Navbar from "@/components/navbar"
 

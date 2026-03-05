@@ -353,11 +353,9 @@ export const championsVenue: Venue = {
 
 export const navItems = [
     { label: "For you", href: "/" },
-    { label: "Dining", href: "#" },
-    { label: "Movies", href: "/" },
+    { label: "Movies", href: "/movies" },
     { label: "Events", href: "/events/shakira-concert" },
-    { label: "Stores", href: "#" },
-    { label: "Activities", href: "#" },
+    { label: "Stores", href: "/stores" },
     { label: "Play", href: "/play/champions-cave" },
 ]
 
