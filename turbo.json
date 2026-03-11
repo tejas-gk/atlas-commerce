@@ -37,7 +37,17 @@
       "env": [
         "DATABASE_URL",
         "ACCESS_TOKEN_SECRET",
-        "REFRESH_TOKEN_SECRET"
+        "REFRESH_TOKEN_SECRET",
+        "REDIS_URL",
+        "KAFKA_CLIENT_ID",
+        "KAFKA_BROKER",
+        "KAFKA_USERNAME",
+        "KAFKA_PASSWORD",
+        "SMTP_HOST",
+        "SMTP_PORT",
+        "SMTP_SERVICE",
+        "SMTP_USER",
+        "SMTP_PASS"
       ]
     }
   }

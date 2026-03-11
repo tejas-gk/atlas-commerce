@@ -1,13 +1,11 @@
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import db from "@repo/db";
 
 const initializeSiteConfig = async () => {
   try {
-    const existingConfig = await prisma.site_config.findFirst();
+    const existingConfig = await db.site_config.findFirst();
 
     if (!existingConfig) {
-      await prisma.site_config.create({
+      await db.site_config.create({
         data: {
           categories: [
             "Electronics",

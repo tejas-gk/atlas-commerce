@@ -1,5 +1,5 @@
 import { ValidationError } from "@repo/error-handler";
-import redis from "../../../../packages/libs/redis";
+import redis from "@repo/redis";
 import crypto from "crypto"
 import { NextFunction, Request, Response } from "express";
 import { sendEmail } from "./sendMail";

@@ -8,6 +8,7 @@
     "@workspace/typescript-config": "workspace:*"
   },
   "exports": {
-    ".": "./isAuthenticated.ts"
+    ".": "./isAuthenticated.ts",
+    "./authorizeRoles": "./authorizeRoles.ts"
   }
 }

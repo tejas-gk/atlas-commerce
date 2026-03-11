@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { checkOtpRestrictions, handleForgotPassword, sendOtp, trackOtpRequests, validateRegistrationData, verifyForgotPasswordOtp, verifyOtp } from "../utils/auth.helper";
 
-import {  AuthError, NotFoundError, ValidationError } from "../../../../packages/error-handler";
+import {  AuthError, NotFoundError, ValidationError } from "@repo/error-handler";
 import { setCookie } from "../utils/cookies/setCookie";
 import jwt, { JsonWebTokenError } from "jsonwebtoken";
 import bcrypt from "bcryptjs";

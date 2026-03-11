@@ -11,7 +11,7 @@
     "studio": "prisma studio"
   },
   "prisma": {
-    "schema": "prisma/schema.prisma"
+    "schema": "packages/db/prisma/schema.prisma"
   },
   "devDependencies": {
     "@turbo/gen": "^2.8.1",
