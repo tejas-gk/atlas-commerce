@@ -1,8 +1,8 @@
 import express, { Router } from "express";
 import { addUserAddress, createShop, deleteUserAddress, getLayoutData, getSeller, getUser, getUserAddresses, loginSeller, loginUser, logOutAdmin, logOutSeller, logOutUser, refreshToken, registerSeller, resetUserPassword, userForgotPassword, verifySeller, verifyUser, verifyUserForgotPassword } from "../controller/auth.controller";
 import { userRegistration } from "../controller/auth.controller";
-import isAuthenticated from "../../../../packages/middleware/isAuthenticated";
-import { isAdmin, isSeller } from "../../../../packages/middleware/authorizeRoles";
+import isAuthenticated from "@repo/middleware";
+import { isAdmin, isSeller } from "@repo/middleware/authorizeRoles";
 
 const router: Router = express.Router();
 

@@ -1,0 +1,14 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Auth Service API",
+    "version": "1.0.0",
+    "description": "Authentication service API documentation"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:6001"
+    }
+  ],
+  "paths": {}
+}

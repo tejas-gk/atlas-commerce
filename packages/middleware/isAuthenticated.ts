@@ -1,4 +1,4 @@
-import db from "../db";
+import db from "@repo/db";
 import { NextFunction, Response } from "express";
 import jwt from "jsonwebtoken";
 
