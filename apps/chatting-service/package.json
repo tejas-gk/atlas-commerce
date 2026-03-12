@@ -1,0 +1,14 @@
+{
+  "name": "@eshop/chatting-service",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist/main.js",
+  
+  "dependencies": {
+    "@repo/db": "workspace:^",
+    "@repo/error-handler": "workspace:^",
+    "@repo/middleware": "workspace:^",
+    "@atlas/kafka": "workspace:^",
+    "@repo/redis": "workspace:^"
+  }
+}

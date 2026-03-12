@@ -1,0 +1,17 @@
+{
+  "name": "@atlas/kafka-service",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "dotenv -e ../../.env -- tsx watch src/main.ts",
+    "build": "tsc",
+    "start": "node dist/main.js"
+  },
+  "dependencies": {
+    "@repo/db": "workspace:^",
+    "@repo/error-handler": "workspace:^",
+    "@repo/middleware": "workspace:^",
+    "@atlas/kafka": "workspace:^",
+    "@repo/redis": "workspace:^"
+  }
+}

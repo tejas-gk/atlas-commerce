@@ -1,9 +1,13 @@
 {
-  "name": "@repo/kafka",
+  "name": "@atlas/kafka",
   "version": "1.0.0",
   "private": true,
   "main": "index.js",
   "dependencies": {
     "kafkajs": "^2.2.4"
+  },
+  "exports": {
+    ".": "./index.ts"
+
   }
-} 
+}

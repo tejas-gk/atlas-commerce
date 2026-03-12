@@ -1,15 +1,5 @@
 import Redis from "ioredis"
 
-const redisUrl = process.env.REDIS_URL
-
-if (!redisUrl) {
-  console.warn("REDIS_URL is not set. Redis will attempt default connection.")
-}
-
-const redis = new Redis(redisUrl || "redis://localhost:6379")
-
-redis.on("error", (err) => {
-  console.error("Redis connection error:", err.message)
-})
+const redis = new Redis("rediss://default:AcUfAAIncDFlNzEyMjM4MGFhMjQ0MjUwYWUwZDM1OGQyODE5ZjZiM3AxNTA0NjM@relieved-ewe-50463.upstash.io:6379")
 
 export default redis

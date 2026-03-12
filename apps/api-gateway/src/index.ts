@@ -66,7 +66,7 @@ const server = app.listen(Number(port), host, () => {
     console.log(`🔗 CORS Origins: ${JSON.stringify(allowedOrigins)}`);
 
     try {
-        // initializeSiteConfig();
+        initializeSiteConfig();
         console.log("✅ Site config initialized successfully!");
     } catch (error) {
         console.error("❌ Failed to initialize site config:", error);
