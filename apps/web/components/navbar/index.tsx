@@ -4,6 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import {DistrictNavbar} from "./DistrictNavbar";
 import StoresNavbar from "./StoresNavbar";
 import { ArrowLeft } from "lucide-react";
+import HeaderBottom from "./header-bottom";
 
 export default function Navbar() {
     const pathname = usePathname();
@@ -69,6 +70,7 @@ function SectionNavbar({
                 <h1 className="font-semibold text-lg">{title}</h1>
 
             </div>
+            <HeaderBottom/>
         </header>
     );
 }

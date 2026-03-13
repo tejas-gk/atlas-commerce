@@ -1,79 +1,171 @@
-// components/ProductCard.tsx
-"use client";
+"use client"
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
+import { Eye, Heart, ShoppingBag } from "lucide-react";
+// import ProductDetailsCard from "./product-details.card";
+import useUser from "@/hooks/useUser";
+import useLocationTracking from "@/hooks/useLocationTracking";
+import useDeviceTracking from "@/hooks/useDeviceTracking";
+import { useStore } from "@/store";
+import Ratings from "./ratings";
 
-import { Product, useStore } from "@/context/cart-context";
-import React from "react";
 
 
-type Props = Product;
+const ProductCard = ({
+    product,
+    isEvent,
+}: {
+    product: any;
+    isEvent?: boolean;
+}) => {
+    const [timeLeft, setTimeLeft] = useState("");
+    const [open, setOpen] = useState(false);
+    const { user } = useUser();
+    const location = useLocationTracking();
+    const deviceInfo = useDeviceTracking();
+    const addToCart = useStore((state: any) => state.addToCart);
+    const addToWishlist = useStore((state: any) => state.addToWishlist);
+    const removeFromWishlist = useStore((state: any) => state.removeFromWishlist);
+    const wishlist = useStore((state: any) => state.wishlist);
+    const isWishlisted = wishlist.some((item: any) => item.id === product.id);
+    const cart = useStore((state: any) => state.cart);
+    const isInCart = cart.some((item: any) => item.id === product.id);
 
-export default function ProductCard({ id, image, name, weight, price }: Props) {
-    const { addToCart, increment, decrement, getQuantity, toggleWishlist, isWishlisted } = useStore();
+    useEffect(() => {
+        if (isEvent && product?.ending_date) {
+            const interval = setInterval(() => {
+                const endTime = new Date(product.ending_date).getTime();
+                const now = Date.now();
+                const diff = endTime - now;
 
-    const qty = getQuantity(id);
-    const wish = isWishlisted(id);
+                if (diff <= 0) {
+                    setTimeLeft("Expired");
+                    clearInterval(interval);
+                    return;
+                }
 
-    const product = { id, image, name, weight, price };
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+                const minutes = Math.floor((diff / (1000 * 60)) % 60);
+                setTimeLeft(`${days}d ${hours}h ${minutes}m left with this price`);
+            }, 60000);
+            return () => clearInterval(interval);
+        }
+        return;
+    }, [isEvent, product?.ending_date]);
+
+   
 
     return (
-        <div className="bg-white rounded-xl border p-4 hover:shadow-md transition relative">
-            <button
-                aria-label={wish ? "Remove from wishlist" : "Add to wishlist"}
-                onClick={() => toggleWishlist(product)}
-                className={`absolute top-3 right-3 p-1 rounded-full transition ${wish ? "text-red-600" : "text-gray-400 hover:text-red-500"
-                    }`}
-                title={wish ? "Remove from wishlist" : "Add to wishlist"}
+        <div className="w-full min-h-[350px] h-max bg-white rounded-lg relative">
+            {isEvent && (
+                <div className="absolute top-2 left-2 bg-red-600 text-white text-[10px] font-semibold px-2 py-1 rounded-sm shadow-md">
+                    OFFER
+                </div>
+            )}
+
+            {product?.stock <= 5 && (
+                <div className="absolute top-2 right-2 bg-yellow-400 text-slate-700 text-[10px] font-semibold px-2 py-1 rounded-sm shadow-md">
+                    Limited Stock
+                </div>
+            )}
+
+            <Link href={`/product/${product?.slug}`}>
+                <img
+                    src={
+                        product?.images?.[0]?.url ||
+                        "https://images.unsplash.com/photo-1635405074683-96d6921a2a68?w=500&auto=format&fit=crop&q=60"
+                    }
+                    alt={product?.title}
+                    width={300}
+                    height={300}
+                    className="w-full h-[220px] object-cover mx-auto rounded-t-md"
+                />
+            </Link>
+
+            <Link
+                href={`/shop/${product?.Shop?.id}`}
+                className="block text-blue-500 text-sm font-medium my-2 px-2"
             >
-                {/* simple heart svg */}
-                {wish ? (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" className="block">
-                        <path d="M12 21s-7-4.35-9.17-6.36C0.9 12.96 1.36 9.63 4.2 7.8 6.26 6.41 9.08 6.7 11 8.31 12.92 6.7 15.74 6.41 17.8 7.8c2.84 1.83 3.3 5.16 1.37 7.84C19 16.65 12 21 12 21z" />
-                    </svg>
-                ) : (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path d="M12 21s-7-4.35-9.17-6.36C0.9 12.96 1.36 9.63 4.2 7.8 6.26 6.41 9.08 6.7 11 8.31 12.92 6.7 15.74 6.41 17.8 7.8c2.84 1.83 3.3 5.16 1.37 7.84C19 16.65 12 21 12 21z" />
-                    </svg>
-                )}
-            </button>
+                {product?.Shop?.name}
+            </Link>
 
-            <img src={image} alt={name} className="h-32 object-contain mx-auto mb-3" />
+            <Link href={`/product/${product?.slug}`}>
+                <h3 className="text-base font-semibold px-2 text-gray-800 line-clamp-2">
+                    {product?.title}
+                </h3>
+            </Link>
 
-            <h4 className="text-sm font-medium mb-1 line-clamp-2">{name}</h4>
-
-            {weight && <p className="text-xs text-gray-500 mb-2">{weight}</p>}
-
-            <div className="flex items-center justify-between">
-                <span className="font-semibold text-sm">₹{price}</span>
-
-                {qty === 0 ? (
-                    <button
-                        onClick={() => addToCart(product)}
-                        className="border border-green-600 text-green-600 px-3 py-1 rounded-md text-sm font-semibold hover:bg-green-50"
-                    >
-                        ADD
-                    </button>
-                ) : (
-                    <div className="flex items-center border border-green-600 rounded-md">
-                        <button
-                            onClick={() => decrement(id)}
-                            className="px-3 py-1 text-green-600 font-bold"
-                            aria-label="decrement"
-                        >
-                            −
-                        </button>
-
-                        <span className="px-4 text-sm font-semibold">{qty}</span>
-
-                        <button
-                            onClick={() => increment(id)}
-                            className="px-3 py-1 text-green-600 font-bold"
-                            aria-label="increment"
-                        >
-                            +
-                        </button>
-                    </div>
-                )}
+            <div className="mt-2 px-2">
+                <Ratings rating={product?.ratings} />
             </div>
+
+            <div className="mt-3 flex justify-between items-center px-2">
+                <div className="flex items-center gap-2">
+                    <span className="text-lg font-bold text-gray-900">
+                        ${product?.sale_price}
+                    </span>
+                    <span className="text-sm line-through text-gray-400">
+                        ${product?.regular_price}
+                    </span>
+                </div>
+
+                <span className="text-green-500 text-sm font-medium">
+                    {product?.totalSales || 0} sold
+                </span>
+            </div>
+
+            {isEvent && timeLeft && (
+                <div className="mt-2">
+                    <span className="inline-block text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded font-medium">
+                        {timeLeft}
+                    </span>
+                </div>
+            )}
+
+            <div className="absolute z-10 flex flex-col gap-3 right-3 top-10">
+                <div className="bg-white rounded-full p-[6px] shadow-md">
+                    <Heart
+                        className="cursor-pointer hover:scale-110 transition"
+                        size={22}
+                        fill={isWishlisted ? "red" : "transparent"}
+                        onClick={() =>
+                            isWishlisted
+                                ? removeFromWishlist(product.id, user, location, deviceInfo)
+                                : addToWishlist(
+                                    { ...product, quantity: 1 },
+                                    user,
+                                    location,
+                                    deviceInfo
+                                )
+                        }
+                        stroke={isWishlisted ? "red" : "#4B5563"}
+                    />
+                </div>
+
+                <div className="bg-white rounded-full p-[6px] shadow-md">
+                    <Eye
+                        className="cursor-pointer text-[#4b5563] hover:scale-110 transition"
+                        size={22}
+                        onClick={() => setOpen(!open)}
+                    />
+                </div>
+
+                <div className="bg-white rounded-full p-[6px] shadow-md">
+                    <ShoppingBag
+                        size={22}
+                        onClick={() =>
+                            !isInCart &&
+                            addToCart({ ...product, quantity: 1 }, user, location, deviceInfo)
+                        }
+                        className="cursor-pointer text-[#4b5563] hover:scale-110 transition"
+                    />
+                </div>
+            </div>
+
+            {/* {open && <ProductDetailsCard data={product} setOpen={setOpen} />} */}
         </div>
     );
-}
+};
+
+export default ProductCard;

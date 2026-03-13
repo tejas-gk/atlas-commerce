@@ -1,21 +1,55 @@
-"use client"
+"use client";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import React, { useState } from "react";
+import { Toaster } from "sonner";
+import useUser from "../hooks/useUser";
+// import { WebSocketProvider } from "@/context/web-socket-context";
+import { StoreProvider } from "@/context/cart-context";
 
-import * as React from "react"
-import { ThemeProvider as NextThemesProvider } from "next-themes"
-import { StoreProvider } from "@/context/cart-context"
+const Providers = ({ children }: { children: React.ReactNode }) => {
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            refetchOnWindowFocus: false,
+            staleTime: 1000 * 60 * 5,
+          },
+        },
+      })
+  );
 
-export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <NextThemesProvider
-      attribute="light"
-      defaultTheme="system"
-      enableSystem
-      disableTransitionOnChange
-      enableColorScheme
-    >
+    <QueryClientProvider client={queryClient}>
       <StoreProvider>
-        {children}
+        {/* <ProvidersWithWebSocket> */}
+          {children}
+        {/* </ProvidersWithWebSocket> */}
+        <Toaster />
       </StoreProvider>
-    </NextThemesProvider>
-  )
-}
+    </QueryClientProvider>
+  );
+};
+
+const ProvidersWithWebSocket = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
+  const { user, isLoading } = useUser();
+
+  if (isLoading) return null;
+
+  return (
+    <>
+      {user &&
+    
+        { children }
+      
+      }
+      {!user && children}
+    </>
+  );
+};
+
+export default Providers;
