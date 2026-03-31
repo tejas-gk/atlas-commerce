@@ -12,6 +12,11 @@ import { toast } from "sonner";
 import BreadCrumbs from "@/shared/components/breadcrumbs";
 import ImagePlaceHolder from "@/shared/components/image-placeholder";
 import { Input } from "../../../../../../../packages/ui/src/components/input";
+import ColorSelector from "@/shared/components/color-selector";
+import CustomSpecifications from "../custom-specifications";
+import CustomProperties from "@/shared/components/custom-properties";
+import SizeSelector from "@/shared/components/size-selector";
+import RichTextEditor from "@/shared/components/rich-text-editor";
 
 interface UploadedImage {
   fileId: string;

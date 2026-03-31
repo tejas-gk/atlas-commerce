@@ -11,10 +11,10 @@ import {
   Trash2,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
-import Input from "packages/components/input";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import axiosInstance from "@/utils/axiosInstance";
+import { Input } from "@workspace/ui/components/input";
 
 // Fetch seller's connected domain
 const fetchDomains = async () => {

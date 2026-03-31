@@ -14,6 +14,7 @@ import Image from "next/image";
 import BreadCrumbs from "@/shared/components/breadcrumbs";
 import DeleteConfirmationModal from "@/shared/components/modals/delete.confirmation.modal";
 import AnalyticsModal from "@/shared/components/modals/analytics.modal";
+import { Input } from "@workspace/ui/components/input";
 
 
 const fetchProducts = async () => {
@@ -69,7 +70,7 @@ const ProductList = () => {
         header: "Image",
         cell: ({ row }: any) => {
           return (
-            <Image
+            <img
               src={row.original.images[0]?.url}
               alt={row.original.images[0]?.url}
               width={200}
@@ -200,7 +201,7 @@ const ProductList = () => {
       {/* Search Bar */}
       <div className="mb-4 flex items-center bg-gray-900 p-2 rounded-md flex-1">
         <Search size={18} className="text-gray-400 mr-2" />
-        <input
+        <Input
           type="text"
           placeholder="Search products..."
           className="w-full bg-transparent text-white outline-none"
