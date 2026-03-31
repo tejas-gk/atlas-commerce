@@ -72,6 +72,7 @@
     "react-simple-maps": "^3.0.0",
     "recharts": "^3.8.1",
     "sonner": "^2.0.7",
+    "stripe": "^12.0.0",
     "styled-components": "^6.3.12",
     "swagger-ui-express": "^5.0.1",
     "ua-parser-js": "^2.0.9",

@@ -1,11 +1,17 @@
 import { NextFunction, Request, Response } from "express";
 import { checkOtpRestrictions, handleForgotPassword, sendOtp, trackOtpRequests, validateRegistrationData, verifyForgotPasswordOtp, verifyOtp } from "../utils/auth.helper";
 
-import {  AuthError, NotFoundError, ValidationError } from "@repo/error-handler";
+import { AuthError, NotFoundError, ValidationError } from "@repo/error-handler";
 import { setCookie } from "../utils/cookies/setCookie";
 import jwt, { JsonWebTokenError } from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import db from "@repo/db";
+import Stripe from "stripe";
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: "2022-11-15",
+});
+
 
 export const userRegistration = async (
     req: Request,
@@ -292,6 +298,202 @@ export const resetUserPassword = async (
     }
 };
 
+export const updateUserPassword = async (
+    req: any,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const userId = req.user?.id;
+        const { currentPassword, newPassword, confirmPassword } = req.body;
+
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            return next(new ValidationError("all fields are required"));
+        }
+
+        if (newPassword !== confirmPassword) {
+            return next(new ValidationError("new passwords do not match"));
+        }
+
+        if (currentPassword === newPassword) {
+            return next(
+                new ValidationError(
+                    "New password cannot be the same as the current password"
+                )
+            );
+        }
+
+        const user = await db.users.findUnique({
+            where: { id: userId },
+        });
+
+        if (!user || !user.password) {
+            return next(new AuthError("user not found or password not set"));
+        }
+
+        const isPasswordCorrect = await bcrypt.compare(
+            currentPassword,
+            user.password
+        );
+        if (!isPasswordCorrect) {
+            return next(new AuthError("current password is incorrect"));
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+        await db.users.update({
+            where: { id: userId },
+            data: { password: hashedPassword },
+        });
+
+        res.status(200).json({ message: "password updated successfully" });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const createStripeConnectLink = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const { sellerId } = req.body;
+
+        if (!sellerId) return next(new ValidationError("Seller ID is required!"));
+
+        const seller = await db.sellers.findUnique({
+            where: {
+                id: sellerId,
+            },
+        });
+
+        if (!seller) {
+            return next(new ValidationError("Seller is not available with this id!"));
+        }
+
+        const account = await stripe.accounts.create({
+            type: "express",
+            email: seller?.email,
+            country: "GB",
+            capabilities: {
+                card_payments: { requested: true },
+                transfers: { requested: true },
+            },
+        });
+
+        await prisma.sellers.update({
+            where: {
+                id: sellerId,
+            },
+            data: {
+                stripeId: account.id,
+            },
+        });
+
+        const accountLink = await stripe.accountLinks.create({
+            account: account.id,
+            refresh_url: `http://localhost:3000/success`,
+            return_url: `http://localhost:3000/success`,
+            type: "account_onboarding",
+        });
+
+        res.json({ url: accountLink.url });
+    } catch (error) {
+        return next(error);
+    }
+};
+
+export const loginAdmin = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return next(new ValidationError("Email and password are required!"));
+        }
+
+        const user = await db.users.findUnique({ where: { email } });
+
+        if (!user) return next(new AuthError("User doesn't exists!"));
+
+        // verify password
+        const isMatch = await bcrypt.compare(password, user.password!);
+        if (!isMatch) {
+            return next(new AuthError("Invalid email or password"));
+        }
+
+        const isAdmin = user.role === "admin";
+
+        if (!isAdmin) {
+            // sendLog({
+            //     type: "error",
+            //     message: `Admin login failed for ${email} — not an admin`,
+            //     source: "auth-service",
+            // });
+            return next(new AuthError("Invalid access!"));
+        }
+
+        // sendLog({
+        //     type: "success",
+        //     message: `Admin login successful: ${email}`,
+        //     source: "auth-service",
+        // });
+
+        res.clearCookie("seller-access-token");
+        res.clearCookie("seller-refresh-token");
+
+        // Generate access and refresh token
+        const accessToken = jwt.sign(
+            { id: user.id, role: "admin" },
+            process.env.ACCESS_TOKEN_SECRET as string,
+            {
+                expiresIn: "15m",
+            }
+        );
+
+        const refreshToken = jwt.sign(
+            { id: user.id, role: "admin" },
+            process.env.REFRESH_TOKEN_SECRET as string,
+            {
+                expiresIn: "7d",
+            }
+        );
+
+        // store the refresh and access token in an httpOnly secure cookie
+        setCookie(res, "refresh_token", refreshToken);
+        setCookie(res, "access_token", accessToken);
+
+        res.status(200).json({
+            message: "Login successful!",
+            user: { id: user.id, email: user.email, name: user.name },
+        });
+    } catch (error) {
+        return next(error);
+    }
+};
+
+export const getAdmin = async (req: any, res: Response, next: NextFunction) => {
+    try {
+        const user = req.user;
+
+        // await sendLog({
+        //     type: "success",
+        //     message: `Admin data retrieved ${user?.email}`,
+        //     source: "auth-service",
+        // });
+
+        res.status(201).json({
+            success: true,
+            user,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
 
 export const registerSeller = async (
     req: Request,
