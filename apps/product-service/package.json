@@ -8,6 +8,10 @@
     "start": "node dist/main.js"
   },
   "dependencies": {
-    "@repo/db": "workspace:^"
+    "@repo/db": "workspace:^",
+    "cors": "^2.8.6"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19"
   }
 }

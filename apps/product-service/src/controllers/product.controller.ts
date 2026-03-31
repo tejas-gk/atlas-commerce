@@ -583,8 +583,8 @@ export const getProductDetails = async (
   try {
     const product = await db.products.findUnique({
       where: {
-        slug: req.params.slug!,
-      },
+  slug: req.params.slug as string, // Add "as string"
+},
       include: {
         images: true,
         Shop: true,
@@ -890,7 +890,7 @@ export const topShops = async (
       take: 10,
     });
 
-    // Fetch the corresponding shop details
+    // fetch the corresponding shop details
     const shopIds = topShopsData.map((item) => item.shopId);
 
     const shops = await db.shops.findMany({
@@ -911,7 +911,7 @@ export const topShops = async (
       },
     });
 
-    // Merge sales with shop data
+    // merge sales with shop data
     const enrichedShops = shops.map((shop) => {
       const salesData = topShopsData.find((s) => s.shopId === shop.id);
       return {
@@ -946,7 +946,7 @@ export const slugValidator = async (
       );
     }
 
-    // Slugify manually (no slugify lib)
+    // slugify manually (no slugify lib)
     slug = slug
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
@@ -984,8 +984,8 @@ export const getProductAnalytics = async (
   try {
     const analytics = await db.productAnalytics.findUnique({
       where: {
-        productId: req.params.productId,
-      },
+  productId: req.params.productId as string, // add "as string"
+},
     });
     res.status(201).json({
       success: true,

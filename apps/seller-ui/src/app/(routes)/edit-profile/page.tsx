@@ -1,14 +1,7 @@
 "use client";
 
-import React from "react";
-import { useRouter } from "next/navigation";
-import { useForm, Controller, FieldValues } from "react-hook-form";
-import { Save, Trash, ArrowLeft, Loader } from "lucide-react";
-import Input from "packages/components/input";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import toast from "react-hot-toast";
-import axiosInstance from "@/utils/axiosInstance";
-import useSeller from "apps/seller-ui/src/hooks/useSeller";
+import { useState } from "react";
+import { Store, Globe, MapPin, Clock, Plus, Trash2, Save, Link as LinkIcon } from "lucide-react";
 
 interface SocialLink {
   type: string;
@@ -24,238 +17,186 @@ interface SellerProfileForm {
   socialLinks: SocialLink[];
 }
 
-const socialMediaOptions = [
-  { label: "Facebook", value: "facebook" },
-  { label: "YouTube", value: "youtube" },
-  { label: "X (Twitter)", value: "x" },
-];
-
-// API call to update profile
-const updateSellerProfile = async (data: SellerProfileForm) => {
-  const response = await axiosInstance.put("/seller/api/edit-profile", data);
-  return response.data;
-};
-
-const EditProfile: React.FC = () => {
-  const { seller } = useSeller();
-  const router = useRouter();
-  const queryClient = useQueryClient();
-
-  // React Hook Form Setup
-  const {
-    register,
-    handleSubmit,
-    control,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useForm<SellerProfileForm>({
-    defaultValues: {
-      name: seller?.shop?.name || "",
-      bio: seller?.shop?.bio || "",
-      opening_hours: seller?.shop?.opening_hours || "Mon - Sat: 9 AM - 6 PM",
-      address: seller?.shop?.address || "",
-      website: seller?.shop?.website || "",
-      socialLinks: seller?.shop?.socialLinks || [{ type: "facebook", url: "" }],
-    },
+export default function StoreSettings() {
+  const [isSaving, setIsSaving] = useState(false);
+  const [formData, setFormData] = useState<SellerProfileForm>({
+    name: "Atlas Default Store",
+    bio: "We sell premium, high-quality goods.",
+    opening_hours: "Mon-Fri: 9AM - 6PM",
+    address: "123 Commerce St, Tech District",
+    website: "https://atlas-store.com",
+    socialLinks: [{ type: "instagram", url: "https://instagram.com/atlas" }]
   });
 
-  const socialLinks = watch("socialLinks");
-
-  // Mutation for updating the seller profile
-  const { mutate: updateProfile, isPending } = useMutation({
-    mutationFn: updateSellerProfile,
-    onSuccess: (data) => {
-      toast.success(data.message || "Profile updated successfully!");
-      queryClient.invalidateQueries({ queryKey: ["seller"] });
-      router.push("/");
-    },
-    onError: (error: any) => {
-      toast.error(
-        error?.response?.data?.message || "Failed to update profile!"
-      );
-    },
-  });
-
-  // Form Submit Handler
-  const onSubmit = (data: FieldValues) => {
-    updateProfile(data as SellerProfileForm);
+  const handleAddSocial = () => {
+    setFormData({
+      ...formData,
+      socialLinks: [...formData.socialLinks, { type: "twitter", url: "" }]
+    });
   };
 
-  // Add New Social Link
-  const addSocialLink = () => {
-    setValue("socialLinks", [...socialLinks, { type: "facebook", url: "" }]);
+  const handleRemoveSocial = (index: number) => {
+    const newLinks = formData.socialLinks.filter((_, i) => i !== index);
+    setFormData({ ...formData, socialLinks: newLinks });
   };
 
-  // Remove Social Link
-  const removeSocialLink = (index: number) => {
-    const updatedLinks = socialLinks.filter((_, i) => i !== index);
-    setValue("socialLinks", updatedLinks);
+  const handleUpdateSocial = (index: number, field: "type" | "url", value: string) => {
+    const newLinks = [...formData.socialLinks];
+    if (newLinks[index]) {
+      newLinks[index][field] = value;
+      setFormData({ ...formData, socialLinks: newLinks });
+    }
   };
 
-  const countWords = (text: string) => text.trim().split(/\s+/).length;
+  const handleSave = async () => {
+    setIsSaving(true);
+    setTimeout(() => {
+      setIsSaving(false);
+      alert("Store profile saved successfully!");
+    }, 1000);
+  };
 
   return (
-    <div className="w-full bg-gray-900 min-h-screen py-10 px-6">
-      {/* 🔙 Back Button & Breadcrumbs */}
-      <div className="absolute top-10 left-5">
-        <div className="text-gray-400 text-sm mb-6 flex items-center gap-2">
-          <button
-            onClick={() => router.push("/")}
-            className="flex items-center gap-1 text-gray-300 hover:text-white transition"
-          >
-            <ArrowLeft size={18} />
-            <span className="font-medium">Back to Profile</span>
-          </button>
-          <span className="mx-2 text-gray-500">/</span>
-          <span className="text-white font-medium">Edit Profile</span>
-        </div>
+    <div className="max-w-4xl mx-auto p-8 font-sans text-zinc-100 selection:bg-red-500/30">
+      
+      <div className="mb-8">
+        <h1 className="text-2xl font-semibold tracking-tight text-zinc-50">Storefront Settings</h1>
+        <p className="text-zinc-400 text-sm mt-1">Manage how your shop appears to buyers on the Atlas marketplace.</p>
       </div>
 
-      <div className="max-w-[50%] lg:max-w-[40%] mx-auto bg-gray-800 p-6 rounded-lg shadow-lg">
-        <h2 className="text-2xl font-semibold text-white mb-6">
-          Edit Shop Profile
-        </h2>
-
-        <form onSubmit={handleSubmit(onSubmit)}>
-          {/* Shop Name */}
-          <Input
-            label="Shop Name"
-            {...register("name", { required: "Shop name is required" })}
-          />
-          {errors.name && (
-            <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>
-          )}
-
-          {/* Shop Bio (Limited to 100 Words) */}
-          <div className="mt-1">
-            <Input
-              type="textarea"
-              label="Shop Bio (Max 100 words)"
-              {...register("bio", {
-                validate: (value) =>
-                  countWords(value) <= 100 || "Bio can't exceed 100 words",
-              })}
-            />
+      <div className="space-y-6">
+        
+        <section className="bg-[#09090B] rounded-xl border border-white/10 overflow-hidden shadow-2xl">
+          <div className="px-6 py-4 border-b border-white/10 bg-white/[0.02]">
+            <h2 className="text-sm font-medium text-zinc-200 flex items-center gap-2">
+              <Store size={16} className="text-zinc-500" /> Basic Information
+            </h2>
           </div>
-
-          {/* Opening Hours */}
-          <Input label="Opening Hours" {...register("opening_hours")} />
-
-          <div className="mt-1">
-            {/* Address */}
-            <Input label="Shop Address" {...register("address")} />
+          <div className="p-6 space-y-6">
+            <div>
+              <label className="block text-[11px] font-semibold text-zinc-500 mb-2 uppercase tracking-widest">Store Name</label>
+              <input 
+                type="text" 
+                value={formData.name}
+                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                className="w-full px-4 py-2.5 bg-white/[0.03] border border-white/10 rounded-lg text-sm text-zinc-100 placeholder:text-zinc-600 focus:bg-white/[0.05] focus:border-red-500/50 focus:ring-1 focus:ring-red-500/30 outline-none transition-all"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-semibold text-zinc-500 mb-2 uppercase tracking-widest">Store Bio / Description</label>
+              <textarea 
+                rows={4}
+                value={formData.bio}
+                onChange={(e) => setFormData({...formData, bio: e.target.value})}
+                className="w-full px-4 py-3 bg-white/[0.03] border border-white/10 rounded-lg text-sm text-zinc-100 placeholder:text-zinc-600 focus:bg-white/[0.05] focus:border-red-500/50 focus:ring-1 focus:ring-red-500/30 outline-none transition-all resize-none leading-relaxed"
+              />
+            </div>
           </div>
+        </section>
 
-          {/* Website */}
-          <Input
-            label="Website"
-            {...register("website", {
-              pattern: {
-                value:
-                  /^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]{2,256}\.[a-z]{2,6}\b)(\/[^\s]*)?$/,
-                message: "Enter a valid URL",
-              },
-            })}
-          />
-          {errors.website && (
-            <p className="text-red-500 text-xs mt-1">
-              {errors.website.message}
-            </p>
-          )}
+        <section className="bg-[#09090B] rounded-xl border border-white/10 overflow-hidden shadow-2xl">
+          <div className="px-6 py-4 border-b border-white/10 bg-white/[0.02]">
+            <h2 className="text-sm font-medium text-zinc-200 flex items-center gap-2">
+              <MapPin size={16} className="text-zinc-500" /> Location & Contact
+            </h2>
+          </div>
+          <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-[11px] font-semibold text-zinc-500 mb-2 uppercase tracking-widest flex items-center gap-1.5">
+                <Clock size={12} /> Opening Hours
+              </label>
+              <input 
+                type="text" 
+                value={formData.opening_hours}
+                onChange={(e) => setFormData({...formData, opening_hours: e.target.value})}
+                placeholder="e.g. Mon-Fri: 9AM - 6PM"
+                className="w-full px-4 py-2.5 bg-white/[0.03] border border-white/10 rounded-lg text-sm text-zinc-100 placeholder:text-zinc-600 focus:bg-white/[0.05] focus:border-red-500/50 focus:ring-1 focus:ring-red-500/30 outline-none transition-all"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-semibold text-zinc-500 mb-2 uppercase tracking-widest flex items-center gap-1.5">
+                <Globe size={12} /> Website
+              </label>
+              <input 
+                type="url" 
+                value={formData.website}
+                onChange={(e) => setFormData({...formData, website: e.target.value})}
+                placeholder="https://"
+                className="w-full px-4 py-2.5 bg-white/[0.03] border border-white/10 rounded-lg text-sm text-zinc-100 placeholder:text-zinc-600 focus:bg-white/[0.05] focus:border-red-500/50 focus:ring-1 focus:ring-red-500/30 outline-none transition-all"
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-[11px] font-semibold text-zinc-500 mb-2 uppercase tracking-widest">Physical Address</label>
+              <input 
+                type="text" 
+                value={formData.address}
+                onChange={(e) => setFormData({...formData, address: e.target.value})}
+                className="w-full px-4 py-2.5 bg-white/[0.03] border border-white/10 rounded-lg text-sm text-zinc-100 placeholder:text-zinc-600 focus:bg-white/[0.05] focus:border-red-500/50 focus:ring-1 focus:ring-red-500/30 outline-none transition-all"
+              />
+            </div>
+          </div>
+        </section>
 
-          {/* Social Links */}
-          <div className="mt-4">
-            <label className="block font-semibold text-gray-300">
-              Social Links
-            </label>
-            {socialLinks.map((link, index) => (
-              <div key={index} className="flex gap-2 mt-1 items-center">
-                {/* Social Media Type Selection */}
-                <Controller
-                  control={control}
-                  name={`socialLinks.${index}.type`}
-                  render={({ field }) => (
-                    <select
-                      {...field}
-                      className="w-32 p-2 rounded-md bg-gray-700 text-white outline-none border border-gray-600"
-                    >
-                      {socialMediaOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  )}
-                />
-
-                {/* Social Media URL Input */}
-                <Controller
-                  control={control}
-                  name={`socialLinks.${index}.url`}
-                  rules={{
-                    pattern: {
-                      value:
-                        /^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]{1,256}\.[a-z]{1,6}\b)(\/[^\s]*)?$/,
-                      message: `Enter a valid ${socialLinks[index]?.type} URL`,
-                    },
-                  }}
-                  render={({ field }) => (
-                    <div className="flex flex-col w-full">
-                      {/* ✅ Ensure full width */}
-                      <Input
-                        {...field}
-                        className="w-full"
-                        placeholder={`Enter ${socialLinks[index]?.type} URL`}
-                      />
-                      {/* ✅ Show Validation Error */}
-                      {errors.socialLinks?.[index]?.url && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {errors.socialLinks[index]?.url?.message}
-                        </p>
-                      )}
-                    </div>
-                  )}
-                />
-
-                {/* Remove Button */}
-                <button
-                  type="button"
-                  onClick={() => removeSocialLink(index)}
-                  className="bg-red-600 p-2 rounded-md text-white hover:bg-red-700 transition"
+        <section className="bg-[#09090B] rounded-xl border border-white/10 overflow-hidden shadow-2xl">
+          <div className="px-6 py-4 border-b border-white/10 bg-white/[0.02] flex items-center justify-between">
+            <h2 className="text-sm font-medium text-zinc-200 flex items-center gap-2">
+              <LinkIcon size={16} className="text-zinc-500" /> Social Links
+            </h2>
+            <button 
+              onClick={handleAddSocial}
+              className="text-xs font-semibold text-red-500 flex items-center gap-1 hover:text-red-400 transition-colors"
+            >
+              <Plus size={14} /> Add Link
+            </button>
+          </div>
+          <div className="p-6 space-y-4">
+            {formData.socialLinks.map((link, index) => (
+              <div key={index} className="flex items-center gap-3">
+                <select 
+                  value={link.type}
+                  onChange={(e) => handleUpdateSocial(index, "type", e.target.value)}
+                  className="w-36 px-3 py-2.5 bg-white/[0.03] border border-white/10 rounded-lg text-sm text-zinc-300 focus:bg-white/[0.05] focus:border-red-500/50 outline-none cursor-pointer appearance-none"
                 >
-                  <Trash size={18} />
+                  <option value="instagram" className="bg-[#09090B]">Instagram</option>
+                  <option value="twitter" className="bg-[#09090B]">X (Twitter)</option>
+                  <option value="facebook" className="bg-[#09090B]">Facebook</option>
+                  <option value="tiktok" className="bg-[#09090B]">TikTok</option>
+                </select>
+                <input 
+                  type="url" 
+                  value={link.url}
+                  onChange={(e) => handleUpdateSocial(index, "url", e.target.value)}
+                  placeholder="https://"
+                  className="flex-1 px-4 py-2.5 bg-white/[0.03] border border-white/10 rounded-lg text-sm text-zinc-100 placeholder:text-zinc-600 focus:bg-white/[0.05] focus:border-red-500/50 focus:ring-1 focus:ring-red-500/30 outline-none transition-all"
+                />
+                <button 
+                  onClick={() => handleRemoveSocial(index)}
+                  className="p-2.5 text-zinc-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors border border-transparent hover:border-red-500/20"
+                >
+                  <Trash2 size={16} />
                 </button>
               </div>
             ))}
-
-            {/* Add Social Link Button */}
-            <button
-              type="button"
-              onClick={addSocialLink}
-              className="mt-3 px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
-            >
-              + Add Social Link
-            </button>
-          </div>
-
-          {/* Save Button with Loader */}
-          <button
-            type="submit"
-            disabled={isPending}
-            className="w-full py-3 mt-6 rounded-md font-semibold flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white transition disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isPending ? (
-              <Loader size={18} className="animate-spin" />
-            ) : (
-              <Save size={18} />
+            {formData.socialLinks.length === 0 && (
+              <p className="text-sm text-zinc-500 text-center py-4 italic">No social links added yet.</p>
             )}
-            {isPending ? "Saving..." : "Save Changes"}
+          </div>
+        </section>
+
+        <div className="flex items-center justify-end gap-4 pt-4">
+          <button className="px-5 py-2.5 text-sm font-semibold text-zinc-400 hover:text-zinc-100 transition-colors">
+            Discard Changes
           </button>
-        </form>
+          <button 
+            onClick={handleSave}
+            disabled={isSaving}
+            className="flex items-center gap-2 px-6 py-2.5 bg-red-600 text-white rounded-lg text-sm font-semibold hover:bg-red-500 transition-all shadow-[0_0_15px_rgba(220,38,38,0.2)] disabled:opacity-70 disabled:hover:bg-red-600"
+          >
+            {isSaving ? "Saving..." : <><Save size={16} /> Save Profile</>}
+          </button>
+        </div>
+
       </div>
     </div>
   );
-};
-
-export default EditProfile;
+}

@@ -100,9 +100,9 @@ const Customization = () => {
               categories.map((cat, idx) => (
                 <div key={idx}>
                   <p className="font-semibold mb-1">{cat}</p>
-                  {subCategories?.[cat]?.length > 0 ? (
+                  {(subCategories?.[cat]?.length ?? 0) > 0 ? (
                     <ul className="ml-4 text-sm text-gray-400 list-disc">
-                      {subCategories[cat].map((sub, i) => (
+                      {subCategories[cat]?.map((sub, i) => (
                         <li key={i}>{sub}</li>
                       ))}
                     </ul>

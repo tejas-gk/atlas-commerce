@@ -1,17 +1,15 @@
 "use client";
+
+import React, { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Controller, useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { Package, Tag, IndianRupee, Image as ImageIcon, CheckCircle2, Save, Wand2 } from "lucide-react";
 
 import axiosInstance from "@/utils/axiosInstance";
 import { isProtected } from "@/utils/protected";
-import { Wand2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-
-import React, { useEffect, useMemo, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { toast } from "sonner";
-import BreadCrumbs from "@/shared/components/breadcrumbs";
 import ImagePlaceHolder from "@/shared/components/image-placeholder";
-import { Input } from "../../../../../../../packages/ui/src/components/input";
 import ColorSelector from "@/shared/components/color-selector";
 import CustomSpecifications from "../custom-specifications";
 import CustomProperties from "@/shared/components/custom-properties";
@@ -23,7 +21,15 @@ interface UploadedImage {
   file_url: string;
 }
 
-const Page = () => {
+export default function CreateProduct() {
+  const [activeSection, setActiveSection] = useState("basic");
+  const [images, setImages] = useState<(UploadedImage | null)[]>([null]);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const [slugValue, setSlugValue] = useState("");
+  const [isSlugChecking, setIsSlugChecking] = useState(false);
+
   const {
     register,
     control,
@@ -33,11 +39,6 @@ const Page = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const [images, setImages] = useState<(UploadedImage | null)[]>([null]);
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
-  const [slugValue, setSlugValue] = useState("");
-  const [isSlugChecking, setIsSlugChecking] = useState(false);
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
@@ -46,67 +47,40 @@ const Page = () => {
         axiosInstance
           .post("/product/api/slug-validator", { slug: slugValue }, isProtected)
           .then((res) => {
-            if (res.data.available) {
-              toast.success("Slug is available and applied!");
-            } else {
+            if (res.data.available) toast.success("Slug is available!");
+            else {
               setValue("slug", res.data.slug);
-              toast.info("Slug was taken. Suggested new one applied.");
+              toast.info("Slug taken. Suggested new one applied.");
             }
           })
-          .catch(() => {
-            toast.error("Error checking slug!");
-          })
-          .finally(() => {
-            setIsSlugChecking(false);
-          });
+          .catch(() => toast.error("Error checking slug!"))
+          .finally(() => setIsSlugChecking(false));
       }
-    }, 3000);
-
+    }, 1500);
     return () => clearTimeout(delayDebounce);
-  }, [slugValue]);
+  }, [slugValue, setValue]);
 
   const { onChange: formOnChange, ...restSlugProps } = register("slug", {
     required: "Slug is required!",
     pattern: {
       value: /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-      message:
-        "Invalid slug format! Use only lowercase letters, numbers, and dashes (e.g., product-slug).",
-    },
-    minLength: {
-      value: 3,
-      message: "Slug must be at least 3 characters long.",
-    },
-    maxLength: {
-      value: 50,
-      message: "Slug cannot be longer than 50 characters.",
+      message: "Lowercase, numbers, and dashes only.",
     },
   });
 
-  const { data, isLoading, isError } = useQuery({
+  const { data: catData, isLoading: catLoading } = useQuery({
     queryKey: ["categories"],
-    queryFn: async () => {
-      try {
-        const res = await axiosInstance.get("/product/api/get-categories");
-        return res.data;
-      } catch (error) {
-        console.log(error);
-      }
-    },
+    queryFn: async () => (await axiosInstance.get("/product/api/get-categories")).data,
     staleTime: 1000 * 60 * 5,
-    retry: 2,
   });
 
-  const { data: discountCodes = [], isLoading: discountLoading } = useQuery({
+  const { data: discountCodes = [] } = useQuery({
     queryKey: ["shop-discounts"],
-    queryFn: async () => {
-      const res = await axiosInstance.get("/product/api/get-discount-codes");
-      return res?.data?.discount_codes || [];
-    },
+    queryFn: async () => (await axiosInstance.get("/product/api/get-discount-codes"))?.data?.discount_codes || [],
   });
 
-  const categories = data?.categories || [];
-  const subCategoriesData = data?.subCategories || {};
-
+  const categories = catData?.categories || [];
+  const subCategoriesData = catData?.subCategories || {};
   const selectedCategory = watch("category");
   const regularPrice = watch("regular_price");
 
@@ -118,534 +92,222 @@ const Page = () => {
     try {
       setLoading(true);
       await axiosInstance.post("/product/api/create-product", data);
+      toast.success("Product created successfully!");
       router.push("/dashboard/all-products");
     } catch (error: any) {
-      toast.error(error?.data?.message);
+      toast.error(error?.data?.message || "Failed to create product");
     } finally {
       setLoading(false);
     }
   };
 
+  const inputClass = "w-full px-4 py-2.5 bg-white/[0.03] border border-white/10 rounded-lg text-sm text-zinc-100 placeholder:text-zinc-600 focus:bg-white/[0.05] focus:border-red-500/50 focus:ring-1 focus:ring-red-500/30 outline-none transition-all";
+
   return (
-    <form
-      className="w-full mx-auto p-8 shadow-md rounded-lg text-white"
-      onSubmit={handleSubmit(onSubmit)}
-    >
-      {/* Heading & Breadcrumbs */}
-      <h2 className="text-2xl py-2 font-semibold font-Poppins text-white">
-        Create Event
-      </h2>
-      <BreadCrumbs title="Create Event" />
+    <div className="flex h-screen bg-[#09090B] font-sans text-zinc-100 selection:bg-red-500/30">
+      
+      <aside className="w-64 border-r border-white/10 bg-[#09090B] p-6 hidden md:block shrink-0">
+        <h2 className="text-lg font-bold mb-8 tracking-tight">Create Product</h2>
+        <nav className="space-y-1">
+          {[
+            { id: "basic", icon: Package, label: "Basic Info" },
+            { id: "pricing", icon: IndianRupee, label: "Pricing & Stock" },
+            { id: "variants", icon: Tag, label: "Variants & Details" },
+            { id: "media", icon: ImageIcon, label: "Images & Media" },
+          ].map((item) => (
+            <button
+              key={item.id}
+              onClick={() => setActiveSection(item.id)}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                activeSection === item.id ? "bg-white/10 text-white" : "text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.02]"
+              }`}
+            >
+              <item.icon size={16} /> {item.label}
+              {activeSection === item.id && <CheckCircle2 size={14} className="ml-auto text-red-500" />}
+            </button>
+          ))}
+        </nav>
+      </aside>
 
-      {/* Content Layout */}
-      <div className="py-4 w-full flex gap-6">
-        {/* Left side - Image upload section */}
-        <div className="md:w-[35%]">
-          {images?.length > 0 && (
-            <ImagePlaceHolder
-              size="765 x 850"
-              small={false}
-              images={images}
-              setImages={setImages}
-              setValue={setValue}
-              index={0}
-            />
-          )}
+      <main className="flex-1 flex flex-col h-screen overflow-hidden bg-[#0A0A0C]">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col h-full">
+          
+          <header className="h-16 border-b border-white/10 flex items-center justify-end px-8 shrink-0 bg-[#09090B]/80 backdrop-blur-sm sticky top-0 z-10">
+            <div className="flex items-center gap-3">
+              <button type="button" onClick={() => router.back()} className="px-4 py-2 text-sm font-medium text-zinc-400 hover:text-white">Discard</button>
+              <button 
+                type="submit" disabled={loading}
+                className="flex items-center gap-2 px-5 py-2 bg-red-600 text-white rounded-lg text-sm font-semibold hover:bg-red-500 transition-all shadow-[0_0_15px_rgba(220,38,38,0.2)] disabled:opacity-50"
+              >
+                <Save size={16} /> {loading ? "Publishing..." : "Publish Product"}
+              </button>
+            </div>
+          </header>
 
-          <div className="grid grid-cols-2 gap-3 mt-4">
-            {images.slice(1).map((_, index) => (
-              <ImagePlaceHolder
-                size="765 x 850"
-                images={images}
-                setImages={setImages}
-                key={index}
-                small
-                setValue={setValue}
-                index={index + 1}
-              />
-            ))}
-          </div>
-        </div>
+          <div className="flex-1 overflow-auto p-8 custom-scrollbar">
+            <div className="max-w-3xl space-y-8 pb-20">
 
-        {/* Right side - form inputs */}
-        <div className="md:w-[65%]">
-          <div className="w-full flex gap-6">
-            {/* Product Title Input */}
-            <div className="w-2/4">
-              <Input
-                label="Product Title *"
-                placeholder="Enter product title"
-                {...register("title", { required: "Title is required" })}
-              />
-              {errors.title && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.title.message as string}
-                </p>
-              )}
+              <div className={activeSection === "basic" ? "block" : "hidden"}>
+                <div className="mb-6">
+                  <h3 className="text-xl font-bold mb-1">Basic Information</h3>
+                  <p className="text-zinc-500 text-sm">Core details and categorization.</p>
+                </div>
+                
+                <div className="space-y-5">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-zinc-500 mb-2 uppercase tracking-widest">Product Title *</label>
+                    <input {...register("title", { required: "Title required" })} placeholder="Enter title" className={inputClass} />
+                    {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title.message as string}</p>}
+                  </div>
 
-              <div className="mt-2">
-                <Input
-                  type="textarea"
-                  rows={7}
-                  cols={10}
-                  label="Short Description * (Max 150 words)"
-                  placeholder="Enter product description for quick view"
-                  {...register("short_description", {
-                    required: "Description is required",
-                    validate: (value) => {
-                      const wordCount = value.trim().split(/\s+/).length;
-                      return (
-                        wordCount <= 150 ||
-                        `Description cannot exceed 150 words (Current: ${wordCount})`
-                      );
-                    },
-                  })}
-                />
-                {errors.description && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.description.message as string}
-                  </p>
-                )}
-              </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-zinc-500 mb-2 uppercase tracking-widest">Slug *</label>
+                    <div className="relative">
+                      <input 
+                        placeholder="product-slug"
+                        className={`${inputClass} pr-10`}
+                        value={watch("slug")}
+                        onChange={(e) => {
+                          setSlugValue(e.target.value);
+                          setValue("slug", e.target.value);
+                          formOnChange(e);
+                        }}
+                        {...restSlugProps}
+                      />
+                      <button 
+                        type="button"
+                        onClick={() => {
+                          const title = getValues("title");
+                          if (!title) return toast.error("Enter a title first!");
+                          const rawSlug = title.toLowerCase().trim().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-");
+                          setSlugValue(rawSlug);
+                        }}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-white/10 hover:bg-red-500 hover:text-white rounded text-zinc-400 transition-colors"
+                      >
+                        <Wand2 size={14} />
+                      </button>
+                    </div>
+                    {errors.slug && <p className="text-red-500 text-xs mt-1">{errors.slug.message as string}</p>}
+                  </div>
 
-              <div className="mt-2">
-                <Input
-                  label="Tags *"
-                  placeholder="apple,flagship"
-                  {...register("tags", {
-                    required: "Seperate related products tags with a coma,",
-                  })}
-                />
-                {errors.tags && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.tags.message as string}
-                  </p>
-                )}
-              </div>
+                  <div className="grid grid-cols-2 gap-5">
+                    <div>
+                      <label className="block text-[11px] font-semibold text-zinc-500 mb-2 uppercase tracking-widest">Category *</label>
+                      <select {...register("category", { required: "Category required" })} className={`${inputClass} appearance-none`}>
+                        <option value="" className="bg-[#09090B]">Select Category</option>
+                        {categories?.map((c: string) => <option key={c} value={c} className="bg-[#09090B]">{c}</option>)}
+                      </select>
+                      {errors.category && <p className="text-red-500 text-xs mt-1">{errors.category.message as string}</p>}
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-semibold text-zinc-500 mb-2 uppercase tracking-widest">Sub Category *</label>
+                      <select {...register("subCategory", { required: "Subcategory required" })} className={`${inputClass} appearance-none`}>
+                        <option value="" className="bg-[#09090B]">Select Subcategory</option>
+                        {subcategories?.map((s: string) => <option key={s} value={s} className="bg-[#09090B]">{s}</option>)}
+                      </select>
+                      {errors.subCategory && <p className="text-red-500 text-xs mt-1">{errors.subCategory.message as string}</p>}
+                    </div>
+                  </div>
 
-              <div className="mt-2">
-                <label className="block font-semibold text-gray-300 mb-1">
-                  Starting Date *
-                </label>
-                <input
-                  type="date"
-                  className={`w-full border outline-none border-gray-700 bg-transparent p-2 rounded-md text-white`}
-                  {...register("starting_date", {
-                    required: "Starting Date is required!",
-                  })}
-                  min={new Date().toISOString().split("T")[0]}
-                />
-              </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-zinc-500 mb-2 uppercase tracking-widest">Short Description</label>
+                    <textarea rows={3} {...register("short_description", { required: "Required" })} className={`${inputClass} resize-none`} />
+                  </div>
 
-              <div className="mt-2">
-                <Input
-                  label="Warranty *"
-                  placeholder="1 Year / No Warranty"
-                  {...register("warranty", {
-                    required: "Warranty is required!",
-                  })}
-                />
-                {errors.tags && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.tags.message as string}
-                  </p>
-                )}
-              </div>
-
-              <div className="mt-2">
-                <div className="relative">
-                  <Input
-                    label="Slug *"
-                    placeholder="product_slug"
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      setSlugValue(e.target.value);
-                      setValue("slug", e.target.value);
-                      formOnChange(e);
-                    }}
-                    value={watch("slug")}
-                    className="pr-10"
-                    {...restSlugProps}
-                  />
-
-                  <div className="absolute w-7 h-7 flex items-center justify-center bg-blue-600 !rounded shadow top-[70%] right-3 transform -translate-y-1/2 text-white cursor-pointer hover:bg-blue-700">
-                    <Wand2
-                      size={16}
-                      onClick={async () => {
-                        const title = getValues("title");
-                        if (!title) {
-                          toast.error(
-                            "Please enter a event title to generate a slug!"
-                          );
-                          return;
-                        }
-
-                        // Generate slug from title
-                        const rawSlug = title
-                          .toLowerCase()
-                          .trim()
-                          .replace(/[^a-z0-9\s-]/g, "")
-                          .replace(/\s+/g, "-")
-                          .replace(/-+/g, "-");
-
-                        try {
-                          // Check slug validity via API
-                          const res = await axiosInstance.post(
-                            "/product/api/slug-validator",
-                            { slug: rawSlug }
-                          );
-                          const { available, suggestedSlug } = res.data;
-
-                          if (available) {
-                            setValue("slug", rawSlug);
-                            toast.success("Slug is available!");
-                          } else if (suggestedSlug) {
-                            setValue("slug", suggestedSlug);
-                            toast.info(
-                              "Slug not available, suggested new one!"
-                            );
-                          } else {
-                            toast.error(
-                              "Slug is already taken, try editing it."
-                            );
-                          }
-                        } catch (err) {
-                          toast.error("Failed to validate slug. Try again.");
-                        }
-                      }}
+                  <div>
+                    <label className="block text-[11px] font-semibold text-zinc-500 mb-2 uppercase tracking-widest">Detailed Description</label>
+                    <Controller
+                      name="detailed_description"
+                      control={control}
+                      rules={{ required: "Detailed description is required" }}
+                      render={({ field }) => (
+                        <div className="border border-white/10 rounded-lg overflow-hidden">
+                          <RichTextEditor value={field.value} onChange={field.onChange} />
+                        </div>
+                      )}
                     />
                   </div>
                 </div>
-
-                {errors.slug && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.slug.message as string}
-                  </p>
-                )}
               </div>
 
-              <div className="mt-2">
-                <Input
-                  label="Brand"
-                  placeholder="Apple"
-                  {...register("brand")}
-                />
-                {errors.tags && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.tags.message as string}
-                  </p>
-                )}
-              </div>
-
-              <div className="mt-2">
-                <ColorSelector control={control} errors={errors} />
-              </div>
-
-              <div className="mt-2">
-                <CustomSpecifications control={control} errors={errors} />
-              </div>
-
-              <div className="mt-2">
-                <CustomProperties control={control} errors={errors} />
-              </div>
-
-              <div className="mt-2">
-                <label className="block font-semibold text-gray-300 mb-1">
-                  Cash On Delivery *
-                </label>
-                <select
-                  {...register("cash_on_delivery", {
-                    required: "Cash on Delivery is required",
-                  })}
-                  defaultValue="yes"
-                  className="w-full border outline-none border-gray-700 bg-transparent p-2 rounded-md text-white"
-                >
-                  <option value="yes" className="bg-black">
-                    Yes
-                  </option>
-                  <option value="no" className="bg-black">
-                    No
-                  </option>
-                </select>
-                {errors.cash_on_delivery && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.cash_on_delivery.message as string}
-                  </p>
-                )}
-              </div>
-            </div>
-            <div className="w-2/4">
-              <label className="block font-semibold text-gray-300 mb-1">
-                Category *
-              </label>
-              {isLoading ? (
-                <p className="text-gray-400">Loading categories...</p>
-              ) : isError ? (
-                <p className="text-red-500">Failed to load categories</p>
-              ) : (
-                <Controller
-                  name="category"
-                  control={control}
-                  rules={{ required: "Category is required" }}
-                  render={({ field }) => (
-                    <select
-                      {...field}
-                      className="w-full border outline-none border-gray-700 bg-transparent p-2 rounded-md text-white"
-                    >
-                      <option value="" className="bg-black">
-                        Select Category
-                      </option>
-                      {categories?.map((category: string) => (
-                        <option
-                          value={category}
-                          key={category}
-                          className="bg-black"
-                        >
-                          {category}
-                        </option>
-                      ))}
+              <div className={activeSection === "pricing" ? "block" : "hidden"}>
+                <div className="mb-6">
+                  <h3 className="text-xl font-bold mb-1">Pricing & Inventory</h3>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-zinc-500 mb-2 uppercase tracking-widest">Regular Price</label>
+                    <input type="number" {...register("regular_price", { valueAsNumber: true })} className={inputClass} />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-zinc-500 mb-2 uppercase tracking-widest text-red-400">Sale Price *</label>
+                    <input type="number" {...register("sale_price", { required: true, valueAsNumber: true })} className={`${inputClass} border-red-500/30 text-red-100 focus:border-red-500`} />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-zinc-500 mb-2 uppercase tracking-widest">Stock *</label>
+                    <input type="number" {...register("stock", { required: true, valueAsNumber: true })} className={inputClass} />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-zinc-500 mb-2 uppercase tracking-widest">Cash on Delivery</label>
+                    <select {...register("cashOnDelivery")} className={`${inputClass} appearance-none`}>
+                      <option value="Yes" className="bg-[#09090B]">Yes</option>
+                      <option value="No" className="bg-[#09090B]">No</option>
                     </select>
+                  </div>
+                </div>
+              </div>
+
+              <div className={activeSection === "variants" ? "block" : "hidden"}>
+                <div className="mb-6">
+                  <h3 className="text-xl font-bold mb-1">Variants & Details</h3>
+                </div>
+                
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-zinc-500 mb-2 uppercase tracking-widest">Brand</label>
+                    <input {...register("brand")} className={inputClass} />
+                  </div>
+                  
+                  <div className="p-5 bg-white/[0.02] border border-white/5 rounded-xl space-y-4">
+                     <ColorSelector control={control} errors={errors} />
+                  </div>
+                  
+                  <div className="p-5 bg-white/[0.02] border border-white/5 rounded-xl space-y-4">
+                    <SizeSelector control={control} errors={errors} />
+                  </div>
+
+                  <div className="p-5 bg-white/[0.02] border border-white/5 rounded-xl space-y-4">
+                    <CustomSpecifications control={control} errors={errors} />
+                  </div>
+
+                  <div className="p-5 bg-white/[0.02] border border-white/5 rounded-xl space-y-4">
+                    <CustomProperties control={control} errors={errors} />
+                  </div>
+                </div>
+              </div>
+
+              <div className={activeSection === "media" ? "block" : "hidden"}>
+                <div className="mb-6">
+                  <h3 className="text-xl font-bold mb-1">Images & Media</h3>
+                </div>
+                
+                <div className="space-y-4">
+                  {images?.length > 0 && (
+                    <ImagePlaceHolder size="765 x 850" small={false} images={images} setImages={setImages} setValue={setValue} index={0} />
                   )}
-                />
-              )}
-              {errors.category && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.category.message as string}
-                </p>
-              )}
-
-              <div className="mt-2">
-                <label className="block font-semibold text-gray-300 mb-1">
-                  Subcategory *
-                </label>
-                <Controller
-                  name="subCategory"
-                  control={control}
-                  rules={{ required: "Subcategory is required" }}
-                  render={({ field }) => (
-                    <select
-                      {...field}
-                      className="w-full border outline-none border-gray-700 bg-transparent p-2 rounded-md text-white"
-                    >
-                      <option value="" className="bg-black">
-                        Select Subcategory
-                      </option>
-                      {subcategories?.map((subcategory: string) => (
-                        <option
-                          key={subcategory}
-                          value={subcategory}
-                          className="bg-black"
-                        >
-                          {subcategory}
-                        </option>
-                      ))}
-                    </select>
-                  )}
-                />
-                {errors.subcategory && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.subcategory.message as string}
-                  </p>
-                )}
-              </div>
-
-              <div className="mt-2">
-                <label className="block font-semibold text-gray-300 mb-1">
-                  Detailed Description * (Min 100 words)
-                </label>
-                <Controller
-                  name="detailed_description"
-                  control={control}
-                  rules={{
-                    required: "Detailed description is required!",
-                    validate: (value) => {
-                      const wordCount = value
-                        ?.split(/\s+/)
-                        .filter((word: string) => word).length;
-                      return (
-                        wordCount >= 100 ||
-                        "Description must be at least 100 words!"
-                      );
-                    },
-                  }}
-                  render={({ field }) => (
-                    <RichTextEditor
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
-                {errors.detailed_description && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.detailed_description.message as string}
-                  </p>
-                )}
-              </div>
-
-              <div className="mt-2">
-                <label className="block font-semibold text-gray-300 mb-1">
-                  Ending Date *
-                </label>
-                <input
-                  type="date"
-                  className={`w-full border outline-none border-gray-700 bg-transparent p-2 rounded-md text-white`}
-                  {...register("ending_date", {
-                    required: "Ending Date is required!",
-                  })}
-                  min={new Date().toISOString().split("T")[0]}
-                />
-              </div>
-
-              <div className="mt-2">
-                <Input
-                  label="Video URL"
-                  placeholder="https://www.youtube.com/embed/xyz123"
-                  {...register("video_url", {
-                    pattern: {
-                      value:
-                        /^https:\/\/(www\.)?youtube\.com\/embed\/[a-zA-Z0-9_-]+$/,
-                      message:
-                        "Invalid YouTube embed URL! Use format: https://www.youtube.com/embed/xyz123",
-                    },
-                  })}
-                />
-                {errors.video_url && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.video_url.message as string}
-                  </p>
-                )}
-              </div>
-
-              <div className="mt-2">
-                <Input
-                  label="Regular Price"
-                  placeholder="20$"
-                  {...register("regular_price", {
-                    valueAsNumber: true,
-                    min: { value: 1, message: "Price must be at least 1" },
-                    validate: (value) =>
-                      !isNaN(value) || "Only numbers are allowed",
-                  })}
-                />
-                {errors.regular_price && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.regular_price.message as string}
-                  </p>
-                )}
-              </div>
-
-              <div className="mt-2">
-                <Input
-                  label="Sale Price *"
-                  placeholder="15$"
-                  {...register("sale_price", {
-                    required: "Sale Price is required",
-                    valueAsNumber: true,
-                    min: { value: 1, message: "Sale Price must be at least 1" },
-                    validate: (value) => {
-                      if (isNaN(value)) return "Only numbers are allowed";
-                      if (regularPrice && value >= regularPrice) {
-                        return "Sale Price must be less than Regular Price";
-                      }
-                      return true;
-                    },
-                  })}
-                />
-                {errors.sale_price && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.sale_price.message as string}
-                  </p>
-                )}
-              </div>
-
-              <div className="mt-2">
-                <Input
-                  label="Stock *"
-                  placeholder="100"
-                  {...register("stock", {
-                    required: "Stock is required!",
-                    valueAsNumber: true,
-                    min: { value: 1, message: "Stock must be at least 1" },
-                    max: {
-                      value: 1000,
-                      message: "Stock cannot exceed 1,000",
-                    },
-                    validate: (value) => {
-                      if (isNaN(value)) return "Only numbers are allowed!";
-                      if (!Number.isInteger(value))
-                        return "Stock must be a whole number!";
-                      return true;
-                    },
-                  })}
-                />
-                {errors.stock && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.stock.message as string}
-                  </p>
-                )}
-              </div>
-
-              <div className="mt-2">
-                <SizeSelector control={control} errors={errors} />
-              </div>
-
-              <div className="mt-3">
-                <label className="block font-semibold text-gray-300 mb-1">
-                  Select Discount Codes (optional)
-                </label>
-
-                {discountLoading ? (
-                  <p className="text-gray-400">Loading discount codes...</p>
-                ) : (
-                  <div className="flex flex-wrap gap-2">
-                    {discountCodes?.map((code: any) => (
-                      <button
-                        key={code.id}
-                        type="button"
-                        className={`px-3 py-1 rounded-md text-sm font-semibold border ${watch("discountCodes")?.includes(code.id)
-                            ? "bg-blue-600 text-white border-blue-600"
-                            : "bg-gray-800 text-gray-300 border-gray-600 hover:bg-gray-700"
-                          }`}
-                        onClick={() => {
-                          const currentSelection = watch("discountCodes") || [];
-                          const updatedSelection = currentSelection?.includes(
-                            code.id
-                          )
-                            ? currentSelection.filter(
-                              (id: string) => id !== code.id
-                            )
-                            : [...currentSelection, code.id];
-                          setValue("discountCodes", updatedSelection);
-                        }}
-                      >
-                        {code?.public_name} ({code.discountValue}
-                        {code.discountType === "percentage" ? "%" : "$"})
-                      </button>
+                  <div className="grid grid-cols-2 gap-4 mt-4">
+                    {images.slice(1).map((_, index) => (
+                      <ImagePlaceHolder key={index} size="765 x 850" images={images} setImages={setImages} small setValue={setValue} index={index + 1} />
                     ))}
                   </div>
-                )}
-
-                {discountCodes?.length === 0 && (
-                  <p className="text-gray-400">
-                    No discount codes available yet!
-                  </p>
-                )}
+                </div>
               </div>
+
             </div>
           </div>
-        </div>
-      </div>
-
-      <div className="mt-6 flex justify-end gap-3">
-        <button
-          type="submit"
-          className="px-4 py-2 bg-blue-600 text-white rounded-md"
-          disabled={loading}
-        >
-          {loading ? "Creating..." : "Create"}
-        </button>
-      </div>
-    </form>
+        </form>
+      </main>
+    </div>
   );
-};
-
-export default Page;
+}
