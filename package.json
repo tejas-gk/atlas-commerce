@@ -21,6 +21,7 @@
     "@types/express-http-proxy": "^1.6.7",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/morgan": "^1.9.10",
+    "@types/react-image-magnify": "^2.7.4",
     "@types/react-simple-maps": "^3.0.6",
     "@types/swagger-ui-express": "^4.1.8",
     "@workspace/eslint-config": "workspace:*",
@@ -37,6 +38,8 @@
     "node": ">=20"
   },
   "dependencies": {
+    "@stripe/react-stripe-js": "^6.1.0",
+    "@stripe/stripe-js": "^9.0.1",
     "@tanstack/react-table": "^8.21.3",
     "@tensorflow/tfjs": "^4.22.0",
     "@tensorflow/tfjs-backend-cpu": "^4.22.0",
@@ -63,7 +66,9 @@
     "react-apexcharts": "^2.1.0",
     "react-hook-form": "^7.71.2",
     "react-hot-toast": "^2.6.0",
+    "react-image-magnify": "^2.7.4",
     "react-quill-new": "^3.8.3",
+    "react-range": "^1.10.0",
     "react-simple-maps": "^3.0.0",
     "recharts": "^3.8.1",
     "sonner": "^2.0.7",

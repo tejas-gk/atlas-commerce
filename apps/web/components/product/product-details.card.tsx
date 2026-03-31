@@ -1,16 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
-import Ratings from "../ratings";
-import { Heart, MapPin, X } from "lucide-react";
+import { CarTaxiFrontIcon, Heart, MapPin, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import CartIcon from "apps/user-ui/src/assets/svgs/cart-icon";
-import { useStore } from "apps/user-ui/src/store";
-import useUser from "apps/user-ui/src/hooks/useUser";
-import useLocationTracking from "apps/user-ui/src/hooks/useLocationTracking";
-import useDeviceTracking from "apps/user-ui/src/hooks/useDeviceTracking";
-import axiosInstance from "apps/user-ui/src/utils/axiosInstance";
-import { isProtected } from "apps/user-ui/src/utils/protected";
+import axiosInstance from "@/utils/axiosInstance";
+import { useStore } from "@/store";
+import useUser from "@/hooks/useUser";
+import useLocationTracking from "@/hooks/useLocationTracking";
+import useDeviceTracking from "@/hooks/useDeviceTracking";
+import Ratings from "./ratings";
+import { isProtected } from "@/utils/protected";
 
 const ProductDetailsCard = ({
   data,
@@ -251,7 +250,7 @@ const ProductDetailsCard = ({
                   isInCart ? "cursor-not-allowed" : "cursor-pointer"
                 }`}
               >
-                <CartIcon size={18} />
+                <CarTaxiFrontIcon size={18} />
                 Add to Cart
               </button>
               <button className="opacity-[.7] cursor-pointer">
