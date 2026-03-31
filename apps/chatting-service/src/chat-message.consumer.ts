@@ -1,7 +1,7 @@
 import { kafka } from "@atlas/kafka";
 import db from "@repo/db";
 import { Consumer, EachMessagePayload } from "kafkajs";
-import { incrementUnseenCount } from "@repo/message.redis";
+import { incrementUnseenCount } from "@repo/redis/message.redis";
 
 interface BufferedMessage {
   conversationId: string;
