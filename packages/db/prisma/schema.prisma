@@ -37,6 +37,11 @@ model users {
   imagesId    String?       @db.ObjectId
   followings  followers[]
   orders      orders[]
+
+  isDeleted   Boolean       @default(false)
+  deletedAt   DateTime?
+  shops       shops[]
+  shopMembers shopMembers[]
 }
 
 model shopReviews {
@@ -86,6 +91,23 @@ model shops {
   deletedAt     DateTime?
   imagesId      String?       @db.ObjectId
   orders        orders[]
+  owner         users?        @relation(fields: [ownerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ownerId       String?       @db.ObjectId
+  shopMembers   shopMembers[]
+}
+
+model shopMembers {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  shopId String @db.ObjectId
+  userId String @db.ObjectId
+
+  role String // owner | manager | staff
+
+  shop shops @relation(fields: [shopId], references: [id])
+  user users @relation(fields: [userId], references: [id])
+
+  @@unique([shopId, userId])
 }
 
 model sellers {
@@ -159,8 +181,8 @@ model products {
   deletedAt             DateTime?
   createdAt             DateTime      @default(now())
   updatedAt             DateTime      @updatedAt
-  shopId                String?        @db.ObjectId
-  Shop                  shops?         @relation(fields: [shopId], references: [id])
+  shopId                String?       @db.ObjectId
+  Shop                  shops?        @relation(fields: [shopId], references: [id])
 }
 
 model userAnalytics {
