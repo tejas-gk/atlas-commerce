@@ -1,4 +1,5 @@
 import React from "react";
+// import "@workspace/ui/styles/globals.css";
 import "./globals.css";
 
 import { Poppins } from "next/font/google";
