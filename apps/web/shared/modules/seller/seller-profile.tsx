@@ -1,9 +1,7 @@
 "use client";
 import { shops } from "@prisma/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import XIcon from "apps/user-ui/src/assets/svgs/x-icon";
-import YoutubeIcon from "apps/user-ui/src/assets/svgs/youtube-icon";
-import axiosInstance from "apps/user-ui/src/utils/axiosInstance";
+
 import {
   Calendar,
   Clock,
@@ -12,15 +10,19 @@ import {
   MapPin,
   Star,
   Users,
+  XIcon,
+  YoutubeIcon,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import ProductCard from "../../components/cards/product-card";
-import useLocationTracking from "apps/user-ui/src/hooks/useLocationTracking";
-import useDeviceTracking from "apps/user-ui/src/hooks/useDeviceTracking";
-import useUser from "apps/user-ui/src/hooks/useUser";
-import { sendKafkaEvent } from "apps/user-ui/src/actions/track-user";
+import useUser from "@/hooks/useUser";
+import useLocationTracking from "@/hooks/useLocationTracking";
+import useDeviceTracking from "@/hooks/useDeviceTracking";
+import axiosInstance from "@/utils/axiosInstance";
+import { sendKafkaEvent } from "@/actions/track-user";
+
 
 const TABS = ["Products", "Offers", "Reviews"];
 

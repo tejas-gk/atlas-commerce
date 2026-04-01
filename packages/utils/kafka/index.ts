@@ -6,8 +6,8 @@ export const kafka = new Kafka({
   ssl: true,
   sasl: {
     mechanism: "plain",
-    username: process.env.KAFKA_USERNAME!,
-    password: process.env.KAFKA_PASSWORD!
+    username: "T5BYR6B6GYDXHE5J",
+    password: "cflta3DXgI954T22Mr4657Te7Pc/Gx5hs06YMYXqGmv9W6GYuIdFQXNcWrs3hvAg"
   }, connectionTimeout: 10000,
   authenticationTimeout: 10000,
   requestTimeout: 30000,

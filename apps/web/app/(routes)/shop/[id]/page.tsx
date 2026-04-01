@@ -1,4 +1,4 @@
-import SellerProfile from "apps/user-ui/src/shared/modules/seller/seller-profile";
+import SellerProfile from "@/shared/modules/seller/seller-profile";
 import axiosInstance from "@/utils/axiosInstance";
 import { Metadata } from "next";
 import React from "react";

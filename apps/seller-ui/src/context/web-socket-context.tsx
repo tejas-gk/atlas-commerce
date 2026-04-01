@@ -23,7 +23,7 @@ export const WebSocketProvider = ({
   useEffect(() => {
     if (!seller?.id) return;
 
-    const ws = new WebSocket(process.env.NEXT_PUBLIC_CHATTING_WEBSOCKET_URI!);
+    const ws = new WebSocket("ws://localhost:6006");
     wsRef.current = ws;
 
     ws.onopen = () => {

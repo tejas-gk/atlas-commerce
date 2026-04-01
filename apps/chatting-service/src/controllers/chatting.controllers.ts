@@ -2,13 +2,13 @@ import {
   AuthError,
   NotFoundError,
   ValidationError,
-} from "@packages/error-handler";
-import prisma from "@packages/libs/prisma";
-import redis from "@packages/libs/redis";
+} from "@repo/error-handler";
+import prisma from "@repo/db";
+import redis from "@repo/redis";
 import {
   clearUnseenCount,
   getUnseenCount,
-} from "@packages/libs/redis/message.redis";
+} from "@repo/redis/message.redis";
 import { NextFunction, Response } from "express";
 
 // create a new conversation

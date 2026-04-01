@@ -1,4 +1,4 @@
-import isAuthenticated from "@packages/middleware/isAuthenticated";
+import isAuthenticated from "@repo/middleware";
 import express from "express";
 import {
   fetchMessages,
@@ -7,7 +7,7 @@ import {
   getUserConversations,
   newConversation,
 } from "../controllers/chatting.controllers";
-import { isSeller } from "@packages/middleware/authorizeRoles";
+import { isSeller } from "@repo/middleware/authorizeRoles";
 
 const router = express.Router();
 
