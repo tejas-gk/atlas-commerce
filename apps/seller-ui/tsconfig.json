@@ -2,6 +2,8 @@
   "extends": "@workspace/typescript-config/nextjs.json",
   "compilerOptions": {
     "baseUrl": ".",
+    "allowImportingTsExtensions": true,
+    "ignoreDeprecations": "6.0",
     "paths": {
       "@/*": [
         "src/*"
@@ -17,6 +19,7 @@
     ]
   },
   "include": [
+    "index.d.ts",
     "next-env.d.ts",
     "next.config.ts",
     "**/*.ts",

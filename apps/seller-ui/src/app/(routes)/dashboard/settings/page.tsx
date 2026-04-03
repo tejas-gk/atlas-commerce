@@ -1,312 +1,214 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
-import {
-  ChevronRight,
-  Bell,
-  Shield,
-  Trash2,
-  AlertTriangle,
-  ChevronDownCircle,
-  ChevronRightCircle,
-  Save,
-} from "lucide-react";
-
+import { Bell, Shield, Trash2, AlertTriangle, ChevronDown, ChevronRight, Save, X } from "lucide-react";
 import { useForm } from "react-hook-form";
-
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "@/utils/axiosInstance";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import useSeller from "@/hooks/useSeller";
 import CustomDomains from "@/shared/modules/settings";
 import WithdrawMethod from "@/shared/modules/settings/withdraw-method";
-import { Input } from "../../../../../../../packages/ui/src/components/input";
+import { Input } from "@workspace/ui/components/input";
 
-const SettingsPage = () => {
+const TABS = [
+  { key: "general", label: "General" },
+  { key: "custom-domains", label: "Custom Domains" },
+  { key: "withdraw", label: "Withdraw Method" },
+];
+
+export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("general");
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { seller } = useSeller();
   const queryClient = useQueryClient();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    defaultValues: {
-      lowStockThreshold: "10",
-      notificationPreference: "email",
-      termsURL: "",
-      privacyURL: "",
-      refundURL: "",
-    },
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    defaultValues: { lowStockThreshold: "10", notificationPreference: "email" },
   });
 
   const deleteShopMutation = useMutation({
-    mutationFn: async () => {
-      const res = await axiosInstance.delete("/seller/api/delete");
-      return res.data;
-    },
-    onSuccess: (data) => {
-      toast.success("Shop marked for deletion. It will be removed in 28 days.");
-      queryClient.invalidateQueries({ queryKey: ["seller"] });
-    },
-    onError: (error: any) => {
-      toast.error(
-        error?.response?.data?.message || "Failed to delete shop. Try again."
-      );
-    },
+    mutationFn: async () => { const res = await axiosInstance.delete("/seller/api/delete"); return res.data; },
+    onSuccess: () => { toast.success("Shop marked for deletion. Restore within 28 days."); queryClient.invalidateQueries({ queryKey: ["seller"] }); },
+    onError: (e: any) => toast.error(e?.response?.data?.message || "Failed to delete shop."),
   });
-
   const restoreShopMutation = useMutation({
-    mutationFn: async () => {
-      const res = await axiosInstance.patch("/seller/api/restore");
-      return res.data;
-    },
-    onSuccess: (data) => {
-      toast.success("Shop restored successfully!");
-      queryClient.invalidateQueries({ queryKey: ["seller"] });
-    },
-    onError: (error: any) => {
-      toast.error(
-        error?.response?.data?.message || "Failed to Restore shop. Try again."
-      );
-    },
+    mutationFn: async () => { const res = await axiosInstance.patch("/seller/api/restore"); return res.data; },
+    onSuccess: () => { toast.success("Shop restored!"); queryClient.invalidateQueries({ queryKey: ["seller"] }); },
+    onError: (e: any) => toast.error(e?.response?.data?.message || "Failed to restore shop."),
   });
 
-  const onSubmit = (data: any) => {
-    console.log("Settings Updated:", data);
-    alert("Settings saved successfully!");
-  };
-
-  // Toggle Sections (Prevents accidental collapse when clicking inputs)
-  const toggleSection = (section: string) => {
-    setExpandedSection((prev) => (prev === section ? null : section));
-  };
-
-  const deleteShopHanlder = () => {
-    if (seller?.isDeleted) {
-      restoreShopMutation.mutate();
-    } else {
-      deleteShopMutation.mutate();
-    }
-    setShowDeleteModal(false);
-  };
+  const onSubmit = (data: any) => toast.success("Settings saved!");
+  const toggleSection = (s: string) => setExpandedSection((p) => (p === s ? null : s));
+  const handleDelete = () => { seller?.isDeleted ? restoreShopMutation.mutate() : deleteShopMutation.mutate(); setShowDeleteModal(false); };
 
   return (
-    <div className="w-full min-h-screen p-8">
-      {/* Header & Breadcrumbs */}
-      <h2 className="text-2xl text-white font-semibold">Settings</h2>
-      <div className="flex items-center mb-6">
-        <a href="/dashboard" className="text-blue-400 cursor-pointer">
-          Dashboard
-        </a>
-        <ChevronRight size={20} className="text-gray-200" />
-        <span className="text-white">Settings</span>
+    <div className="space-y-5">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-white to-white/50 bg-clip-text text-transparent">Settings</h1>
+        <p className="text-white/35 text-sm mt-0.5">Configure your store preferences</p>
       </div>
 
-      {/* Tabs Navigation */}
-      <div className="flex border-b border-gray-700 mb-6">
-        {[
-          { key: "general", label: "General" },
-          { key: "custom-domains", label: "Custom Domains" },
-          { key: "withdraw", label: "Withdraw Method" },
-        ].map((tab) => (
+      {/* Tabs */}
+      <div className="flex gap-1 p-1 rounded-xl bg-white/4 border border-white/8 w-fit">
+        {TABS.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            className={`py-3 px-6 text-lg font-semibold transition ${activeTab === tab.key
-                ? "text-white border-b-2 border-blue-500"
-                : "text-gray-400"
-              }`}
+            className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+              activeTab === tab.key
+                ? "bg-gradient-to-r from-violet-600 to-pink-600 text-white shadow-[0_0_15px_rgba(124,58,237,0.35)]"
+                : "text-white/40 hover:text-white"
+            }`}
           >
             {tab.label}
           </button>
         ))}
       </div>
 
-      {/* General Settings */}
+      {/* General tab */}
       {activeTab === "general" && (
-        <div className="max-w-2xl space-y-6">
+        <div className="max-w-2xl space-y-3">
           {/* Low Stock Alert */}
-          <div className="px-4 rounded-lg cursor-pointer">
-            <div
-              className="flex justify-between items-center"
+          <div className="rounded-2xl border border-white/8 bg-white/3 backdrop-blur-md overflow-hidden">
+            <button
+              className="w-full flex items-center justify-between px-5 py-4"
               onClick={() => toggleSection("lowStock")}
             >
               <div className="flex items-center gap-3">
-                <Bell size={22} className="text-blue-400" />
-                <div>
-                  <h3 className="text-white font-semibold">
-                    Low Stock Alert Threshold
-                  </h3>
-                  <p className="text-gray-400 text-sm">
-                    Get notified when stock falls below the set limit.
-                  </p>
+                <Bell size={18} className="text-violet-400" />
+                <div className="text-left">
+                  <p className="text-white font-semibold text-sm">Low Stock Alert Threshold</p>
+                  <p className="text-white/35 text-xs mt-0.5">Get notified when stock falls below the set limit.</p>
                 </div>
               </div>
-              {expandedSection === "lowStock" ? (
-                <ChevronDownCircle size={22} className="text-gray-400" />
-              ) : (
-                <ChevronRightCircle size={22} className="text-gray-400" />
-              )}
-            </div>
-
+              {expandedSection === "lowStock"
+                ? <ChevronDown size={16} className="text-white/30" />
+                : <ChevronRight size={16} className="text-white/30" />}
+            </button>
             {expandedSection === "lowStock" && (
-              <form
-                onSubmit={handleSubmit(onSubmit)}
-                className="mt-4 border-t border-gray-700 pt-4"
-              >
-                <Input
-                  type="number"
-                  label="Threshold Value"
-                  min="1"
-                  {...register("lowStockThreshold", { required: "Required" })}
-                  onClick={(e: any) => e.stopPropagation()}
-                />
-                {errors.lowStockThreshold && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.lowStockThreshold.message}
-                  </p>
-                )}
-                <button
-                  type="submit"
-                  className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center gap-2"
-                >
-                  <Save size={18} /> Save Changes
+              <form onSubmit={handleSubmit(onSubmit)} className="px-5 pb-5 border-t border-white/5 pt-4 space-y-3">
+                <Input type="number" min="1"
+                  className="bg-white/5 border-white/10 text-white focus-visible:ring-violet-500 rounded-xl h-10"
+                  {...register("lowStockThreshold", { required: true })} />
+                <button type="submit"
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-pink-600 text-white text-sm font-semibold shadow-[0_0_12px_rgba(124,58,237,0.3)] transition-all">
+                  <Save size={15} /> Save Changes
                 </button>
               </form>
             )}
           </div>
 
-          {/* Order Notification Preferences */}
-          <div className="px-4 rounded-lg cursor-pointer">
-            <div
-              className="flex justify-between items-center"
+          {/* Notification Preferences */}
+          <div className="rounded-2xl border border-white/8 bg-white/3 backdrop-blur-md overflow-hidden">
+            <button
+              className="w-full flex items-center justify-between px-5 py-4"
               onClick={() => toggleSection("notifications")}
             >
               <div className="flex items-center gap-3">
-                <Shield size={22} className="text-yellow-400" />
-                <div>
-                  <h3 className="text-white font-semibold">
-                    Order Notification Preferences
-                  </h3>
-                  <p className="text-gray-400 text-sm">
-                    Choose how you receive order notifications (Email, Web,
-                    App).
-                  </p>
+                <Shield size={18} className="text-amber-400" />
+                <div className="text-left">
+                  <p className="text-white font-semibold text-sm">Order Notification Preferences</p>
+                  <p className="text-white/35 text-xs mt-0.5">Choose how you receive order notifications.</p>
                 </div>
               </div>
-              {expandedSection === "notifications" ? (
-                <ChevronDownCircle size={22} className="text-gray-400" />
-              ) : (
-                <ChevronRightCircle size={22} className="text-gray-400" />
-              )}
-            </div>
-
+              {expandedSection === "notifications"
+                ? <ChevronDown size={16} className="text-white/30" />
+                : <ChevronRight size={16} className="text-white/30" />}
+            </button>
             {expandedSection === "notifications" && (
-              <form
-                onSubmit={handleSubmit(onSubmit)}
-                className="mt-4 border-t border-gray-700 pt-4"
-              >
-                <select
-                  {...register("notificationPreference", {
-                    required: "Required",
-                  })}
-                  className="w-full border outline-none border-gray-700 bg-transparent p-2 rounded-md text-white"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <option value="email">Email</option>
-                  <option value="web">Web Push Notification</option>
-                  <option value="app">App Push Notification</option>
-                  <option value="all">All of the above</option>
+              <form onSubmit={handleSubmit(onSubmit)} className="px-5 pb-5 border-t border-white/5 pt-4 space-y-3">
+                <select {...register("notificationPreference")}
+                  className="w-full h-10 px-3 rounded-xl bg-white/5 border border-white/10 text-white/80 text-sm outline-none focus:border-violet-500/50">
+                  <option value="email" className="bg-[#111]">Email</option>
+                  <option value="web" className="bg-[#111]">Web Push</option>
+                  <option value="app" className="bg-[#111]">App Push</option>
+                  <option value="all" className="bg-[#111]">All</option>
                 </select>
-                <button
-                  type="submit"
-                  className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center gap-2"
-                >
-                  <Save size={18} /> Save Changes
+                <button type="submit"
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-pink-600 text-white text-sm font-semibold shadow-[0_0_12px_rgba(124,58,237,0.3)] transition-all">
+                  <Save size={15} /> Save Changes
                 </button>
               </form>
             )}
           </div>
 
           {/* Danger Zone */}
-          <div className="mt-10 border-t border-gray-700 pt-6">
-            <h3 className="text-xl text-red-500 font-semibold mb-3 flex items-center gap-2">
-              <AlertTriangle size={22} className="text-red-500" />
-              Danger Zone
-            </h3>
-            <div
-              className="flex justify-between items-center p-4 rounded-lg cursor-pointer"
-              onClick={() => setShowDeleteModal(true)}
-            >
+          <div className="rounded-2xl border border-red-500/20 bg-red-500/5 backdrop-blur-md p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <AlertTriangle size={16} className="text-red-400" />
+              <h3 className="text-red-400 font-bold text-sm">Danger Zone</h3>
+            </div>
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <Trash2 size={22} className="text-white" />
+                <Trash2 size={18} className="text-white/40" />
                 <div>
-                  <h3 className="text-white font-semibold">Delete Shop</h3>
-                  <p className="text-red-400 text-sm">
-                    Deleting your shop is irreversible. Proceed with caution.
+                  <p className="text-white text-sm font-semibold">
+                    {seller?.isDeleted ? "Restore Shop" : "Delete Shop"}
+                  </p>
+                  <p className="text-red-400/70 text-xs mt-0.5">
+                    {seller?.isDeleted
+                      ? "Your shop is pending deletion. Restore it before 28 days."
+                      : "Deleting your shop is irreversible. Proceed with caution."}
                   </p>
                 </div>
               </div>
-              <ChevronRightCircle size={22} className="text-white" />
+              <button
+                onClick={() => setShowDeleteModal(true)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
+                  seller?.isDeleted
+                    ? "border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10"
+                    : "border-red-500/30 text-red-400 hover:bg-red-500/10"
+                }`}
+              >
+                {seller?.isDeleted ? "Restore" : "Delete"}
+              </button>
             </div>
           </div>
         </div>
       )}
 
       {activeTab === "custom-domains" && <CustomDomains />}
-
       {activeTab === "withdraw" && <WithdrawMethod />}
-      {/* Delete Shop Modal */}
+
+      {/* Delete modal */}
       {showDeleteModal && (
-        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-gray-800 p-6 rounded-lg w-[450px] shadow-lg">
-            {/* Header */}
-            <h3 className="text-xl text-white mb-4 flex items-center gap-2">
-              <Trash2 size={22} className="text-red-500" /> Delete Shop
-            </h3>
-
-            {/* Warning Message */}
-            <p className="text-gray-300">
-              Deleting your shop is a **permanent action**. However, you have
-              **28 days** to restore your shop before it is permanently removed.
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#111111] p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Trash2 size={18} className="text-red-400" />
+                <h3 className="text-white font-bold">{seller?.isDeleted ? "Restore Shop" : "Delete Shop"}</h3>
+              </div>
+              <button onClick={() => setShowDeleteModal(false)} className="text-white/30 hover:text-white transition-colors">
+                <X size={16} />
+              </button>
+            </div>
+            <p className="text-white/50 text-sm leading-relaxed">
+              {seller?.isDeleted
+                ? "Your shop is pending deletion. Restoring it will resume normal operations immediately."
+                : "Deleting your shop will mark it for permanent removal. You have 28 days to restore it. After that, it cannot be recovered, and this email cannot be reused."}
             </p>
-
-            <p className="text-gray-300 mt-3">
-              <span className="text-yellow-400 font-semibold">
-                ⚠️ Important:
-              </span>{" "}
-              Once the shop is permanently deleted, you **cannot** create a new
-              account with the same email in the future.
-            </p>
-
-            {/* Recovery Period Warning */}
-            <div className="bg-gray-900 text-yellow-400 p-3 mt-4 rounded-md border border-yellow-500">
-              <p className="text-sm">
-                You can **restore** your shop within 28 days from the date of
-                deletion. After that, it will be **permanently removed**.
+            <div className="mt-4 p-3 rounded-xl border border-amber-500/20 bg-amber-500/5">
+              <p className="text-amber-400 text-xs">
+                {seller?.isDeleted
+                  ? "Restoring will cancel the scheduled deletion."
+                  : "You can restore your shop within 28 days after deletion."}
               </p>
             </div>
-
-            {/* Action Buttons */}
-            <div className="flex justify-end gap-3 mt-6">
-              <button
-                onClick={() => setShowDeleteModal(false)}
-                className="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-md text-white transition"
-              >
+            <div className="flex gap-3 mt-5">
+              <button onClick={() => setShowDeleteModal(false)}
+                className="flex-1 h-10 rounded-xl bg-white/5 border border-white/10 text-white/60 hover:text-white hover:bg-white/10 text-sm transition-all">
                 Cancel
               </button>
-              <button
-                className={`${!seller?.isDeleted
-                    ? "bg-red-600 hover:bg-red-700"
-                    : "bg-green-600 hover:bg-green-700"
-                  } px-4 py-2 rounded-md text-white font-semibold transition`}
-                onClick={deleteShopHanlder}
-              >
-                {!seller?.isDeleted ? "Confirm Delete" : "Restore"}
+              <button onClick={handleDelete}
+                className={`flex-1 h-10 rounded-xl text-white text-sm font-semibold transition-all ${
+                  seller?.isDeleted
+                    ? "bg-gradient-to-r from-emerald-600 to-emerald-500 hover:opacity-90"
+                    : "bg-gradient-to-r from-red-600 to-red-500 hover:opacity-90"
+                }`}>
+                {seller?.isDeleted ? "Restore Shop" : "Confirm Delete"}
               </button>
             </div>
           </div>
@@ -314,6 +216,4 @@ const SettingsPage = () => {
       )}
     </div>
   );
-};
-
-export default SettingsPage;
+}

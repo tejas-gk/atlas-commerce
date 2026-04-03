@@ -1,22 +1,17 @@
-"use client";
+﻿"use client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
 import axiosInstance from "@/utils/axiosInstance";
-import { AxiosError } from "axios";
-import { Plus, Trash, X } from "lucide-react";
-
+import { Plus, Trash, X, Tag } from "lucide-react";
 import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import toast from "react-hot-toast";
-import { Input } from "../../../../../../../packages/ui/src/components/input";
+import { toast } from "sonner";
+import { Input } from "@workspace/ui/components/input";
 import DeleteDiscountCodeModal from "@/shared/components/modals/delete.discount-codes";
-import BreadCrumbs from "@/shared/components/breadcrumbs";
 
-const Page = () => {
+export default function DiscountCodesPage() {
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedDiscount, setSelectedDiscount] = useState<any>();
-
   const queryClient = useQueryClient();
 
   const { data: discountCodes = [], isLoading } = useQuery({
@@ -27,215 +22,124 @@ const Page = () => {
     },
   });
 
-  const {
-    register,
-    handleSubmit,
-    control,
-    reset,
-    formState: { errors },
-  } = useForm({
-    defaultValues: {
-      public_name: "",
-      discountType: "percentage",
-      discountValue: "",
-      discountCode: "",
-    },
+  const { register, handleSubmit, control, reset, formState: { errors } } = useForm({
+    defaultValues: { public_name: "", discountType: "percentage", discountValue: "", discountCode: "" },
   });
 
-  const createDiscountCodeMutation = useMutation({
-    mutationFn: async (data) => {
+  const createMutation = useMutation({
+    mutationFn: async (data: any) => {
       await axiosInstance.post("/product/api/create-discount-code", data);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["shop-discounts"] });
-      reset();
-      setShowModal(false);
-    },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["shop-discounts"] }); reset(); setShowModal(false); },
   });
 
-  const deleteDiscountCodeMutation = useMutation({
-    mutationFn: async (discountId) => {
-      await axiosInstance.delete(
-        `/product/api/delete-discount-code/${discountId}`
-      );
+  const deleteMutation = useMutation({
+    mutationFn: async (id: any) => {
+      await axiosInstance.delete(`/product/api/delete-discount-code/${id}`);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["shop-discounts"] });
-      setShowDeleteModal(false);
-    },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["shop-discounts"] }); setShowDeleteModal(false); },
   });
-
-  const handleDeleteClick = async (discount: any) => {
-    setSelectedDiscount(discount);
-    setShowDeleteModal(true);
-  };
 
   const onSubmit = (data: any) => {
-    if (discountCodes.length >= 8) {
-      toast.error("You can only create up to 8 discount codes.");
-      return;
-    }
-    createDiscountCodeMutation.mutate(data);
+    if (discountCodes.length >= 8) { toast.error("Max 8 discount codes allowed."); return; }
+    createMutation.mutate(data);
   };
 
   return (
-    <div className="w-full min-h-screen p-8">
-      <div className="flex justify-between items-center mb-1">
-        <h2 className="text-2xl text-white font-semibold">Discount Codes</h2>
+    <div className="space-y-5">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-white to-white/50 bg-clip-text text-transparent">Discount Codes</h1>
+          <p className="text-white/35 text-sm mt-0.5">Create and manage promotional codes</p>
+        </div>
         <button
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
           onClick={() => setShowModal(true)}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-500 hover:to-pink-500 text-white text-sm font-semibold shadow-[0_0_15px_rgba(124,58,237,0.35)] transition-all"
         >
-          <Plus size={18} /> Create Discount
+          <Plus size={15} /> Add Code
         </button>
       </div>
-      {/* Breadcrumbs */}
-      <BreadCrumbs title="Create Discount" />
 
-      <div className="mt-8 bg-gray-900 p-6 rounded-lg shadow-lg">
-        <h3 className="text-lg font-semibold text-white mb-4">
-          Your Discount Codes
-        </h3>
-        {isLoading ? (
-          <p className="text-gray-400 text-center">Loading discounts...</p>
-        ) : (
-          <table className="w-full text-white">
-            <thead>
-              <tr className="border-b border-gray-800">
-                <th className="p-3 text-left">Title</th>
-                <th className="p-3 text-left">Type</th>
-                <th className="p-3 text-left">Value</th>
-                <th className="p-3 text-left">Code</th>
-                <th className="p-3 text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {discountCodes?.map((discount: any) => (
-                <tr
-                  key={discount?.id}
-                  className="border-b border-gray-800 hover:bg-gray-800 transition"
-                >
-                  <td className="p-3">{discount?.public_name}</td>
-                  <td className="p-3 capitalize">
-                    {discount.discountType === "percentage"
-                      ? "Percentage (%)"
-                      : "Flat ($)"}
-                  </td>
-                  <td className="p-3">
-                    {discount.discountType === "percentage"
-                      ? `${discount.discountValue}%`
-                      : `$${discount.discountValue}`}
-                  </td>
-                  <td className="p-3">{discount.discountCode}</td>
-                  <td className="p-3">
-                    <button
-                      onClick={() => handleDeleteClick(discount)}
-                      className="text-red-400 hover:text-red-300 transition"
-                    >
-                      <Trash size={18} />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-
-        {!isLoading && discountCodes?.length === 0 && (
-          <p className="text-gray-400 w-full pt-4 block text-center">
-            No Discount Codes Available!
-          </p>
-        )}
-      </div>
-
-      {/* Create Discount modal */}
-      {showModal && (
-        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-gray-800 p-6 rounded-lg w-[450px] shadow-lg">
-            <div className="flex justify-between items-center border-b border-gray-700 pb-3">
-              <h3 className="text-xl text-white">Create Discount Code</h3>
+      {/* Code list */}
+      {isLoading ? (
+        <div className="flex items-center justify-center py-20">
+          <div className="w-8 h-8 rounded-full border-2 border-violet-500/30 border-t-violet-500 animate-spin" />
+        </div>
+      ) : discountCodes.length === 0 ? (
+        <div className="rounded-2xl border border-white/8 bg-white/3 backdrop-blur-md flex flex-col items-center justify-center py-20">
+          <Tag size={36} className="text-white/15 mb-3" />
+          <p className="text-white/25 text-sm">No discount codes yet</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {discountCodes.map((code: any) => (
+            <div key={code.id} className="rounded-2xl border border-white/8 bg-white/3 backdrop-blur-md p-5 flex items-start justify-between">
+              <div>
+                <span className="text-[10px] font-semibold tracking-widest text-violet-400 uppercase">{code.discountType}</span>
+                <p className="text-white font-bold text-lg mt-0.5 font-mono">{code.discountCode}</p>
+                <p className="text-white/50 text-sm">{code.public_name}</p>
+                <div className="flex items-center gap-1 mt-2">
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-pink-500/10 text-pink-400 border border-pink-500/20 font-semibold">
+                    {code.discountValue}{code.discountType === "percentage" ? "%" : " off"}
+                  </span>
+                </div>
+              </div>
               <button
-                onClick={() => setShowModal(false)}
-                className="text-gray-400 hover:text-white"
+                onClick={() => { setSelectedDiscount(code); setShowDeleteModal(true); }}
+                className="text-white/25 hover:text-red-400 transition-colors"
               >
-                <X size={22} />
+                <Trash size={15} />
               </button>
             </div>
+          ))}
+        </div>
+      )}
 
-            <form onSubmit={handleSubmit(onSubmit)} className="mt-4">
-              {/* Title */}
-              <Input
-                label="Title (Public Name)"
-                {...register("public_name", { required: "Title is required" })}
-              />
-              {errors.public_name && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.public_name.message}
-                </p>
-              )}
-
-              {/* Discount Type */}
-              <div className="mt-2">
-                <label className="block font-semibold text-gray-300 mb-1">
-                  Discount Type
-                </label>
-                <Controller
-                  control={control}
-                  name="discountType"
-                  render={({ field }) => (
-                    <select
-                      {...field}
-                      className="w-full border outline-none border-gray-700 bg-transparent p-2 rounded-md text-white"
-                    >
-                      <option value="percentage">Percentage (%)</option>
-                      <option value="flat">Flat Amount ($)</option>
-                    </select>
-                  )}
-                />
-              </div>
-
-              {/* Discount Value */}
-              <div className="mt-2">
-                <Input
-                  label="Discount Value"
-                  type="number"
-                  min={1}
-                  {...register("discountValue", {
-                    required: "Value is required",
-                  })}
-                />
-              </div>
-
-              <div className="mt-2">
-                {/* Discount Code */}
-                <Input
-                  label="Discount Code"
-                  {...register("discountCode", {
-                    required: "Discount Code is required",
-                  })}
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={createDiscountCodeMutation.isPending}
-                className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md font-semibold flex items-center justify-center gap-2"
-              >
-                <Plus size={18} />
-                {createDiscountCodeMutation?.isPending
-                  ? "Creating ..."
-                  : "Create"}
+      {/* Create modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#111111] p-6">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-white font-bold text-lg">Create Discount Code</h2>
+              <button onClick={() => setShowModal(false)} className="text-white/30 hover:text-white transition-colors">
+                <X size={18} />
               </button>
-
-              {createDiscountCodeMutation.isError && (
-                <p className="text-red-500 text-sm mt-2">
-                  {(
-                    createDiscountCodeMutation.error as AxiosError<{
-                      message: string;
-                    }>
-                  )?.response?.data?.message || "Something went wrong"}
-                </p>
-              )}
+            </div>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-white/50 text-xs font-semibold uppercase tracking-wider">Public Name</label>
+                <Input placeholder="Summer Sale" className="bg-white/5 border-white/10 text-white placeholder:text-white/20 focus-visible:ring-violet-500 rounded-xl h-10"
+                  {...register("public_name", { required: true })} />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-white/50 text-xs font-semibold uppercase tracking-wider">Discount Code</label>
+                <Input placeholder="SAVE20" className="bg-white/5 border-white/10 text-white placeholder:text-white/20 focus-visible:ring-violet-500 rounded-xl h-10 font-mono uppercase"
+                  {...register("discountCode", { required: true })} />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-white/50 text-xs font-semibold uppercase tracking-wider">Type</label>
+                <Controller name="discountType" control={control} render={({ field }) => (
+                  <select {...field} className="w-full h-10 px-3 rounded-xl bg-white/5 border border-white/10 text-white/80 text-sm outline-none focus:border-violet-500/50">
+                    <option value="percentage" className="bg-[#111]">Percentage</option>
+                    <option value="flat" className="bg-[#111]">Flat Amount</option>
+                  </select>
+                )} />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-white/50 text-xs font-semibold uppercase tracking-wider">Value</label>
+                <Input type="number" placeholder="20" className="bg-white/5 border-white/10 text-white placeholder:text-white/20 focus-visible:ring-violet-500 rounded-xl h-10"
+                  {...register("discountValue", { required: true })} />
+              </div>
+              <div className="flex gap-3 pt-1">
+                <button type="button" onClick={() => setShowModal(false)}
+                  className="flex-1 h-10 rounded-xl bg-white/5 border border-white/10 text-white/60 hover:text-white hover:bg-white/10 text-sm transition-all">
+                  Cancel
+                </button>
+                <button type="submit"
+                  className="flex-1 h-10 rounded-xl bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-500 hover:to-pink-500 text-white text-sm font-semibold shadow-[0_0_15px_rgba(124,58,237,0.35)] transition-all">
+                  Create
+                </button>
+              </div>
             </form>
           </div>
         </div>
@@ -243,15 +147,10 @@ const Page = () => {
 
       {showDeleteModal && selectedDiscount && (
         <DeleteDiscountCodeModal
-          discount={selectedDiscount}
           onClose={() => setShowDeleteModal(false)}
-          onConfirm={() =>
-            deleteDiscountCodeMutation.mutate(selectedDiscount?.id)
-          }
+          onConfirm={() => deleteMutation.mutate(selectedDiscount.id)}
         />
       )}
     </div>
   );
-};
-
-export default Page;
+}

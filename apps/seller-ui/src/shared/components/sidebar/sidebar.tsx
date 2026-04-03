@@ -1,19 +1,11 @@
-"use client";
+﻿"use client";
 
-
-import { redirect, usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
-import Box from "../box";
-import { Sidebar } from "./sidebar.styles";
 import Link from "next/link";
-import SidebarItem from "./sidebar.item";
-
-import SidebarMenu from "./sidebar.menu";
 import {
-  BellPlus,
   BellRing,
   CalendarPlus,
-  Headset,
   Home,
   ListOrdered,
   LogOut,
@@ -23,183 +15,159 @@ import {
   Settings,
   SquarePlus,
   TicketPercent,
+  BellPlus,
 } from "lucide-react";
-import useSidebar from "@/hooks/useSidebar";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarRail,
+} from "@workspace/ui/components/sidebar";
+import useSidebar from "@/hooks/useSidebar.tsx";
 import useRequireAuth from "@/hooks/useRequiredAuth";
+import axiosInstance from "@/utils/axiosInstance";
+import { useQueryClient } from "@tanstack/react-query";
 
+const navGroups = [
+  {
+    label: "Main Menu",
+    items: [
+      { title: "Dashboard",   href: "/dashboard",          icon: Home         },
+      { title: "Orders",      href: "/dashboard/orders",   icon: ListOrdered  },
+      { title: "Payments",    href: "/dashboard/payments", icon: PartyPopper  },
+    ],
+  },
+  {
+    label: "Products",
+    items: [
+      { title: "Create Product", href: "/dashboard/create-product", icon: SquarePlus   },
+      { title: "All Products",   href: "/dashboard/all-products",   icon: PackageSearch },
+    ],
+  },
+  {
+    label: "Events",
+    items: [
+      { title: "Create Event", href: "/dashboard/create-event", icon: CalendarPlus },
+      { title: "All Events",   href: "/dashboard/all-events",   icon: BellPlus     },
+    ],
+  },
+  {
+    label: "Controllers",
+    items: [
+      { title: "Inbox",          href: "/dashboard/inbox",           icon: Mail         },
+      { title: "Notifications",  href: "/dashboard/notifications",   icon: BellRing     },
+      { title: "Settings",       href: "/dashboard/settings",        icon: Settings     },
+      { title: "Discount Codes", href: "/dashboard/discount-codes",  icon: TicketPercent},
+    ],
+  },
+];
 
-const SidebarBarWrapper = () => {
+const SellerSidebar = () => {
   const { activeSidebar, setActiveSidebar } = useSidebar();
   const pathName = usePathname();
+  const router = useRouter();
+  const queryClient = useQueryClient();
   const { seller } = useRequireAuth();
 
   useEffect(() => {
     setActiveSidebar(pathName);
   }, [pathName, setActiveSidebar]);
 
-  const getIconColor = (route: string) =>
-    activeSidebar === route ? "#0085ff" : "#969696";
+  const handleLogout = async () => {
+    try {
+      await axiosInstance.get("/api/logout-seller");
+      queryClient.invalidateQueries({ queryKey: ["seller"] });
+      router.push("/login");
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
+  };
+
+  const shopInitial = seller?.shop?.name?.[0]?.toUpperCase() ?? "S";
+  const shopName    = seller?.shop?.name ?? "My Store";
 
   return (
-    <Box
-      css={{
-        height: "100vh",
-        zIndex: 202,
-        position: "sticky",
-        padding: "8px",
-        top: "0",
-        overflowY: "scroll",
-        scrollbarWidth: "none",
-      }}
-      className="sidebar-wrapper"
-    >
-      <Sidebar.Header>
-        <Box>
-          <Link href={"/"} className="flex justify-center text-center gap-2">
-            <LogOut />
-            <Box>
-              <h3 className="text-xl font-medium text-[#ecedee]">
-                {seller?.shop?.name}
-              </h3>
-              <h5 className="font-medium pl-2 text-xs text-[#ecedeecf] whitespace-nowrap overflow-hidden text-ellipsis max-w-[170px]">
-                {seller?.shop?.address}
-              </h5>
-            </Box>
-          </Link>
-        </Box>
-      </Sidebar.Header>
-      <div className="block my-3 h-full">
-        <Sidebar.Body className="body sidebar">
-          <SidebarItem
-            title="Dashboard"
-            icon={<Home fill={getIconColor("/dashboard")} />}
-            isActive={activeSidebar === "/dashboard"}
-            href="/dashboard"
-          />
-          <div className="mt-2 block">
-            <SidebarMenu title="Main Menu">
-              <SidebarItem
-                isActive={activeSidebar === "/dashboard/orders"}
-                title="Orders"
-                href="/dashboard/orders"
-                icon={
-                  <ListOrdered
-                    size={26}
-                    color={getIconColor("/dashboard/orders")}
-                  />
-                }
-              />
-              <SidebarItem
-                isActive={activeSidebar === "/payments"}
-                title="Payments"
-                href="/dashboard/payments"
-                icon={<PartyPopper fill={getIconColor("/dashboard/payments")} />}
-              />
+    <Sidebar collapsible="icon" className="border-r border-white/5 bg-[#0a0a0a]">
+      {/* Header — shop identity */}
+      <SidebarHeader className="border-b border-white/5 px-3 py-3">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton size="lg" asChild className="hover:bg-white/5 transition-colors">
+              <Link href="/dashboard">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-600 to-pink-500 flex items-center justify-center flex-shrink-0 text-white text-sm font-bold shadow-[0_0_12px_rgba(124,58,237,0.5)]">
+                  {shopInitial}
+                </div>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-semibold text-white">{shopName}</span>
+                  <span className="truncate text-[10px] text-white/40">Seller Dashboard</span>
+                </div>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
+
+      {/* Nav groups */}
+      <SidebarContent className="py-2">
+        {navGroups.map((group) => (
+          <SidebarGroup key={group.label}>
+            <SidebarGroupLabel className="text-white/25 text-[9px] font-semibold tracking-widest uppercase px-3 mb-1">
+              {group.label}
+            </SidebarGroupLabel>
+            <SidebarMenu>
+              {group.items.map((item) => {
+                const isActive = activeSidebar === item.href;
+                const Icon = item.icon;
+                return (
+                  <SidebarMenuItem key={item.href}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={isActive}
+                      tooltip={item.title}
+                      className={`mx-1 rounded-lg transition-all text-white/50 hover:text-white hover:bg-white/5 ${
+                        isActive
+                          ? "bg-violet-600/15 text-violet-400 hover:bg-violet-600/20 hover:text-violet-300 shadow-[inset_2px_0_0_#7c3aed]"
+                          : ""
+                      }`}
+                    >
+                      <Link href={item.href}>
+                        <Icon size={15} />
+                        <span className="text-sm">{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
-            <SidebarMenu title="Products">
-              <SidebarItem
-                isActive={activeSidebar === "/dashboard/create-product"}
-                title="Create Product"
-                href="/dashboard/create-product"
-                icon={
-                  <SquarePlus
-                    size={24}
-                    color={getIconColor("/dashboard/create-product")}
-                  />
-                }
-              />
-              <SidebarItem
-                isActive={activeSidebar === "/dashboard/all-products"}
-                title="All Products"
-                href="/dashboard/all-products"
-                icon={
-                  <PackageSearch
-                    size={22}
-                    color={getIconColor("/dashboard/all-products")}
-                  />
-                }
-              />
-            </SidebarMenu>
-            <SidebarMenu title="Events">
-              <SidebarItem
-                isActive={activeSidebar === "/dashboard/create-event"}
-                title="Create Event"
-                href="/dashboard/create-event"
-                icon={
-                  <CalendarPlus
-                    size={24}
-                    color={getIconColor("/dashboard/create-event")}
-                  />
-                }
-              />
-              <SidebarItem
-                isActive={activeSidebar === "/dashboard/all-events"}
-                title="All Events"
-                href="/dashboard/all-events"
-                icon={
-                  <BellPlus
-                    size={24}
-                    color={getIconColor("/dashboard/all-events")}
-                  />
-                }
-              />
-            </SidebarMenu>
-            <SidebarMenu title="Controllers">
-              <SidebarItem
-                isActive={activeSidebar === "/dashboard/inbox"}
-                title="Inbox"
-                href="/dashboard/inbox"
-                icon={
-                  <Mail size={20} color={getIconColor("/dashboard/inbox")} />
-                }
-              />
-              <SidebarItem
-                isActive={activeSidebar === "/dashboard/settings"}
-                title="Settings"
-                href="/dashboard/settings"
-                icon={
-                  <Settings
-                    size={22}
-                    color={getIconColor("/dashboard/settings")}
-                  />
-                }
-              />
-              <SidebarItem
-                isActive={activeSidebar === "/dashboard/notifications"}
-                title="Notifications"
-                href="/dashboard/notifications"
-                icon={
-                  <BellRing
-                    size={24}
-                    color={getIconColor("/dashboard/notifications")}
-                  />
-                }
-              />
-            </SidebarMenu>
-            <SidebarMenu title="Extras">
-              <SidebarItem
-                isActive={activeSidebar === "/dashboard/discount-codes"}
-                title="Discount Codes"
-                href="/dashboard/discount-codes"
-                icon={
-                  <TicketPercent
-                    size={22}
-                    color={getIconColor("/dashboard/discount-codes")}
-                  />
-                }
-              />
-              <SidebarItem
-                isActive={activeSidebar === "/logout"}
-                title="Logout"
-                href="/"
-                icon={<LogOut size={20} color={getIconColor("/logout")} />}
-              />
-            </SidebarMenu>
-          </div>
-        </Sidebar.Body>
-      </div>
-    </Box>
+          </SidebarGroup>
+        ))}
+      </SidebarContent>
+
+      {/* Footer — logout */}
+      <SidebarFooter className="border-t border-white/5 p-2">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              onClick={handleLogout}
+              tooltip="Logout"
+              className="mx-1 rounded-lg text-white/50 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+            >
+              <LogOut size={15} />
+              <span className="text-sm">Logout</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
+
+      <SidebarRail />
+    </Sidebar>
   );
 };
 
-export default SidebarBarWrapper;
+export default SellerSidebar;

@@ -1,5 +1,4 @@
 import React from "react";
-// import "@workspace/ui/styles/globals.css";
 import "./globals.css";
 
 import { Poppins } from "next/font/google";
@@ -23,9 +22,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`min-h-screen bg-slate-900 font-sans antialiased ${poppins.variable}`}
+        className={`min-h-screen bg-[#0d0d0d] font-sans antialiased ${poppins.variable}`}
       >
         <Providers>{children}</Providers>
       </body>

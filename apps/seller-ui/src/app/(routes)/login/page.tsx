@@ -1,167 +1,165 @@
-"use client";
+﻿"use client";
 
-import { useAuthStore } from "@/store/authStore";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-import axios, { AxiosError } from "axios";
-import { Eye, EyeOff } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import axios from "axios";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { Eye, EyeOff, ShoppingBag, Zap, BarChart3, Globe } from "lucide-react";
+import { Input } from "@workspace/ui/components/input";
+import { Label } from "@workspace/ui/components/label";
+import { Button } from "@workspace/ui/components/button";
 
-type FormData = {
-  email: string;
-  password: string;
-};
+type FormValues = { email: string; password: string };
 
-const Login = () => {
-  const { setLoggedIn } = useAuthStore();
+const features = [
+  { icon: BarChart3, title: "Real-time Analytics", desc: "Live revenue tracking and insights" },
+  { icon: ShoppingBag, title: "Order Management",  desc: "Manage orders from one place"       },
+  { icon: Globe,       title: "Global Reach",       desc: "Sell to customers worldwide"        },
+  { icon: Zap,         title: "Instant Payouts",    desc: "Fast and reliable payment processing" },
+];
+
+export default function LoginPage() {
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormValues>();
+  const [showPass, setShowPass] = useState(false);
   const queryClient = useQueryClient();
-  const [passwordVisible, setPasswordVisible] = useState(false);
-  const [serverError, setServerError] = useState<string | null>(null);
-  const [rememberMe, setRememberMe] = useState(false);
   const router = useRouter();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormData>();
-
-  const loginMutation = useMutation({
-    mutationFn: async (data: FormData) => {
-      const response = await axios.post(
-        `http://localhost:8080/auth/api/login-seller`,
-        data,
-        { withCredentials: true }
-      );
-      return response.data;
-    },
-    onSuccess: (data) => {
-      setServerError(null);
-      setLoggedIn(true);
+  const onSubmit = async (data: FormValues) => {
+    try {
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080"}/auth/api/login-seller`, data, { withCredentials: true });
       queryClient.invalidateQueries({ queryKey: ["seller"] });
-      router.push("/");
-    },
-    onError: (error: AxiosError) => {
-      const errorMessage =
-        (error.response?.data as { message?: string })?.message ||
-        "Invalid credentials!";
-      setServerError(errorMessage);
-    },
-  });
-
-  const onSubmit = (data: FormData) => {
-    loginMutation.mutate(data);
+      router.push("/dashboard");
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message ?? "Invalid credentials");
+    }
   };
 
   return (
-    <div className="w-full py-10 min-h-screen bg-[#f1f1f1]">
-      <h1 className="text-4xl font-Poppins font-semibold text-black text-center">
-        Login
-      </h1>
-      <p className="text-center text-lg font-medium py-3 text-[#00000099]">
-        Home . Login
-      </p>
+    <div className="min-h-screen flex bg-[#0d0d0d]">
+      {/* ── Left Panel ─────────────────────── */}
+      <div className="hidden lg:flex lg:w-[48%] relative overflow-hidden flex-col justify-between p-12">
+        {/* Gradient mesh background */}
+        <div className="absolute inset-0 bg-[#0a0a0a]" />
+        <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-violet-600/20 blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-5%] w-[400px] h-[400px] rounded-full bg-pink-500/15 blur-[100px]" />
+        <div className="absolute top-[40%] left-[40%] w-[300px] h-[300px] rounded-full bg-cyan-500/10 blur-[80px]" />
 
-      <div className="w-full flex justify-center">
-        <div className="md:w-[480px] p-8 bg-white shadow rounded-lg">
-          <h3 className="text-3xl font-semibold text-center mb-2">
-            Login to Eshop
-          </h3>
-          <p className="text-center text-gray-500 mb-4">
-            Don't have an account?{" "}
-            <Link href={"/signup"} className="text-blue-500">
-              Sign up
-            </Link>
-          </p>
+        {/* Brand */}
+        <div className="relative z-10">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-600 to-pink-500 flex items-center justify-center shadow-[0_0_20px_rgba(124,58,237,0.5)]">
+              <ShoppingBag size={18} className="text-white" />
+            </div>
+            <span className="text-white font-bold text-lg tracking-tight">Atlas Commerce</span>
+          </div>
+        </div>
 
-          <div className="flex items-center my-5 text-gray-400 text-sm">
-            <div className="flex-1 border-t border-gray-300" />
-            <span className="px-3">or Sign in with Email</span>
-            <div className="flex-1 border-t border-gray-300" />
+        {/* Hero text */}
+        <div className="relative z-10 space-y-6">
+          <div>
+            <h2 className="text-4xl font-bold leading-tight text-white">
+              Your store,<br />
+              <span className="bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent">
+                supercharged.
+              </span>
+            </h2>
+            <p className="text-white/40 mt-3 text-sm leading-relaxed">
+              Everything you need to run a modern e-commerce business — analytics, orders, products, and payouts — in one beautiful dashboard.
+            </p>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <label className="block text-gray-700 mb-1">Email</label>
-            <input
-              type="email"
-              placeholder="support@becodemy.com"
-              className="w-full p-2 border border-gray-300 outline-0 !rounded mb-1"
-              {...register("email", {
-                required: "Email is required",
-                pattern: {
-                  value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
-                  message: "Invalid email address",
-                },
-              })}
-            />
-            {errors.email && (
-              <p className="text-red-500 text-sm">
-                {String(errors.email.message)}
-              </p>
-            )}
+          {/* Feature tiles */}
+          <div className="grid grid-cols-2 gap-3">
+            {features.map((f) => {
+              const Icon = f.icon;
+              return (
+                <div key={f.title} className="rounded-xl border border-white/8 bg-white/4 backdrop-blur-md p-4">
+                  <Icon size={16} className="text-violet-400 mb-2" />
+                  <p className="text-white text-xs font-semibold">{f.title}</p>
+                  <p className="text-white/35 text-[11px] mt-0.5">{f.desc}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
 
-            <label className="block text-gray-700 mb-1">Password</label>
-            <div className="relative">
-              <input
-                type={passwordVisible ? "text" : "password"}
-                placeholder="Min. 6 characters"
-                className="w-full p-2 border border-gray-300 outline-0 !rounded mb-1"
-                {...register("password", {
-                  required: "Password is required",
-                  minLength: {
-                    value: 6,
-                    message: "Password must be at least 6 characters",
-                  },
-                })}
-              />
+        {/* Bottom tagline */}
+        <p className="relative z-10 text-white/20 text-xs">
+          Trusted by 5,000+ sellers worldwide
+        </p>
+      </div>
 
-              <button
-                type="button"
-                onClick={() => setPasswordVisible(!passwordVisible)}
-                className="absolute inset-y-0 right-3 flex items-center text-gray-400"
-              >
-                {passwordVisible ? <Eye /> : <EyeOff />}
-              </button>
-              {errors.password && (
-                <p className="text-red-500 text-sm">
-                  {String(errors.password.message)}
-                </p>
-              )}
+      {/* ── Right Panel ─────────────────────── */}
+      <div className="flex-1 flex items-center justify-center px-6 py-12">
+        <div className="w-full max-w-md">
+          {/* Glass card */}
+          <div className="rounded-2xl border border-white/8 bg-white/4 backdrop-blur-md p-8">
+            <div className="mb-8">
+              <h1 className="text-2xl font-bold text-white tracking-tight">Sign in</h1>
+              <p className="text-white/40 text-sm mt-1">Enter your credentials to access your dashboard</p>
             </div>
-            <div className="flex justify-between items-center my-4">
-              <label className="flex items-center text-gray-600">
-                <input
-                  type="checkbox"
-                  className="mr-2"
-                  checked={rememberMe}
-                  onChange={() => setRememberMe(!rememberMe)}
+
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+              {/* Email */}
+              <div className="space-y-1.5">
+                <Label className="text-white/60 text-xs font-semibold uppercase tracking-wider">Email</Label>
+                <Input
+                  type="email"
+                  placeholder="you@example.com"
+                  className="bg-white/5 border-white/10 text-white placeholder:text-white/25 focus-visible:ring-violet-500 focus-visible:border-violet-500/50 rounded-xl h-11"
+                  {...register("email", { required: "Email is required" })}
                 />
-                Remember me
-              </label>
-              <Link href={"/forgot-password"} className="text-blue-500 text-sm">
-                Forgot Password?
+                {errors.email && <p className="text-red-400 text-xs">{errors.email.message}</p>}
+              </div>
+
+              {/* Password */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <Label className="text-white/60 text-xs font-semibold uppercase tracking-wider">Password</Label>
+                  <Link href="/forgot-password" className="text-violet-400 hover:text-violet-300 text-xs transition-colors">
+                    Forgot password?
+                  </Link>
+                </div>
+                <div className="relative">
+                  <Input
+                    type={showPass ? "text" : "password"}
+                    placeholder="••••••••"
+                    className="bg-white/5 border-white/10 text-white placeholder:text-white/25 focus-visible:ring-violet-500 focus-visible:border-violet-500/50 rounded-xl h-11 pr-10"
+                    {...register("password", { required: "Password is required" })}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPass((v) => !v)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
+                  >
+                    {showPass ? <EyeOff size={15} /> : <Eye size={15} />}
+                  </button>
+                </div>
+                {errors.password && <p className="text-red-400 text-xs">{errors.password.message}</p>}
+              </div>
+
+              {/* Submit */}
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full h-11 rounded-xl bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-500 hover:to-pink-500 text-white font-semibold tracking-wide shadow-[0_0_20px_rgba(124,58,237,0.4)] hover:shadow-[0_0_30px_rgba(124,58,237,0.6)] transition-all border-0"
+              >
+                {isSubmitting ? "Signing in…" : "Sign in"}
+              </Button>
+            </form>
+
+            <p className="text-center text-white/30 text-sm mt-6">
+              No account?{" "}
+              <Link href="/signup" className="text-violet-400 hover:text-violet-300 transition-colors font-medium">
+                Create one
               </Link>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loginMutation.isPending}
-              className="w-full text-lg cursor-pointer bg-black text-white py-2 rounded-lg"
-            >
-              {loginMutation?.isPending ? "Loggin in..." : "Login"}
-            </button>
-
-            {serverError && (
-              <p className="text-red-500 text-sm mt-2">{serverError}</p>
-            )}
-          </form>
+            </p>
+          </div>
         </div>
       </div>
     </div>
   );
-};
-
-export default Login;
+}

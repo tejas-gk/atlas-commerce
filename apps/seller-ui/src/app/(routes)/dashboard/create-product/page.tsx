@@ -91,6 +91,7 @@ const Page = () => {
         return res.data;
       } catch (error) {
         console.log(error);
+        return { categories: [], subCategories: {} };
       }
     },
     staleTime: 1000 * 60 * 5,
@@ -252,7 +253,7 @@ const Page = () => {
                       setValue("slug", e.target.value);
                       formOnChange(e);
                     }}
-                    value={watch("slug")}
+                    value={watch("slug") ?? ""}
                     className="pr-10"
                     {...restSlugProps}
                   />

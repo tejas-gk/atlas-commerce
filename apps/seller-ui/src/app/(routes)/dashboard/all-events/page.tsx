@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import React, { useMemo, useState } from "react";
 import {
   useReactTable,
@@ -6,50 +6,32 @@ import {
   getFilteredRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import {
-  Search,
-  Pencil,
-  Trash,
-  Eye,
-  Plus,
-  BarChart,
-  Star,
-  ChevronRight,
-} from "lucide-react";
+import { Search, Trash, Eye, Plus, BarChart, Star } from "lucide-react";
 import Link from "next/link";
 import axiosInstance from "@/utils/axiosInstance";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import DeleteConfirmationModal from "@/shared/components/modals/delete.confirmation.modal";
-import BreadCrumbs from "@/shared/components/breadcrumbs";
 import AnalyticsModal from "@/shared/components/modals/analytics.modal";
 
 const fetchEvents = async () => {
   const res = await axiosInstance.get("/product/api/get-shop-products");
-  const products = res.data.products?.filter((i) => i.starting_date);
-  return products;
+  return res.data.products?.filter((i: any) => i.starting_date) ?? [];
+};
+const deleteProduct = async (id: string) => {
+  await axiosInstance.delete(`/product/api/delete-product/${id}`);
+};
+const restoreProduct = async (id: string) => {
+  await axiosInstance.put(`/product/api/restore-product/${id}`);
 };
 
-const deleteProduct = async (productId: string) => {
-  await axiosInstance.delete(`/product/api/delete-product/${productId}`);
-};
-
-const restoreProduct = async (productId: string) => {
-  await axiosInstance.put(`/product/api/restore-product/${productId}`);
-};
-
-const EventList = () => {
+export default function AllEventsPage() {
   const [globalFilter, setGlobalFilter] = useState("");
-  const [analyticsData, setAnalyticsData] = useState(null);
+  const [analyticsData, setAnalyticsData] = useState<any>(null);
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any>();
   const queryClient = useQueryClient();
-  // Handle Opening Analytics Modal
-  const openAnalytics = (product) => {
-    setAnalyticsData(product);
-    setShowAnalytics(true);
-  };
 
   const { data: products = [], isLoading } = useQuery({
     queryKey: ["shop-events"],
@@ -57,125 +39,92 @@ const EventList = () => {
     staleTime: 1000 * 60 * 5,
   });
 
-  // Delete Product Mutation
   const deleteMutation = useMutation({
     mutationFn: deleteProduct,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["shop-products"] });
-      setShowDeleteModal(false);
-    },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["shop-events"] }); setShowDeleteModal(false); },
   });
-
-  // Restore Product Mutation
   const restoreMutation = useMutation({
     mutationFn: restoreProduct,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["shop-products"] });
-      setShowDeleteModal(false);
-    },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["shop-events"] }); setShowDeleteModal(false); },
   });
 
-  const columns = useMemo(
-    () => [
-      {
-        accessorKey: "image",
-        header: "Image",
-        cell: ({ row }) => {
-          console.log(row.original);
-          return (
-            <Image
-              src={row.original.images[0]?.url}
-              alt={row.original.images[0]?.url}
-              width={200}
-              height={200}
-              className="w-12 h-12 rounded-md object-cover"
-            />
-          );
-        },
+  const columns = useMemo(() => [
+    {
+      accessorKey: "image",
+      header: "Image",
+      cell: ({ row }: any) => (
+        <Image src={row.original.images?.[0]?.url} alt="event"
+          width={44} height={44}
+          className="w-11 h-11 rounded-xl object-cover border border-white/10" />
+      ),
+    },
+    {
+      accessorKey: "name",
+      header: "Event",
+      cell: ({ row }: any) => {
+        const title = row.original.title?.length > 28
+          ? `${row.original.title.substring(0, 28)}…`
+          : row.original.title;
+        return (
+          <Link href={`${process.env.NEXT_PUBLIC_USER_UI_LINK}/product/${row.original.slug}`}
+            className="text-violet-400 hover:text-violet-300 transition-colors text-sm font-medium">
+            {title}
+          </Link>
+        );
       },
-      {
-        accessorKey: "name",
-        header: "Product Name",
-        cell: ({ row }) => {
-          const truncatedTitle =
-            row.original.title.length > 25
-              ? `${row.original.title.substring(0, 25)}...`
-              : row.original.title;
-
-          return (
-            <Link
-              href={`${process.env.NEXT_PUBLIC_USER_UI_LINK}/product/${row.original.slug}`}
-              className="text-blue-400 hover:underline"
-              title={row.original.title}
-            >
-              {truncatedTitle}
-            </Link>
-          );
-        },
-      },
-      {
-        accessorKey: "price",
-        header: "Price",
-        cell: ({ row }) => <span>${row.original.sale_price}</span>,
-      },
-      {
-        accessorKey: "stock",
-        header: "Stock",
-        cell: ({ row }) => (
-          <span
-            className={row.original.stock < 10 ? "text-red-500" : "text-white"}
-          >
-            {row.original.stock} left
-          </span>
-        ),
-      },
-      {
-        accessorKey: "ending_date",
-        header: "Ending Date",
-        cell: ({ row }) => (
-          <div>
-            <span>{row.original.ending_date.slice(0, 10)}</span>
-          </div>
-        ),
-      },
-      {
-        accessorKey: "rating",
-        header: "Rating",
-        cell: ({ row }) => (
-          <div className="flex items-center gap-1 text-yellow-400">
-            <Star fill="#fde047" size={18} />{" "}
-            <span className="text-white">{row.original.ratings || 5}</span>
-          </div>
-        ),
-      },
-      {
-        header: "Actions",
-        cell: ({ row }) => (
-          <div className="flex gap-3">
-            <Link
-              href={`${process.env.NEXT_PUBLIC_USER_UI_LINK}/product/${row.original.slug}`}
-              className="text-blue-400 hover:text-blue-300 transition"
-            >
-              <Eye size={18} />
-            </Link>
-            <button
-              className="text-green-400 hover:text-green-300 transition"
-              onClick={() => openAnalytics(row.original)}
-            >
-              <BarChart size={18} />
-            </button>
-            <button
-              className="text-red-400 hover:text-red-300 transition"
-              onClick={() => openDeleteModal(row.original)}
-            >
-              <Trash size={18} />
-            </button>
-          </div>
-        ),
-      },
-    ],
-    []
-  );
+    },
+    {
+      accessorKey: "price",
+      header: "Price",
+      cell: ({ row }: any) => <span className="text-violet-300 font-semibold">${row.original.sale_price}</span>,
+    },
+    {
+      accessorKey: "stock",
+      header: "Stock",
+      cell: ({ row }: any) => (
+        <span className={row.original.stock < 10 ? "text-red-400" : "text-white/70"}>
+          {row.original.stock} left
+        </span>
+      ),
+    },
+    {
+      accessorKey: "starting_date",
+      header: "Start Date",
+      cell: ({ row }: any) => (
+        <span className="text-pink-400 text-sm font-medium">
+          {new Date(row.original.starting_date).toLocaleDateString()}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "ending_date",
+      header: "End Date",
+      cell: ({ row }: any) => (
+        <span className="text-white/50 text-sm">
+          {new Date(row.original.ending_date).toLocaleDateString()}
+        </span>
+      ),
+    },
+    {
+      header: "Actions",
+      cell: ({ row }: any) => (
+        <div className="flex gap-2">
+          <Link href={`${process.env.NEXT_PUBLIC_USER_UI_LINK}/product/${row.original.slug}`}
+            className="text-violet-400 hover:text-violet-300 transition-colors">
+            <Eye size={16} />
+          </Link>
+          <button className="text-cyan-400 hover:text-cyan-300 transition-colors"
+            onClick={() => { setAnalyticsData(row.original); setShowAnalytics(true); }}>
+            <BarChart size={16} />
+          </button>
+          <button className="text-red-400 hover:text-red-300 transition-colors"
+            onClick={() => { setSelectedProduct(row.original); setShowDeleteModal(true); }}>
+            <Trash size={16} />
+          </button>
+        </div>
+      ),
+    },
+  ], []);
 
   const table = useReactTable({
     data: products,
@@ -187,102 +136,81 @@ const EventList = () => {
     onGlobalFilterChange: setGlobalFilter,
   });
 
-  const openDeleteModal = (product) => {
-    setSelectedProduct(product);
-    setShowDeleteModal(true);
-  };
-
   return (
-    <div className="w-full min-h-screen p-8">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-1">
-        <h2 className="text-2xl text-white font-semibold">All Events</h2>
-        <Link
-          href="/dashboard/create-event"
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
-        >
-          <Plus size={18} /> Add Event
+    <div className="space-y-5">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-white to-white/50 bg-clip-text text-transparent">All Events</h1>
+          <p className="text-white/35 text-sm mt-0.5">Manage time-limited deals and flash events</p>
+        </div>
+        <Link href="/dashboard/create-event"
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-500 hover:to-pink-500 text-white text-sm font-semibold shadow-[0_0_15px_rgba(124,58,237,0.35)] transition-all">
+          <Plus size={15} /> Create Event
         </Link>
       </div>
 
-      {/* Breadcrumbs */}
-      <div className="mb-2">
-        <BreadCrumbs title="All Events" />
-      </div>
+      <div className="rounded-2xl border border-white/8 bg-white/3 backdrop-blur-md overflow-hidden">
+        <div className="flex items-center gap-3 px-5 py-4 border-b border-white/5">
+          <div className="relative flex-1 max-w-xs">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/25" />
+            <input
+              value={globalFilter}
+              onChange={(e) => setGlobalFilter(e.target.value)}
+              placeholder="Search events…"
+              className="w-full pl-9 pr-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white/80 placeholder:text-white/25 text-sm outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/30 transition-all"
+            />
+          </div>
+          <span className="text-white/30 text-xs ml-auto">{products.length} events</span>
+        </div>
 
-      {/* Search Bar */}
-      <div className="mb-4 flex items-center bg-gray-900 p-2 rounded-md flex-1">
-        <Search size={18} className="text-gray-400 mr-2" />
-        <input
-          type="text"
-          placeholder="Search products..."
-          className="w-full bg-transparent text-white outline-none"
-          value={globalFilter}
-          onChange={(e) => setGlobalFilter(e.target.value)}
-        />
-      </div>
-
-      {/* Table */}
-      <div className="overflow-x-auto bg-gray-900 rounded-lg p-4">
         {isLoading ? (
-          <p className="text-center text-white">Loading products...</p>
+          <div className="flex items-center justify-center py-20">
+            <div className="w-8 h-8 rounded-full border-2 border-violet-500/30 border-t-violet-500 animate-spin" />
+          </div>
         ) : (
-          <table className="w-full text-white">
+          <table className="w-full text-sm">
             <thead>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id} className="border-b border-gray-800">
-                  {headerGroup.headers.map((header) => (
-                    <th key={header.id} className="p-3 text-left">
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+              {table.getHeaderGroups().map((hg) => (
+                <tr key={hg.id} className="border-b border-white/5">
+                  {hg.headers.map((h) => (
+                    <th key={h.id} className="text-left px-5 py-3 text-white/30 text-[11px] font-semibold uppercase tracking-wider">
+                      {flexRender(h.column.columnDef.header, h.getContext())}
                     </th>
                   ))}
                 </tr>
               ))}
             </thead>
             <tbody>
-              {table.getRowModel().rows.map((row) => (
-                <tr
-                  key={row.id}
-                  className="border-b border-gray-800 hover:bg-gray-900 transition"
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="p-3">
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              ))}
+              {table.getRowModel().rows.length === 0 ? (
+                <tr><td colSpan={columns.length} className="text-center py-16 text-white/25 text-sm">No events yet</td></tr>
+              ) : (
+                table.getRowModel().rows.map((row) => (
+                  <tr key={row.id} className="border-b border-white/5 hover:bg-white/3 transition-colors">
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id} className="px-5 py-3">{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
+                    ))}
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         )}
-
-        {/* Analytics Modal */}
-        {showAnalytics && (
-          <AnalyticsModal
-            product={analyticsData}
-            onClose={() => setShowAnalytics(false)}
-          />
-        )}
-
-        {showDeleteModal && (
-          <DeleteConfirmationModal
-            product={selectedProduct}
-            onClose={() => setShowDeleteModal(false)}
-            onConfirm={() => deleteMutation.mutate(selectedProduct?.id)}
-            onRestore={() => restoreMutation.mutate(selectedProduct?.id)}
-          />
-        )}
       </div>
+
+      {showAnalytics && analyticsData && (
+        <AnalyticsModal data={analyticsData} onClose={() => setShowAnalytics(false)} />
+      )}
+      {showDeleteModal && selectedProduct && (
+        <DeleteConfirmationModal
+          isDeleted={selectedProduct.isDeleted}
+          onClose={() => setShowDeleteModal(false)}
+          onConfirm={() =>
+            selectedProduct.isDeleted
+              ? restoreMutation.mutate(selectedProduct.id)
+              : deleteMutation.mutate(selectedProduct.id)
+          }
+        />
+      )}
     </div>
   );
-};
-
-export default EventList;
+}
