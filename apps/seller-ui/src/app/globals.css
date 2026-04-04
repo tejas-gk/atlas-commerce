@@ -1,8 +1,24 @@
 @import "tailwindcss";
 @import "@workspace/ui/globals.css";
 
+/* ── Design-system token overrides (dark mode) ───────────────── */
+.dark {
+  --background: oklch(0.09 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.12 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --border: oklch(0.22 0 0);
+  --input: oklch(0.22 0 0);
+  --muted: oklch(0.22 0 0);
+  --muted-foreground: oklch(0.65 0 0);
+  --accent: oklch(0.22 0 0);
+  --primary: oklch(0.5 0.25 270);
+  --primary-foreground: oklch(0.985 0 0);
+  --radius: 0.75rem;
+}
+
 @theme inline {
-  --font-sans: var(--font-poppins);
+  --font-sans: var(--font-dm-sans);
   --color-base: #0d0d0d;
   --color-surface: #111111;
   --color-surface-2: #1a1a1a;
@@ -11,3 +27,15 @@
   --color-border: rgba(255,255,255,0.08);
   --color-text-muted: rgba(255,255,255,0.4);
 }
+
+/* ── Autofill override ───────────────────────────────────────── */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px #141414 inset !important;
+  -webkit-text-fill-color: white !important;
+  caret-color: white !important;
+}
+
+/* ── Always hide scrollbars ──────────────────────────────────── */
+*::-webkit-scrollbar { display: none !important; }

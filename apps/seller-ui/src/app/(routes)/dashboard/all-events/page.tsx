@@ -13,6 +13,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import DeleteConfirmationModal from "@/shared/components/modals/delete.confirmation.modal";
 import AnalyticsModal from "@/shared/components/modals/analytics.modal";
+import { Input } from "@workspace/ui/components/input";
+import { Button } from "@workspace/ui/components/button";
+import { Card } from "@workspace/ui/components/card";
 
 const fetchEvents = async () => {
   const res = await axiosInstance.get("/product/api/get-shop-products");
@@ -91,7 +94,7 @@ export default function AllEventsPage() {
       accessorKey: "starting_date",
       header: "Start Date",
       cell: ({ row }: any) => (
-        <span className="text-pink-400 text-sm font-medium">
+        <span className="text-white/70 text-sm font-medium">
           {new Date(row.original.starting_date).toLocaleDateString()}
         </span>
       ),
@@ -109,18 +112,19 @@ export default function AllEventsPage() {
       header: "Actions",
       cell: ({ row }: any) => (
         <div className="flex gap-2">
-          <Link href={`${process.env.NEXT_PUBLIC_USER_UI_LINK}/product/${row.original.slug}`}
-            className="text-violet-400 hover:text-violet-300 transition-colors">
-            <Eye size={16} />
-          </Link>
-          <button className="text-cyan-400 hover:text-cyan-300 transition-colors"
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-white/50 hover:text-violet-400 hover:bg-violet-500/10" asChild>
+            <Link href={`${process.env.NEXT_PUBLIC_USER_UI_LINK}/product/${row.original.slug}`}>
+              <Eye size={16} />
+            </Link>
+          </Button>
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-white/50 hover:text-violet-400 hover:bg-violet-500/10"
             onClick={() => { setAnalyticsData(row.original); setShowAnalytics(true); }}>
             <BarChart size={16} />
-          </button>
-          <button className="text-red-400 hover:text-red-300 transition-colors"
+          </Button>
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-white/50 hover:text-red-400 hover:bg-red-500/5"
             onClick={() => { setSelectedProduct(row.original); setShowDeleteModal(true); }}>
             <Trash size={16} />
-          </button>
+          </Button>
         </div>
       ),
     },
@@ -140,7 +144,7 @@ export default function AllEventsPage() {
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-white to-white/50 bg-clip-text text-transparent">All Events</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-white">All Events</h1>
           <p className="text-white/35 text-sm mt-0.5">Manage time-limited deals and flash events</p>
         </div>
         <Link href="/dashboard/create-event"
@@ -149,15 +153,15 @@ export default function AllEventsPage() {
         </Link>
       </div>
 
-      <div className="rounded-2xl border border-white/8 bg-white/3 backdrop-blur-md overflow-hidden">
+      <Card className="bg-white/5 border-white/8 overflow-hidden">
         <div className="flex items-center gap-3 px-5 py-4 border-b border-white/5">
           <div className="relative flex-1 max-w-xs">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/25" />
-            <input
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
+            <Input
               value={globalFilter}
               onChange={(e) => setGlobalFilter(e.target.value)}
               placeholder="Search events…"
-              className="w-full pl-9 pr-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white/80 placeholder:text-white/25 text-sm outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/30 transition-all"
+              className="pl-9 bg-white/5 border-white/10 text-white placeholder:text-white/30 focus-visible:border-violet-500 h-9"
             />
           </div>
           <span className="text-white/30 text-xs ml-auto">{products.length} events</span>
@@ -195,7 +199,7 @@ export default function AllEventsPage() {
             </tbody>
           </table>
         )}
-      </div>
+      </Card>
 
       {showAnalytics && analyticsData && (
         <AnalyticsModal data={analyticsData} onClose={() => setShowAnalytics(false)} />

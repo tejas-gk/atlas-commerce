@@ -10,16 +10,20 @@ import { Search, Eye } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/utils/axiosInstance";
 import Link from "next/link";
+import { Input } from "@workspace/ui/components/input";
+import { Badge } from "@workspace/ui/components/badge";
+import { Button } from "@workspace/ui/components/button";
+import { Card } from "@workspace/ui/components/card";
 
 const fetchOrders = async () => {
   const res = await axiosInstance.get("/order/api/get-seller-orders");
   return res.data.orders ?? [];
 };
 
-const statusClass = (status: string) => {
-  if (status === "Paid")   return "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
-  if (status === "Failed") return "bg-red-500/10 text-red-400 border border-red-500/20";
-  return "bg-amber-500/10 text-amber-400 border border-amber-500/20";
+const statusBadgeClass = (status: string) => {
+  if (status === "Paid")   return "bg-emerald-500/10 text-emerald-400 border-0";
+  if (status === "Failed") return "bg-red-500/10 text-red-400 border-0";
+  return "bg-amber-500/10 text-amber-400 border-0";
 };
 
 export default function OrdersPage() {
@@ -53,9 +57,9 @@ export default function OrdersPage() {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }: any) => (
-        <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-wide ${statusClass(row.original.status)}`}>
+        <Badge className={`text-[11px] font-semibold ${statusBadgeClass(row.original.status)}`}>
           {row.original.status}
-        </span>
+        </Badge>
       ),
     },
     {
@@ -68,9 +72,9 @@ export default function OrdersPage() {
     {
       header: "Actions",
       cell: ({ row }: any) => (
-        <Link href={`/order/${row.original.id}`} className="text-violet-400 hover:text-violet-300 transition-colors">
-          <Eye size={16} />
-        </Link>
+        <Button variant="ghost" size="icon" asChild className="h-7 w-7 hover:text-violet-400 hover:bg-transparent text-white/50">
+          <Link href={`/order/${row.original.id}`}><Eye size={15} /></Link>
+        </Button>
       ),
     },
   ], []);
@@ -88,20 +92,20 @@ export default function OrdersPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-white to-white/50 bg-clip-text text-transparent">Orders</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-white">Orders</h1>
         <p className="text-white/35 text-sm mt-0.5">Manage and track all your orders</p>
       </div>
 
-      <div className="rounded-2xl border border-white/8 bg-white/3 backdrop-blur-md overflow-hidden">
+      <Card className="bg-white/5 border-white/8 overflow-hidden">
         {/* Toolbar */}
         <div className="flex items-center gap-3 px-5 py-4 border-b border-white/5">
           <div className="relative flex-1 max-w-xs">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/25" />
-            <input
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/25 pointer-events-none" />
+            <Input
               value={globalFilter}
               onChange={(e) => setGlobalFilter(e.target.value)}
               placeholder="Search orders…"
-              className="w-full pl-9 pr-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white/80 placeholder:text-white/25 text-sm outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/30 transition-all"
+              className="pl-9 bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-violet-500 h-9"
             />
           </div>
           <span className="text-white/30 text-xs ml-auto">{orders.length} orders</span>
@@ -146,7 +150,7 @@ export default function OrdersPage() {
             </tbody>
           </table>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

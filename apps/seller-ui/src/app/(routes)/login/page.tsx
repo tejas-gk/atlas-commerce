@@ -11,6 +11,7 @@ import { Eye, EyeOff, ShoppingBag, Zap, BarChart3, Globe } from "lucide-react";
 import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
 import { Button } from "@workspace/ui/components/button";
+import { Card } from "@workspace/ui/components/card";
 
 type FormValues = { email: string; password: string };
 
@@ -41,16 +42,12 @@ export default function LoginPage() {
     <div className="min-h-screen flex bg-[#0d0d0d]">
       {/* ── Left Panel ─────────────────────── */}
       <div className="hidden lg:flex lg:w-[48%] relative overflow-hidden flex-col justify-between p-12">
-        {/* Gradient mesh background */}
-        <div className="absolute inset-0 bg-[#0a0a0a]" />
-        <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-violet-600/20 blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-5%] w-[400px] h-[400px] rounded-full bg-pink-500/15 blur-[100px]" />
-        <div className="absolute top-[40%] left-[40%] w-[300px] h-[300px] rounded-full bg-cyan-500/10 blur-[80px]" />
+        <div className="absolute inset-0 bg-[#0d0d0d]" />
 
         {/* Brand */}
         <div className="relative z-10">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-600 to-pink-500 flex items-center justify-center shadow-[0_0_20px_rgba(124,58,237,0.5)]">
+            <div className="w-9 h-9 rounded-xl bg-violet-600 flex items-center justify-center">
               <ShoppingBag size={18} className="text-white" />
             </div>
             <span className="text-white font-bold text-lg tracking-tight">Atlas Commerce</span>
@@ -62,7 +59,7 @@ export default function LoginPage() {
           <div>
             <h2 className="text-4xl font-bold leading-tight text-white">
               Your store,<br />
-              <span className="bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent">
+              <span className="text-violet-400 font-bold">
                 supercharged.
               </span>
             </h2>
@@ -76,18 +73,18 @@ export default function LoginPage() {
             {features.map((f) => {
               const Icon = f.icon;
               return (
-                <div key={f.title} className="rounded-xl border border-white/8 bg-white/4 backdrop-blur-md p-4">
+                <Card key={f.title} className="bg-white/5 border-white/8 p-4">
                   <Icon size={16} className="text-violet-400 mb-2" />
                   <p className="text-white text-xs font-semibold">{f.title}</p>
                   <p className="text-white/35 text-[11px] mt-0.5">{f.desc}</p>
-                </div>
+                </Card>
               );
             })}
           </div>
         </div>
 
         {/* Bottom tagline */}
-        <p className="relative z-10 text-white/20 text-xs">
+        <p className="relative z-10 text-white/30 text-xs">
           Trusted by 5,000+ sellers worldwide
         </p>
       </div>
@@ -96,7 +93,7 @@ export default function LoginPage() {
       <div className="flex-1 flex items-center justify-center px-6 py-12">
         <div className="w-full max-w-md">
           {/* Glass card */}
-          <div className="rounded-2xl border border-white/8 bg-white/4 backdrop-blur-md p-8">
+          <Card className="bg-white/5 border-white/8 p-8">
             <div className="mb-8">
               <h1 className="text-2xl font-bold text-white tracking-tight">Sign in</h1>
               <p className="text-white/40 text-sm mt-1">Enter your credentials to access your dashboard</p>
@@ -145,7 +142,7 @@ export default function LoginPage() {
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full h-11 rounded-xl bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-500 hover:to-pink-500 text-white font-semibold tracking-wide shadow-[0_0_20px_rgba(124,58,237,0.4)] hover:shadow-[0_0_30px_rgba(124,58,237,0.6)] transition-all border-0"
+                className="w-full h-11 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-semibold tracking-wide transition-all border-0"
               >
                 {isSubmitting ? "Signing in…" : "Sign in"}
               </Button>
@@ -157,7 +154,7 @@ export default function LoginPage() {
                 Create one
               </Link>
             </p>
-          </div>
+          </Card>
         </div>
       </div>
     </div>

@@ -19,8 +19,6 @@ import {
   ShoppingCart,
   Package,
   Users,
-  TrendingUp,
-  TrendingDown,
   ArrowUpRight,
 } from "lucide-react";
 import {
@@ -31,14 +29,16 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table";
+import { Card, CardContent } from "@workspace/ui/components/card";
+import { Badge } from "@workspace/ui/components/badge";
 import { SalesChart } from "@/shared/components/charts/sales.chart";
 import GeographicalMap from "@/shared/components/charts/geographicalMap";
 
 const kpiCards = [
-  { label: "Total Revenue",    value: "$48,295", change: "+12.5%", up: true,  icon: DollarSign,  color: "from-violet-600/20 to-violet-600/5",  iconColor: "text-violet-400", glow: "rgba(124,58,237,0.15)" },
-  { label: "Total Orders",     value: "1,284",   change: "+8.2%",  up: true,  icon: ShoppingCart, color: "from-pink-600/20 to-pink-600/5",      iconColor: "text-pink-400",   glow: "rgba(236,72,153,0.15)" },
-  { label: "Total Products",   value: "342",     change: "+3.1%",  up: true,  icon: Package,      color: "from-cyan-600/20 to-cyan-600/5",      iconColor: "text-cyan-400",   glow: "rgba(6,182,212,0.15)"  },
-  { label: "Active Customers", value: "9,041",   change: "-1.4%",  up: false, icon: Users,        color: "from-amber-600/20 to-amber-600/5",    iconColor: "text-amber-400",  glow: "rgba(245,158,11,0.15)" },
+  { label: "Total Revenue",    value: "$48,295", change: "+12.5%", up: true,  icon: DollarSign,  iconColor: "text-violet-400" },
+  { label: "Total Orders",     value: "1,284",   change: "+8.2%",  up: true,  icon: ShoppingCart, iconColor: "text-pink-400"   },
+  { label: "Total Products",   value: "342",     change: "+3.1%",  up: true,  icon: Package,      iconColor: "text-cyan-400"   },
+  { label: "Active Customers", value: "9,041",   change: "-1.4%",  up: false, icon: Users,        iconColor: "text-amber-400"  },
 ];
 
 const deviceData = [
@@ -60,14 +60,14 @@ const orders: Order[] = [
 
 const statusBadge = (status: Order["status"]) => {
   const map = {
-    Paid:    "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20",
-    Pending: "bg-amber-500/10  text-amber-400  border border-amber-500/20",
-    Failed:  "bg-red-500/10   text-red-400   border border-red-500/20",
+    Paid:    "bg-emerald-500/10 text-emerald-400 border-0",
+    Pending: "bg-amber-500/10 text-amber-400 border-0",
+    Failed:  "bg-red-500/10 text-red-400 border-0",
   };
   return (
-    <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-wide ${map[status]}`}>
+    <Badge className={`text-[11px] font-semibold ${map[status]}`}>
       {status}
-    </span>
+    </Badge>
   );
 };
 
@@ -85,7 +85,7 @@ export default function DashboardPage() {
     <div className="space-y-6">
       {/* Page title */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-white to-white/50 bg-clip-text text-transparent">
+        <h1 className="text-2xl font-bold tracking-tight text-white">
           Dashboard
         </h1>
         <p className="text-white/40 text-sm mt-0.5">Welcome back — here is what is happening today.</p>
@@ -96,21 +96,18 @@ export default function DashboardPage() {
         {kpiCards.map((card) => {
           const Icon = card.icon;
           return (
-            <div
-              key={card.label}
-              className={`relative overflow-hidden rounded-2xl border border-white/8 bg-gradient-to-br ${card.color} backdrop-blur-md p-5`}
-              style={{ boxShadow: `0 0 30px ${card.glow}` }}
-            >
-              <div className="flex items-start justify-between mb-3">
-                <Icon size={18} className={card.iconColor} />
-                <span className={`flex items-center gap-0.5 text-xs font-semibold ${card.up ? "text-emerald-400" : "text-red-400"}`}>
-                  {card.up ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-                  {card.change}
-                </span>
-              </div>
-              <p className="text-2xl font-bold text-white tracking-tight">{card.value}</p>
-              <p className="text-white/40 text-xs mt-0.5">{card.label}</p>
-            </div>
+            <Card key={card.label} className="bg-white/5 border-white/8">
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between mb-3">
+                  <Icon size={18} className={card.iconColor} />
+                  <Badge className={`border-0 text-xs font-semibold ${card.up ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"}`}>
+                    {card.change}
+                  </Badge>
+                </div>
+                <p className="text-3xl font-bold text-white tracking-tight">{card.value}</p>
+                <p className="text-white/50 text-sm mt-0.5">{card.label}</p>
+              </CardContent>
+            </Card>
           );
         })}
       </div>

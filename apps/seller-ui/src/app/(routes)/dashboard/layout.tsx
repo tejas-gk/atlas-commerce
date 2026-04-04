@@ -1,19 +1,18 @@
 ﻿import React from "react";
 import SellerSidebar from "@/shared/components/sidebar/sidebar";
 import { SellerSiteHeader } from "@/shared/components/header/site-header";
-import { SidebarProvider, SidebarInset } from "@workspace/ui/components/sidebar";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <SidebarProvider>
+    <div className="flex overflow-hidden h-screen bg-[#0d0d0d]">
       <SellerSidebar />
-      <SidebarInset>
+      <div className="flex-1 overflow-y-auto flex flex-col">
         <SellerSiteHeader />
-        <main className="flex flex-1 flex-col gap-4 p-4 md:p-6 bg-[#0d0d0d] overflow-auto min-h-0">
+        <main className="flex-1 p-6">
           {children}
         </main>
-      </SidebarInset>
-    </SidebarProvider>
+      </div>
+    </div>
   );
 };
 
