@@ -11,16 +11,20 @@ import { Search, Eye, TrendingUp, DollarSign, Percent } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/utils/axiosInstance";
 import Link from "next/link";
+import { Input } from "@workspace/ui/components/input";
+import { Badge } from "@workspace/ui/components/badge";
+import { Button } from "@workspace/ui/components/button";
+import { Card, CardContent } from "@workspace/ui/components/card";
 
 const fetchOrders = async () => {
   const res = await axiosInstance.get("/order/api/get-seller-orders");
   return res.data.orders ?? [];
 };
 
-const statusClass = (status: string) => {
-  if (status === "Paid")   return "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
-  if (status === "Failed") return "bg-red-500/10 text-red-400 border border-red-500/20";
-  return "bg-amber-500/10 text-amber-400 border border-amber-500/20";
+const statusBadgeClass = (status: string) => {
+  if (status === "Paid")   return "bg-emerald-500/10 text-emerald-400 border-0";
+  if (status === "Failed") return "bg-red-500/10 text-red-400 border-0";
+  return "bg-amber-500/10 text-amber-400 border-0";
 };
 
 export default function PaymentsPage() {
@@ -66,9 +70,9 @@ export default function PaymentsPage() {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }: any) => (
-        <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-wide ${statusClass(row.original.status)}`}>
+        <Badge className={`text-[11px] font-semibold ${statusBadgeClass(row.original.status)}`}>
           {row.original.status}
-        </span>
+        </Badge>
       ),
     },
     {
@@ -81,9 +85,9 @@ export default function PaymentsPage() {
     {
       header: "Detail",
       cell: ({ row }: any) => (
-        <Link href={`/order/${row.original.id}`} className="text-violet-400 hover:text-violet-300 transition-colors">
-          <Eye size={16} />
-        </Link>
+        <Button variant="ghost" size="icon" asChild className="h-7 w-7 hover:text-violet-400 hover:bg-transparent text-white/50">
+          <Link href={`/order/${row.original.id}`}><Eye size={15} /></Link>
+        </Button>
       ),
     },
   ], []);
@@ -101,39 +105,45 @@ export default function PaymentsPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-white to-white/50 bg-clip-text text-transparent">Payments</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-white">Payments</h1>
         <p className="text-white/35 text-sm mt-0.5">Revenue breakdown and payment history</p>
       </div>
 
       {/* Summary cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="rounded-2xl border border-white/8 bg-gradient-to-br from-emerald-600/15 to-emerald-600/5 backdrop-blur-md p-5" style={{boxShadow: "0 0 30px rgba(16,185,129,0.1)"}}>
-          <DollarSign size={18} className="text-emerald-400 mb-2" />
-          <p className="text-2xl font-bold text-white">${totalEarnings.toFixed(2)}</p>
-          <p className="text-white/40 text-xs mt-0.5">Total Earnings (90%)</p>
-        </div>
-        <div className="rounded-2xl border border-white/8 bg-gradient-to-br from-amber-600/15 to-amber-600/5 backdrop-blur-md p-5" style={{boxShadow: "0 0 30px rgba(245,158,11,0.1)"}}>
-          <Percent size={18} className="text-amber-400 mb-2" />
-          <p className="text-2xl font-bold text-white">${totalFees.toFixed(2)}</p>
-          <p className="text-white/40 text-xs mt-0.5">Platform Fee (10%)</p>
-        </div>
-        <div className="rounded-2xl border border-white/8 bg-gradient-to-br from-violet-600/15 to-violet-600/5 backdrop-blur-md p-5" style={{boxShadow: "0 0 30px rgba(124,58,237,0.1)"}}>
-          <TrendingUp size={18} className="text-violet-400 mb-2" />
-          <p className="text-2xl font-bold text-white">{orders.length}</p>
-          <p className="text-white/40 text-xs mt-0.5">Total Transactions</p>
-        </div>
+        <Card className="bg-white/5 border-white/8">
+          <CardContent className="p-5">
+            <DollarSign size={18} className="text-emerald-400 mb-2" />
+            <p className="text-2xl font-bold text-white">${totalEarnings.toFixed(2)}</p>
+            <p className="text-white/40 text-xs mt-0.5">Total Earnings (90%)</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-white/5 border-white/8">
+          <CardContent className="p-5">
+            <Percent size={18} className="text-amber-400 mb-2" />
+            <p className="text-2xl font-bold text-white">${totalFees.toFixed(2)}</p>
+            <p className="text-white/40 text-xs mt-0.5">Platform Fee (10%)</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-white/5 border-white/8">
+          <CardContent className="p-5">
+            <TrendingUp size={18} className="text-violet-400 mb-2" />
+            <p className="text-2xl font-bold text-white">{orders.length}</p>
+            <p className="text-white/40 text-xs mt-0.5">Total Transactions</p>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Table */}
-      <div className="rounded-2xl border border-white/8 bg-white/3 backdrop-blur-md overflow-hidden">
+      <Card className="bg-white/5 border-white/8 overflow-hidden">
         <div className="flex items-center gap-3 px-5 py-4 border-b border-white/5">
           <div className="relative flex-1 max-w-xs">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/25" />
-            <input
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/25 pointer-events-none" />
+            <Input
               value={globalFilter}
               onChange={(e) => setGlobalFilter(e.target.value)}
               placeholder="Search payments…"
-              className="w-full pl-9 pr-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white/80 placeholder:text-white/25 text-sm outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/30 transition-all"
+              className="pl-9 bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-violet-500 h-9"
             />
           </div>
         </div>
@@ -172,7 +182,7 @@ export default function PaymentsPage() {
             </tbody>
           </table>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

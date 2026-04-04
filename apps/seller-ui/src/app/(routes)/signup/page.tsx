@@ -10,6 +10,7 @@ import { Eye, EyeOff, ShoppingBag, Check } from "lucide-react";
 import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
 import { Button } from "@workspace/ui/components/button";
+import { Card } from "@workspace/ui/components/card";
 import {
   Select,
   SelectContent,
@@ -55,29 +56,25 @@ export default function SignupPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0d0d0d] relative overflow-hidden px-4 py-12">
-      {/* Ambient glows */}
-      <div className="absolute top-[-15%] right-[-5%] w-[500px] h-[500px] rounded-full bg-violet-600/15 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] rounded-full bg-pink-500/10 blur-[100px] pointer-events-none" />
-
-      <div className="w-full max-w-lg">
+<div className="w-full max-w-lg">
         {/* Brand header */}
         <div className="flex items-center justify-center gap-3 mb-8">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-600 to-pink-500 flex items-center justify-center shadow-[0_0_20px_rgba(124,58,237,0.5)]">
+          <div className="w-9 h-9 rounded-xl bg-violet-600 flex items-center justify-center">
             <ShoppingBag size={18} className="text-white" />
           </div>
           <span className="text-white font-bold text-lg tracking-tight">Atlas Commerce</span>
         </div>
 
         {/* Glass card */}
-        <div className="rounded-2xl border border-white/8 bg-white/4 backdrop-blur-md p-8">
+        <Card className="bg-white/5 border-white/8 p-8">
           {/* Step indicator */}
           <div className="flex items-center justify-between mb-8">
             {STEPS.map((label, i) => (
               <React.Fragment key={label}>
                 <div className="flex flex-col items-center gap-1.5">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
-                    i < step  ? "bg-gradient-to-br from-violet-600 to-pink-500 text-white shadow-[0_0_12px_rgba(124,58,237,0.5)]"
-                    : i === step ? "bg-gradient-to-br from-violet-600 to-pink-500 text-white shadow-[0_0_12px_rgba(124,58,237,0.5)]"
+                    i < step  ? "bg-violet-600 text-white"
+                    : i === step ? "bg-violet-600 text-white"
                     : "bg-white/5 border border-white/10 text-white/30"
                   }`}>
                     {i < step ? <Check size={14} /> : i + 1}
@@ -87,7 +84,7 @@ export default function SignupPage() {
                   </span>
                 </div>
                 {i < STEPS.length - 1 && (
-                  <div className={`flex-1 h-px mx-3 transition-all ${i < step ? "bg-gradient-to-r from-violet-600 to-pink-500" : "bg-white/8"}`} />
+                  <div className={`flex-1 h-px mx-3 transition-all ${i < step ? "bg-violet-500" : "bg-white/8"}`} />
                 )}
               </React.Fragment>
             ))}
@@ -236,7 +233,7 @@ export default function SignupPage() {
               <Button
                 type="submit"
                 disabled={loading}
-                className="flex-1 h-11 rounded-xl bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-500 hover:to-pink-500 text-white font-semibold tracking-wide shadow-[0_0_20px_rgba(124,58,237,0.4)] hover:shadow-[0_0_30px_rgba(124,58,237,0.6)] transition-all border-0"
+                className="flex-1 h-11 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-semibold tracking-wide transition-all border-0"
               >
                 {loading ? "Creating…" : step === STEPS.length - 1 ? "Create Account" : "Continue"}
               </Button>
@@ -249,7 +246,7 @@ export default function SignupPage() {
               Sign in
             </Link>
           </p>
-        </div>
+        </Card>
       </div>
     </div>
   );

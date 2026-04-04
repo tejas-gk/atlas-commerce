@@ -5,7 +5,6 @@ import Link from "next/link";
 import { BellIcon, SearchIcon } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
 import { Separator } from "@workspace/ui/components/separator";
-import { SidebarTrigger } from "@workspace/ui/components/sidebar";
 import { Avatar, AvatarFallback } from "@workspace/ui/components/avatar";
 import {
   DropdownMenu,
@@ -39,10 +38,7 @@ export function SellerSiteHeader() {
   const sellerInitial = seller?.name?.[0]?.toUpperCase() ?? "S";
 
   return (
-    <header className="flex h-14 shrink-0 items-center gap-2 border-b border-white/5 bg-[#111111] px-4 transition-all duration-300 ease-in-out">
-      <SidebarTrigger className="-ml-1 text-white/40 hover:text-white hover:bg-white/5 transition-colors rounded-lg" />
-      <Separator orientation="vertical" className="mx-2 h-4 bg-white/5 data-[orientation=vertical]:h-4" />
-
+    <header className="sticky top-0 z-[10] flex h-14 shrink-0 items-center gap-2 border-b border-white/5 bg-[#111111]/80 backdrop-blur-lg px-6 justify-between">
       {/* Search */}
       <div className="relative hidden md:flex items-center w-64">
         <SearchIcon className="absolute left-2.5 size-3.5 text-white/25 pointer-events-none" />
@@ -53,13 +49,13 @@ export function SellerSiteHeader() {
       </div>
 
       {/* Right section */}
-      <div className="ml-auto flex items-center gap-1">
+      <div className="flex items-center gap-1">
         {/* Notification bell */}
         <Button variant="ghost" size="icon" asChild
           className="relative text-white/40 hover:text-white hover:bg-white/5 transition-colors h-8 w-8 rounded-lg">
           <Link href="/dashboard/notifications">
             <BellIcon size={15} />
-            <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-violet-500 shadow-[0_0_6px_rgba(124,58,237,0.8)]" />
+            <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-violet-500" />
           </Link>
         </Button>
 
@@ -69,7 +65,7 @@ export function SellerSiteHeader() {
             <Button variant="ghost" size="icon"
               className="rounded-full h-8 w-8 hover:bg-white/5 transition-colors">
               <Avatar className="h-7 w-7">
-                <AvatarFallback className="bg-gradient-to-br from-violet-600 to-pink-500 text-white text-[10px] font-bold shadow-[0_0_10px_rgba(124,58,237,0.4)]">
+                <AvatarFallback className="bg-violet-600 text-white text-xs font-bold">
                   {sellerInitial}
                 </AvatarFallback>
               </Avatar>
