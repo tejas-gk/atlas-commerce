@@ -1,12 +1,12 @@
-import { NotFoundError, ValidationError } from "@packages/error-handler";
-import prisma from "@packages/libs/prisma";
-import redis from "@packages/libs/redis";
+import { NotFoundError, ValidationError } from "@repo/error-handler";
+import prisma from "@repo/db";
+import redis from "@repo/redis";
 import { NextFunction, Request, Response } from "express";
 import crypto from "crypto";
 import Stripe from "stripe";
 import { Prisma } from "@prisma/client";
 import { sendEmail } from "../utils/send-email";
-import { sendLog } from "@packages/utils/logs/send-logs";
+// import { sendLog } from "@packages/utils/logs/send-logs";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-02-24.acacia",
@@ -110,7 +110,7 @@ export const createPaymentSession = async (
       select: {
         id: true,
         sellerId: true,
-        sellers: {
+        seller: {
           select: {
             stripeId: true,
           },
@@ -121,7 +121,7 @@ export const createPaymentSession = async (
     const sellerData = shops.map((shop) => ({
       shopId: shop.id,
       sellerId: shop.sellerId,
-      stripeAccountOd: shop?.sellers?.stripeId,
+      stripeAccountOd: shop?.seller?.stripeId,
     }));
 
     // calculate total
@@ -417,16 +417,16 @@ export const getSellerOrders = async (
   next: NextFunction
 ) => {
   try {
-    const shop = await prisma.shops.findUnique({
-      where: {
-        sellerId: req.seller.id,
-      },
-    });
+    const activeShopId = req.seller?.shop?.id;
+
+    if (!req.seller?.id || !activeShopId) {
+      return next(new ValidationError("An active shop is required to view orders."));
+    }
 
     // fetch all orders for this shop
     const orders = await prisma.orders.findMany({
       where: {
-        shopId: shop?.id,
+        shopId: activeShopId,
       },
       include: {
         user: {
@@ -459,7 +459,6 @@ export const getOrderDetails = async (
   next: NextFunction
 ) => {
   try {
-    console.log("ffff");
     const orderId = req.params.id;
 
     const order = await prisma.orders.findUnique({
@@ -473,6 +472,14 @@ export const getOrderDetails = async (
 
     if (!order) {
       return next(new NotFoundError("Order not found with the id!"));
+    }
+
+    if (req.role === "seller" && order.shopId !== req.seller?.shop?.id) {
+      return next(new ValidationError("Unauthorized access to this order."));
+    }
+
+    if (req.role === "user" && order.userId !== req.user?.id) {
+      return next(new ValidationError("Unauthorized access to this order."));
     }
 
     const shippingAddress = order.shippingAddressId
@@ -529,7 +536,7 @@ export const getOrderDetails = async (
 
 // update order status
 export const updateDeliveryStatus = async (
-  req: Request,
+  req: any,
   res: Response,
   next: NextFunction
 ) => {
@@ -560,6 +567,10 @@ export const updateDeliveryStatus = async (
 
     if (!existingOrder) {
       return next(new NotFoundError("Order not found!"));
+    }
+
+    if (existingOrder.shopId !== req.seller?.shop?.id) {
+      return next(new ValidationError("Unauthorized access to this order."));
     }
 
     const updatedOrder = await prisma.orders.update({

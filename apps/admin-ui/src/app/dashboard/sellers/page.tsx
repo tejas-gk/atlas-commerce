@@ -21,11 +21,11 @@ interface Seller {
   name: string;
   email: string;
   createdAt: string;
-  shop: {
+  shops: {
     name: string;
     avatar: string;
     address: string;
-  };
+  }[];
 }
 
 interface SellersResponse {
@@ -77,7 +77,7 @@ const SellersPage = () => {
         header: "Avatar",
         cell: ({ row }: any) => (
           <Image
-            src={row.original.shop?.avatar || "/default-avatar.png"}
+            src={row.original.shops?.[0]?.avatar || "/default-avatar.png"}
             alt={row.original.name}
             width={40}
             height={40}
@@ -94,27 +94,25 @@ const SellersPage = () => {
         header: "Email",
       },
       {
-        accessorKey: "shop.name",
-        header: "Shop Name",
+        accessorKey: "shops",
+        header: "Shops",
         cell: ({ row }: any) => {
-          const shopName = row.original.shop?.name;
-          return shopName ? (
-            <a
-              href={`${process.env.NEXT_PUBLIC_USER_UI_LINK}/shop/${row.original.id}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-400 hover:underline"
-            >
-              {shopName}
-            </a>
+          const shops = row.original.shops || [];
+          return shops.length > 0 ? (
+            <div className="text-sm">
+              {shops.map((shop: any) => shop.name).join(", ")}
+            </div>
           ) : (
             <span className="text-gray-400 italic">No Shop</span>
           );
         },
       },
       {
-        accessorKey: "shop.address",
+        accessorKey: "shops.address",
         header: "Address",
+        cell: ({ row }: any) => (
+          <span>{row.original.shops?.[0]?.address || "-"}</span>
+        ),
       },
       {
         accessorKey: "createdAt",
@@ -142,7 +140,9 @@ const SellersPage = () => {
   const exportToCSV = () => {
     const csvData = filteredSellers.map(
       (seller) =>
-        `${seller.name},${seller.email},${seller.shop.name},${seller.shop.address},${seller.createdAt}`
+        `${seller.name},${seller.email},"${(seller.shops || [])
+          .map((shop) => shop.name)
+          .join(" | ")}",${seller.shops?.[0]?.address || ""},${seller.createdAt}`
     );
     const blob = new Blob(
       [`Name,Email,Shop Name,Address,Joined\n${csvData.join("\n")}`],

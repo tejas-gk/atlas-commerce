@@ -11,6 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/utils/axiosInstance";
 import Link from "next/link";
 import BreadCrumbs from "@/shared/components/breadcrumbs";
+import useSeller from "@/hooks/useSeller";
 
 const fetchOrders = async () => {
   const res = await axiosInstance.get("/order/api/get-seller-orders");
@@ -18,12 +19,14 @@ const fetchOrders = async () => {
 };
 
 const OrdersTable = () => {
+  const { seller } = useSeller();
   const [globalFilter, setGlobalFilter] = useState("");
 
   const { data: orders = [], isLoading } = useQuery({
-    queryKey: ["seller-orders"],
+    queryKey: ["seller-orders", seller?.activeShopId],
     queryFn: fetchOrders,
     staleTime: 1000 * 60 * 5,
+    enabled: !!seller?.activeShopId,
   });
 
   const columns = useMemo(

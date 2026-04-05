@@ -6,11 +6,32 @@ import {
 import { imagekit } from "../../../../packages/libs/imagekit";
 import db from "@repo/db";
 import { NextFunction, Request, Response } from "express";
-// import Stripe from "stripe";
+import Stripe from "stripe";
 
-// const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-//   apiVersion: "2026-01-28.clover",
-// });
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: "2026-01-28.clover",
+});
+
+const getSellerShopId = (req: any) => {
+  const requestedShopId =
+    req.body?.shopId ||
+    req.query?.shopId ||
+    (typeof req.headers["x-shop-id"] === "string"
+      ? req.headers["x-shop-id"]
+      : null);
+
+  if (requestedShopId) {
+    return requestedShopId;
+  }
+
+  return (
+    req.seller?.shop?.id ||
+    req.seller?.activeShopId ||
+    req.seller?.shops?.find((shop: any) => !shop.isDeleted)?.id ||
+    req.seller?.shops?.[0]?.id ||
+    null
+  );
+};
 
 // get product categories
 export const getCategories = async (
@@ -41,7 +62,11 @@ export const createDiscountCodes = async (
   next: NextFunction
 ) => {
   try {
+    const shopId = getSellerShopId(req);
     const { public_name, discountType, discountValue, discountCode } = req.body;
+    if (!req.seller?.id || !shopId) {
+      return next(new AuthError("Only sellers with an active shop can manage discount codes!"));
+    }
 
     const isDiscountCodeExist = await db.discount_codes.findUnique({
       where: {
@@ -63,7 +88,7 @@ export const createDiscountCodes = async (
         discountType,
         discountValue: parseFloat(discountValue),
         discountCode,
-        sellerId: req.seller.id,
+        shopId,
       },
     });
 
@@ -83,9 +108,18 @@ export const getDiscountCodes = async (
   next: NextFunction
 ) => {
   try {
+    const shopId = getSellerShopId(req);
+
+    if (!req.seller?.id || !shopId) {
+      return next(new AuthError("Only sellers with an active shop can view discount codes!"));
+    }
+
     const discount_codes = await db.discount_codes.findMany({
       where: {
-        sellerId: req.seller.id,
+        shopId,
+      },
+      orderBy: {
+        createdAt: "desc",
       },
     });
 
@@ -106,18 +140,22 @@ export const deleteDiscountCode = async (
 ) => {
   try {
     const { id } = req.params;
-    const sellerId = req.seller?.id;
+    const shopId = getSellerShopId(req);
+
+    if (!req.seller?.id || !shopId) {
+      return next(new AuthError("Only sellers with an active shop can delete discount codes!"));
+    }
 
     const discountCode = await db.discount_codes.findUnique({
       where: { id },
-      select: { id: true, sellerId: true },
+      select: { id: true, shopId: true },
     });
 
     if (!discountCode) {
       return next(new NotFoundError("Discount code not found!"));
     }
 
-    if (discountCode.sellerId !== sellerId) {
+    if (discountCode.shopId !== shopId) {
       return next(new ValidationError("Unauthorized access!"));
     }
 
@@ -225,6 +263,11 @@ export const createProduct = async (
       return next(new AuthError("Only seller can create products!"));
     }
 
+    const shopId = getSellerShopId(req);
+    if (!shopId) {
+      return next(new ValidationError("Shop id is required for product creation!"));
+    }
+
     const slugChecking = await db.products.findUnique({
       where: {
         slug,
@@ -263,7 +306,7 @@ export const createProduct = async (
         warranty,
         cashOnDelivery: cash_on_delivery,
         slug,
-        shopId: req.seller?.shop?.id!,
+        shopId,
         tags: Array.isArray(tags) ? tags : tags.split(","),
         brand,
         video_url,
@@ -306,9 +349,15 @@ export const getShopProducts = async (
   next: NextFunction
 ) => {
   try {
+    const shopId = getSellerShopId(req);
+    console.log("Fetching products for shopId:", shopId);
+    if (!req.seller?.id || !shopId) {
+      return next(new AuthError("Only sellers with an active shop can view products!"));
+    }
+
     const products = await db.products.findMany({
       where: {
-        shopId: req?.seller?.shop?.id,
+        shopId,
       },
       include: {
         images: true,
@@ -332,7 +381,7 @@ export const deleteProduct = async (
 ) => {
   try {
     const { productId } = req.params;
-    const sellerId = req.seller?.shop?.id;
+    const sellerId = getSellerShopId(req);
 
     const product = await db.products.findUnique({
       where: { id: productId },
@@ -378,7 +427,7 @@ export const restoreProduct = async (
   try {
     const { productId } = req.params;
 
-    const sellerId = req.seller?.shop?.id;
+    const sellerId = getSellerShopId(req);
 
     const product = await db.products.findUnique({
       where: { id: productId },
@@ -411,55 +460,55 @@ export const restoreProduct = async (
 };
 
 // // get seller stripe information
-// export const getStripeAccount = async (
-//   req: any,
-//   res: Response,
-//   next: NextFunction
-// ) => {
-//   try {
-//     const sellerData = await db.sellers.findUnique({
-//       where: { id: req.seller.id },
-//       select: { stripeId: true },
-//     });
+export const getStripeAccount = async (
+  req: any,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const sellerData = await db.users.findFirst({
+      where: { id: req.seller.id },
+      select: { stripeId: true },
+    });
 
-//     if (!sellerData?.stripeId) {
-//       return next(new ValidationError("No Stripe account linked!"));
-//     }
+    if (!sellerData?.stripeId) {
+      return next(new ValidationError("No Stripe account linked!"));
+    }
 
-//     // Fetch Stripe account details
-//     const stripeAccount = await stripe.accounts.retrieve(sellerData.stripeId);
+    // Fetch Stripe account details
+    const stripeAccount = await stripe.accounts.retrieve(sellerData.stripeId);
 
-//     // Fetch last payout (if available)
-//     const payouts = await stripe.payouts.list(
-//       { limit: 1 },
-//       { stripeAccount: stripeAccount.id }
-//     );
-//     const lastPayout = payouts?.data.length
-//       ? new Date(payouts.data[0].created * 1000).toLocaleDateString()
-//       : null;
+    // Fetch last payout (if available)
+    const payouts = await stripe.payouts.list(
+      { limit: 1 },
+      { stripeAccount: stripeAccount.id }
+    );
+    const lastPayout = payouts?.data.length
+      ? new Date(payouts.data[0].created * 1000).toLocaleDateString()
+      : null;
 
-//     return res.status(200).json({
-//       success: true,
-//       stripeAccount: {
-//         id: stripeAccount.id,
-//         email: stripeAccount.email || "Not available",
-//         business_name:
-//           stripeAccount.business_profile?.name ||
-//           stripeAccount.individual?.first_name +
-//             " " +
-//             stripeAccount.individual?.last_name ||
-//           "N/A",
-//         country: stripeAccount.country || "Unknown",
-//         payouts_enabled: stripeAccount.payouts_enabled,
-//         charges_enabled: stripeAccount.charges_enabled,
-//         last_payout: lastPayout || "No payouts yet",
-//         dashboard_url: `https://connect.stripe.com/app/express_dashboard/${stripeAccount.id}`,
-//       },
-//     });
-//   } catch (error) {
-//     return next(error);
-//   }
-// };
+    return res.status(200).json({
+      success: true,
+      stripeAccount: {
+        id: stripeAccount.id,
+        email: stripeAccount.email || "Not available",
+        business_name:
+          stripeAccount.business_profile?.name ||
+          stripeAccount.individual?.first_name +
+            " " +
+            stripeAccount.individual?.last_name ||
+          "N/A",
+        country: stripeAccount.country || "Unknown",
+        payouts_enabled: stripeAccount.payouts_enabled,
+        charges_enabled: stripeAccount.charges_enabled,
+        last_payout: lastPayout || "No payouts yet",
+        dashboard_url: `https://connect.stripe.com/app/express_dashboard/${stripeAccount.id}`,
+      },
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
 
 // get All products
 export const getAllProducts = async (
@@ -799,7 +848,7 @@ export const getFilteredShops = async (
         skip,
         take: parsedLimit,
         include: {
-          sellers: true,
+          seller: true,
           followers: true,
           products: true,
         },

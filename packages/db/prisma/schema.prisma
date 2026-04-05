@@ -29,6 +29,9 @@ model users {
   email       String        @unique
   role        String        @default("user")
   password    String?
+  phone_number String?
+  country     String?
+  stripeId    String?
   following   String[]
   avatar      images?       @relation(fields: [imagesId], references: [id])
   createdAt   DateTime      @default(now())
@@ -82,8 +85,8 @@ model shops {
   ratings       Float         @default(0)
   reviews       shopReviews[]
   followers     followers[]
-  sellerId      String        @unique @db.ObjectId
-  sellers       sellers       @relation(fields: [sellerId], references: [id])
+  sellerId      String        @db.ObjectId
+  seller        users         @relation(fields: [sellerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   products      products[]
@@ -91,8 +94,6 @@ model shops {
   deletedAt     DateTime?
   imagesId      String?       @db.ObjectId
   orders        orders[]
-  owner         users?        @relation(fields: [ownerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  ownerId       String?       @db.ObjectId
   shopMembers   shopMembers[]
 }
 
@@ -110,21 +111,6 @@ model shopMembers {
   @@unique([shopId, userId])
 }
 
-model sellers {
-  id           String    @id @default(auto()) @map("_id") @db.ObjectId
-  name         String
-  email        String    @unique
-  phone_number String
-  country      String
-  password     String
-  stripeId     String?
-  shop         shops?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  isDeleted    Boolean   @default(false)
-  deletedAt    DateTime?
-}
-
 model site_config {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
   categories    String[]
@@ -139,7 +125,7 @@ model discount_codes {
   discountType  String
   discountValue Float
   discountCode  String   @unique
-  sellerId      String   @db.ObjectId
+  shopId        String   @db.ObjectId
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
@@ -332,4 +318,32 @@ model message {
   createdAt      DateTime @default(now())
 
   @@unique([conversationId, senderId, content, createdAt])
+}
+
+model oauth_codes {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  code      String    @unique
+  clientId  String?
+  userId    String    @db.ObjectId
+  expiresAt DateTime?
+  createdAt DateTime  @default(now())
+}
+
+model oauth_clients {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  clientId     String   @unique
+  clientSecret String
+  redirectUris String[]
+
+  createdAt DateTime @default(now())
+}
+
+model oauth_tokens {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  accessToken  String    @unique
+  refreshToken String    @unique
+  clientId     String
+  userId       String
+  expiresAt    DateTime?
+  createdAt    DateTime  @default(now())
 }

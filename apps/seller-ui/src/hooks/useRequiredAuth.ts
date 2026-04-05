@@ -4,7 +4,7 @@ import useSeller from "./useSeller";
 
 const useRequireAuth = () => {
   const router = useRouter();
-  const { seller, isLoading } = useSeller();
+  const { seller, isLoading, switchShop, isSwitchingShop } = useSeller();
 
   useEffect(() => {
     if (!isLoading && !seller) {
@@ -12,7 +12,7 @@ const useRequireAuth = () => {
     }
   }, [seller, isLoading, router]);
 
-  return { seller, isLoading };
+  return { seller, isLoading, switchShop, isSwitchingShop };
 };
 
 export default useRequireAuth;

@@ -31,18 +31,29 @@ const Login = () => {
 
   const loginMutation = useMutation({
     mutationFn: async (data: FormData) => {
-      const response = await axios.post(
-        `http://localhost:8080/auth/api/login-seller`,
-        data,
-        { withCredentials: true }
-      );
-      return response.data;
+      try {
+        const response = await axios.post(
+          `http://localhost:8080/auth/api/login-seller`,
+          data,
+          { withCredentials: true }
+        );
+        console.log("Seller login response:", response.data);
+        return { ...response.data, loginType: "seller" as const };
+      } catch (error) {
+        const response = await axios.post(
+          `http://localhost:8080/auth/api/login-user`,
+          data,
+          { withCredentials: true }
+        );
+        console.log("User login response:", response.data);
+        return { ...response.data, loginType: "user" as const };
+      }
     },
     onSuccess: (data) => {
       setServerError(null);
       setLoggedIn(true);
       queryClient.invalidateQueries({ queryKey: ["seller"] });
-      router.push("/");
+      router.push(data.loginType === "seller" ? "/" : "/signup");
     },
     onError: (error: AxiosError) => {
       const errorMessage =

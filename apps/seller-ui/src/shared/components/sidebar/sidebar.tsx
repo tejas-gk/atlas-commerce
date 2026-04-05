@@ -13,6 +13,7 @@ import {
   BellPlus,
   BellRing,
   CalendarPlus,
+  ChevronDown,
   Headset,
   Home,
   ListOrdered,
@@ -31,11 +32,15 @@ import useRequireAuth from "@/hooks/useRequiredAuth";
 const SidebarBarWrapper = () => {
   const { activeSidebar, setActiveSidebar } = useSidebar();
   const pathName = usePathname();
-  const { seller } = useRequireAuth();
+  const { seller, isLoading, switchShop, isSwitchingShop } = useRequireAuth() as any;
 
   useEffect(() => {
     setActiveSidebar(pathName);
   }, [pathName, setActiveSidebar]);
+
+  if (isLoading) {
+    return null;
+  }
 
   const getIconColor = (route: string) =>
     activeSidebar === route ? "#0085ff" : "#969696";
@@ -66,6 +71,35 @@ const SidebarBarWrapper = () => {
               </h5>
             </Box>
           </Link>
+          {seller?.shops?.length > 1 && (
+            <div className="mt-3">
+              <label className="text-xs text-[#ecedeecf] block mb-1">
+                Active shop
+              </label>
+              <div className="relative">
+                <select
+                  className="w-full bg-[#1b1c1f] text-white text-sm rounded-md px-3 py-2 appearance-none outline-none border border-[#2f3136]"
+                  value={seller?.activeShopId || seller?.shop?.id || ""}
+                  disabled={isSwitchingShop}
+                  onChange={(e) => {
+                    if (e.target.value) {
+                      switchShop(e.target.value);
+                    }
+                  }}
+                >
+                  {seller?.shops?.map((shop: any) => (
+                    <option key={shop.id} value={shop.id}>
+                      {shop.name}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown
+                  size={16}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                />
+              </div>
+            </div>
+          )}
         </Box>
       </Sidebar.Header>
       <div className="block my-3 h-full">

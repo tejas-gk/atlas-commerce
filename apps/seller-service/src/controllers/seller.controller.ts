@@ -8,6 +8,25 @@ import {
 } from "@repo/error-handler";
 import { imagekit } from "@atlas/imagekit";
 
+const getPrimaryShop = (seller: any, requestedShopId?: string) => {
+  if (!seller?.shops?.length) return null;
+  if (requestedShopId) {
+    return seller.shops.find((shop: any) => shop.id === requestedShopId) ?? null;
+  }
+  return seller.shops.find((shop: any) => !shop.isDeleted) ?? seller.shops[0] ?? null;
+};
+
+const getAccessibleShop = async (sellerId: string, requestedShopId?: string) => {
+  const shop = await db.shops.findFirst({
+    where: {
+      sellerId,
+      ...(requestedShopId ? { id: requestedShopId } : {}),
+    },
+  });
+
+  return shop;
+};
+
 // delete shop (soft delete)
 export const deleteShop = async (
   req: any,
@@ -16,14 +35,15 @@ export const deleteShop = async (
 ) => {
   try {
     const sellerId = req.seller?.id;
+    const requestedShopId = req.body?.shopId || req.query?.shopId;
 
-    // Find seller with shop
-    const seller = await db.sellers.findUnique({
-      where: { id: sellerId },
-      include: { shop: true },
+    const seller = await db.users.findFirst({
+      where: { id: sellerId, role: "seller" },
+      include: { shops: true },
     });
+    const shop = getPrimaryShop(seller, requestedShopId);
 
-    if (!seller || !seller.shop) {
+    if (!seller || !shop) {
       return next(new NotFoundError("Seller or Shop not found"));
     }
 
@@ -31,27 +51,16 @@ export const deleteShop = async (
     const deletedAt = new Date();
     deletedAt.setDate(deletedAt.getDate() + 28);
 
-    // Soft delete both seller and shop
-    await db.$transaction([
-      db.sellers.update({
-        where: { id: sellerId },
-        data: {
-          isDeleted: true,
-          deletedAt,
-        },
-      }),
-      db.shops.update({
-        where: { id: seller.shop.id },
-        data: {
-          isDeleted: true,
-          deletedAt,
-        },
-      }),
-    ]);
+    await db.shops.update({
+      where: { id: shop.id },
+      data: {
+        isDeleted: true,
+        deletedAt,
+      },
+    });
 
     return res.status(200).json({
-      message:
-        "Shop and seller marked for deletion. Will be permanently removed in 28 days.",
+      message: "Shop marked for deletion. It will be permanently removed in 28 days.",
     });
   } catch (error) {
     return next(error);
@@ -66,25 +75,24 @@ export const restoreShop = async (
 ) => {
   try {
     const sellerId = req.seller?.id;
+    const requestedShopId = req.body?.shopId || req.query?.shopId;
 
-    // Find seller with shop
-    const seller = await db.sellers.findUnique({
-      where: { id: sellerId },
-      include: { shop: true },
+    const seller = await db.users.findFirst({
+      where: { id: sellerId, role: "seller" },
+      include: { shops: true },
     });
+    const shop = getPrimaryShop(seller, requestedShopId);
 
-    if (!seller || !seller.shop) {
+    if (!seller || !shop) {
       return next(new NotFoundError("Seller or Shop not found"));
     }
 
-    if (!seller.isDeleted || !seller.deletedAt || !seller.shop.isDeleted) {
-      return next(
-        new ForbiddenError("Seller or Shop is not marked for deletion")
-      );
+    if (!shop.isDeleted || !shop.deletedAt) {
+      return next(new ForbiddenError("Shop is not marked for deletion"));
     }
 
     const now = new Date();
-    const deletedAt = new Date(seller.deletedAt);
+    const deletedAt = new Date(shop.deletedAt);
 
     if (now > deletedAt) {
       return next(
@@ -94,26 +102,16 @@ export const restoreShop = async (
       );
     }
 
-    // Restore both seller and shop
-    await db.$transaction([
-      db.sellers.update({
-        where: { id: sellerId },
-        data: {
-          isDeleted: false,
-          deletedAt: null,
-        },
-      }),
-      db.shops.update({
-        where: { id: seller.shop.id },
-        data: {
-          isDeleted: false,
-          deletedAt: null,
-        },
-      }),
-    ]);
+    await db.shops.update({
+      where: { id: shop.id },
+      data: {
+        isDeleted: false,
+        deletedAt: null,
+      },
+    });
 
     return res.status(200).json({
-      message: "Shop and seller have been successfully restored.",
+      message: "Shop has been successfully restored.",
     });
   } catch (error) {
     return next(error);
@@ -177,7 +175,7 @@ export const updateProfilePictures = async (
 
     // Update seller's profile
     const updatedSeller = await db.shops.update({
-      where: { sellerId: req.seller.id },
+      where: { id: req.body.shopId || req.seller.shop?.id },
       data: updateField,
       select: {
         id: true,
@@ -225,8 +223,11 @@ export const editSellerProfile = async (
     }
 
     // Check if the shop exists for the seller
-    const existingShop = await db.shops.findUnique({
-      where: { sellerId: req.seller.id },
+    const existingShop = await db.shops.findFirst({
+      where: {
+        sellerId: req.seller.id,
+        ...(req.body.shopId ? { id: req.body.shopId } : {}),
+      },
     });
 
     if (!existingShop) {
@@ -235,7 +236,7 @@ export const editSellerProfile = async (
 
     // Update the shop profile
     const updatedShop = await db.shops.update({
-      where: { sellerId: req.seller.id },
+      where: { id: existingShop.id },
       data: {
         name,
         bio,
@@ -532,6 +533,151 @@ export const sellerNotifications = async (
       notifications,
     });
   } catch (error) {}
+};
+
+export const getShopMembers = async (
+  req: any,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const shop = await getAccessibleShop(req.seller.id, req.query.shopId);
+
+    if (!shop) {
+      return next(new NotFoundError("Shop not found!"));
+    }
+
+    const members = await db.shopMembers.findMany({
+      where: { shopId: shop.id },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone_number: true,
+            country: true,
+          },
+        },
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      members,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const addShopMember = async (
+  req: any,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { shopId, email, role } = req.body;
+
+    if (!shopId || !email || !role) {
+      return next(new ValidationError("Shop id, email and role are required!"));
+    }
+
+    if (!["owner", "manager", "staff"].includes(role)) {
+      return next(new ValidationError("Invalid shop member role!"));
+    }
+
+    const shop = await getAccessibleShop(req.seller.id, shopId);
+
+    if (!shop) {
+      return next(new NotFoundError("Shop not found!"));
+    }
+
+    const user = await db.users.findUnique({
+      where: { email },
+      select: { id: true, name: true, email: true },
+    });
+
+    if (!user) {
+      return next(new NotFoundError("User not found with this email!"));
+    }
+
+    const member = await db.shopMembers.upsert({
+      where: {
+        shopId_userId: {
+          shopId: shop.id,
+          userId: user.id,
+        },
+      },
+      create: {
+        shopId: shop.id,
+        userId: user.id,
+        role,
+      },
+      update: {
+        role,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      member,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const removeShopMember = async (
+  req: any,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { shopId, memberId } = req.body;
+
+    if (!shopId || !memberId) {
+      return next(new ValidationError("Shop id and member id are required!"));
+    }
+
+    const shop = await getAccessibleShop(req.seller.id, shopId);
+
+    if (!shop) {
+      return next(new NotFoundError("Shop not found!"));
+    }
+
+    const membership = await db.shopMembers.findUnique({
+      where: { id: memberId },
+    });
+
+    if (!membership || membership.shopId !== shop.id) {
+      return next(new NotFoundError("Shop member not found!"));
+    }
+
+    if (membership.role === "owner") {
+      return next(new ForbiddenError("Owner cannot be removed from the shop!"));
+    }
+
+    await db.shopMembers.delete({
+      where: { id: memberId },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Shop member removed successfully!",
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 // mark notification as read

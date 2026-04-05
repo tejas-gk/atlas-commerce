@@ -255,16 +255,20 @@ export const getAllSellers = async (
     const skip = (page - 1) * limit;
 
     const [sellers, totalSellers] = await Promise.all([
-      db.sellers.findMany({
+      db.users.findMany({
         skip,
         take: limit,
+        where: {
+          role: "seller",
+        },
         orderBy: { createdAt: "desc" },
         select: {
           id: true,
           name: true,
           email: true,
           createdAt: true,
-          shop: {
+          shops: {
+            take: 1,
             select: {
               name: true,
               avatar: true,
@@ -273,7 +277,11 @@ export const getAllSellers = async (
           },
         },
       }),
-      db.sellers.count(),
+      db.users.count({
+        where: {
+          role: "seller",
+        },
+      }),
     ]);
 
     const totalPages = Math.ceil(totalSellers / limit);

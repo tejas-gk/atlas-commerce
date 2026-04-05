@@ -17,8 +17,10 @@ import CustomSpecifications from "../custom-specifications";
 import CustomProperties from "@/shared/components/custom-properties";
 import SizeSelector from "@/shared/components/size-selector";
 import RichTextEditor from "@/shared/components/rich-text-editor";
+import useSeller from "@/hooks/useSeller";
 
 const Page = () => {
+  const { seller } = useSeller();
   const {
     register,
     control,
@@ -98,7 +100,7 @@ const Page = () => {
   });
 
   const { data: discountCodes = [], isLoading: discountLoading } = useQuery({
-    queryKey: ["shop-discounts"],
+    queryKey: ["shop-discounts", seller?.activeShopId],
     queryFn: async () => {
       const res = await axiosInstance.get(
         "/product/api/get-discount-codes",
@@ -106,6 +108,7 @@ const Page = () => {
       );
       return res?.data?.discount_codes || [];
     },
+    enabled: !!seller?.activeShopId,
   });
 
   const categories = data?.categories || [];
@@ -447,15 +450,7 @@ const Page = () => {
                   control={control}
                   rules={{
                     required: "Detailed description is required!",
-                    validate: (value) => {
-                      const wordCount = value
-                        ?.split(/\s+/)
-                        .filter((word: string) => word).length;
-                      return (
-                        wordCount >= 100 ||
-                        "Description must be at least 100 words!"
-                      );
-                    },
+                  
                   }}
                   render={({ field }) => (
                     <RichTextEditor
@@ -544,12 +539,6 @@ const Page = () => {
                     max: {
                       value: 1000,
                       message: "Stock cannot exceed 1,000",
-                    },
-                    validate: (value) => {
-                      if (isNaN(value)) return "Only numbers are allowed!";
-                      if (!Number.isInteger(value))
-                        return "Stock must be a whole number!";
-                      return true;
                     },
                   })}
                 />

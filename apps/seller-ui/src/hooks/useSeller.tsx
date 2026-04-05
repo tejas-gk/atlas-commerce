@@ -1,5 +1,5 @@
 "use client";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "../utils/axiosInstance";
 import { useAuthStore } from "../store/authStore";
 import React from "react";
@@ -16,6 +16,7 @@ const fetchSeller = async () => {
 
 const useSeller = () => {
   const { setLoggedIn, isLoggedIn } = useAuthStore();
+  const queryClient = useQueryClient();
 
   const {
     data: seller,
@@ -38,7 +39,35 @@ const useSeller = () => {
     }
   }, [seller, isError, setLoggedIn]);
 
-  return { seller: seller as any, isLoading: isPending, isError };
+  const switchShopMutation = useMutation({
+    mutationFn: async (shopId: string) => {
+      const response = await axiosInstance.put(
+        "/auth/api/switch-active-shop",
+        { shopId },
+        isProtected
+      );
+      return response.data.seller;
+    },
+    onSuccess: (updatedSeller) => {
+      queryClient.setQueryData(["seller"], updatedSeller);
+      queryClient.invalidateQueries({ queryKey: ["seller-orders"] });
+      queryClient.invalidateQueries({ queryKey: ["seller-products"] });
+      queryClient.invalidateQueries({ queryKey: ["shop-events"] });
+      queryClient.invalidateQueries({ queryKey: ["shop-discounts"] });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["conversations"] });
+      queryClient.invalidateQueries({ queryKey: ["seller-domain"] });
+      queryClient.invalidateQueries({ queryKey: ["stripe-account"] });
+    },
+  });
+
+  return {
+    seller: seller as any,
+    isLoading: isPending,
+    isError,
+    switchShop: switchShopMutation.mutateAsync,
+    isSwitchingShop: switchShopMutation.isPending,
+  };
 };
 
 export default useSeller;

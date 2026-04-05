@@ -27,7 +27,7 @@ const ProductCard = ({
     const addToWishlist = useStore((state: any) => state.addToWishlist);
     const removeFromWishlist = useStore((state: any) => state.removeFromWishlist);
     const wishlist = useStore((state: any) => state.wishlist);
-    const isWishlisted = wishlist.some((item: any) => item.id === product.id);
+    const isWishlisted = wishlist.some((item: any) => item.id === product?.id);
     const cart = useStore((state: any) => state.cart);
     const isInCart = cart.some((item: any) => item.id === product.id);
 

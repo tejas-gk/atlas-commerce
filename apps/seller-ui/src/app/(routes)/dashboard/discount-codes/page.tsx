@@ -11,20 +11,26 @@ import toast from "react-hot-toast";
 import { Input } from "../../../../../../../packages/ui/src/components/input";
 import DeleteDiscountCodeModal from "@/shared/components/modals/delete.discount-codes";
 import BreadCrumbs from "@/shared/components/breadcrumbs";
+import useSeller from "@/hooks/useSeller";
 
 const Page = () => {
+  const { seller } = useSeller();
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedDiscount, setSelectedDiscount] = useState<any>();
 
   const queryClient = useQueryClient();
+  const shopId = seller?.activeShopId || seller?.shop?.id;
 
   const { data: discountCodes = [], isLoading } = useQuery({
-    queryKey: ["shop-discounts"],
+    queryKey: ["shop-discounts", shopId],
     queryFn: async () => {
-      const res = await axiosInstance.get("/product/api/get-discount-codes");
+      const res = await axiosInstance.get("/product/api/get-discount-codes", {
+        params: { shopId },
+      });
       return res?.data?.discount_codes || [];
     },
+    enabled: !!shopId,
   });
 
   const {
@@ -44,7 +50,10 @@ const Page = () => {
 
   const createDiscountCodeMutation = useMutation({
     mutationFn: async (data) => {
-      await axiosInstance.post("/product/api/create-discount-code", data);
+      await axiosInstance.post("/product/api/create-discount-code", {
+        ...data,
+        shopId,
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["shop-discounts"] });
@@ -55,9 +64,9 @@ const Page = () => {
 
   const deleteDiscountCodeMutation = useMutation({
     mutationFn: async (discountId) => {
-      await axiosInstance.delete(
-        `/product/api/delete-discount-code/${discountId}`
-      );
+      await axiosInstance.delete(`/product/api/delete-discount-code/${discountId}`, {
+        params: { shopId },
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["shop-discounts"] });

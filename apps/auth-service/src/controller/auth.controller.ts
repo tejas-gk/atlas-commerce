@@ -12,6 +12,41 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
     apiVersion: "2022-11-15",
 });
 
+const sellerInclude = {
+    shops: true,
+    shopMembers: {
+        include: {
+            shop: true,
+        },
+    },
+};
+
+const mapSellerAccount = (seller: any) =>
+    seller
+        ? (() => {
+            const shop =
+                seller.shops?.find(
+                    (item: any) => item.id === seller.activeShopId && !item.isDeleted
+                ) ??
+                seller.shops?.find((item: any) => !item.isDeleted) ??
+                seller.shops?.[0] ??
+                null;
+
+            return {
+                ...seller,
+                activeShopId: shop?.id ?? seller.activeShopId ?? null,
+                isDeleted: shop?.isDeleted ?? seller.isDeleted,
+                deletedAt: shop?.deletedAt ?? seller.deletedAt,
+                shop,
+            };
+        })()
+        : null;
+
+const getAuthenticatedAccount = (req: any) => req.user || req.seller || null;
+const setActiveShopCookie = (res: Response, shopId: string) => {
+    setCookie(res, "seller-active-shop-id", shopId);
+};
+
 
 export const userRegistration = async (
     req: Request,
@@ -171,8 +206,8 @@ export const refreshToken = async (
 ) => {
     try {
         const refreshToken =
-            req.cookies["refresh_token"] ||
             req.cookies["seller-refresh-token"] ||
+            req.cookies["refresh_token"] ||
             req.headers.authorization?.split(" ")[1];
 
         if (!refreshToken) {
@@ -192,10 +227,10 @@ export const refreshToken = async (
         if (decoded.role === "user" || decoded.role === "admin") {
             account = await db.users.findUnique({ where: { id: decoded.id } });
         } else if (decoded.role === "seller") {
-            // account = await db.sellers.findUnique({
-            //     where: { id: decoded.id },
-            //     include: { shop: true },
-            // });
+            account = await db.users.findFirst({
+                where: { id: decoded.id, role: "seller" },
+                include: sellerInclude,
+            });
         }
 
         if (!account) {
@@ -362,9 +397,10 @@ export const createStripeConnectLink = async (
 
         if (!sellerId) return next(new ValidationError("Seller ID is required!"));
 
-        const seller = await db.sellers.findUnique({
+        const seller = await db.users.findFirst({
             where: {
                 id: sellerId,
+                role: "seller",
             },
         });
 
@@ -381,8 +417,8 @@ export const createStripeConnectLink = async (
                 transfers: { requested: true },
             },
         });
-
-        await prisma.sellers.update({
+        console.log("Stripe Account Created:", account);
+        await db.users.update({
             where: {
                 id: sellerId,
             },
@@ -504,11 +540,11 @@ export const registerSeller = async (
         validateRegistrationData(req.body, "seller");
         const { name, email } = req.body;
 
-        const exisitingSeller = await db.sellers.findUnique({
+        const exisitingSeller = await db.users.findUnique({
             where: { email },
         });
 
-        if (exisitingSeller) {
+        if (exisitingSeller?.role === "seller") {
             throw new ValidationError("Seller already exists with this email!");
         }
 
@@ -537,31 +573,109 @@ export const verifySeller = async (
             return next(new ValidationError("All fields are required!"));
         }
 
-        const existingSeller = await db.sellers.findUnique({
-            where: { email },
-        });
-
-        if (existingSeller)
-            return next(
-                new ValidationError("Seller already exists with this email!")
-            );
-
         await verifyOtp(email, otp, next);
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        const seller = await db.sellers.create({
-            data: {
-                name,
-                email,
-                password: hashedPassword,
-                country,
-                phone_number,
-            },
+        const existingUser = await db.users.findUnique({
+            where: { email },
+            include: sellerInclude,
         });
+
+        let seller;
+
+        if (existingUser) {
+            seller = await db.users.update({
+                where: { id: existingUser.id },
+                data: {
+                    name: existingUser.name || name,
+                    country,
+                    phone_number,
+                    role: "seller",
+                },
+                include: sellerInclude,
+            });
+        } else {
+            const hashedPassword = await bcrypt.hash(password, 10);
+            seller = await db.users.create({
+                data: {
+                    name,
+                    email,
+                    password: hashedPassword,
+                    country,
+                    phone_number,
+                    role: "seller",
+                },
+                include: sellerInclude,
+            });
+        }
+
+        const accessToken = jwt.sign(
+            { id: seller.id, role: "seller" },
+            process.env.ACCESS_TOKEN_SECRET as string,
+            { expiresIn: "15m" }
+        );
+        const refreshToken = jwt.sign(
+            { id: seller.id, role: "seller" },
+            process.env.REFRESH_TOKEN_SECRET as string,
+            { expiresIn: "7d" }
+        );
+
+        setCookie(res, "seller-refresh-token", refreshToken);
+        setCookie(res, "seller-access-token", accessToken);
 
         res
             .status(201)
-            .json({ seller, message: "Seller registered successfully!" });
+            .json({ seller: mapSellerAccount(seller), message: "Seller profile completed successfully!" });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const completeSellerProfile = async (
+    req: any,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const account = getAuthenticatedAccount(req);
+        const { phone_number, country, name } = req.body;
+
+        if (!account?.id) {
+            return next(new AuthError("Please log in first!"));
+        }
+
+        if (!phone_number || !country) {
+            return next(new ValidationError("Phone number and country are required!"));
+        }
+
+        const seller = await db.users.update({
+            where: { id: account.id },
+            data: {
+                role: "seller",
+                phone_number,
+                country,
+                ...(name ? { name } : {}),
+            },
+            include: sellerInclude,
+        });
+
+        const accessToken = jwt.sign(
+            { id: seller.id, role: "seller" },
+            process.env.ACCESS_TOKEN_SECRET as string,
+            { expiresIn: "15m" }
+        );
+        const refreshToken = jwt.sign(
+            { id: seller.id, role: "seller" },
+            process.env.REFRESH_TOKEN_SECRET as string,
+            { expiresIn: "7d" }
+        );
+
+        setCookie(res, "seller-refresh-token", refreshToken);
+        setCookie(res, "seller-access-token", accessToken);
+
+        res.status(200).json({
+            success: true,
+            seller: mapSellerAccount(seller),
+            message: "Seller profile completed successfully!",
+        });
     } catch (error) {
         next(error);
     }
@@ -569,34 +683,61 @@ export const verifySeller = async (
 
 // create a new shop
 export const createShop = async (
-    req: Request,
+    req: any,
     res: Response,
     next: NextFunction
 ) => {
     try {
+        const authenticatedUser = getAuthenticatedAccount(req);
         const { name, bio, address, opening_hours, website, category, sellerId } =
             req.body;
+        const ownerId = authenticatedUser?.id || sellerId;
 
-        if (!name || !bio || !address || !sellerId || !opening_hours || !category) {
-            return next(new ValidationError("All fields are required!"));
+        if (!name || !ownerId) {
+            return next(new ValidationError("Shop name is required!"));
+        }
+
+        const account = await db.users.findUnique({
+            where: { id: ownerId },
+            select: { id: true, role: true },
+        });
+
+        if (!account) {
+            return next(new ValidationError("User account not found!"));
+        }
+
+        if (account.role !== "seller") {
+            await db.users.update({
+                where: { id: ownerId },
+                data: { role: "seller" },
+            });
         }
 
         const shopData: any = {
             name,
-            bio,
-            address,
-            opening_hours,
-            category,
-            sellerId,
+            bio: bio || "",
+            address: address || "Not provided",
+            opening_hours: opening_hours || "",
+            category: category || "General",
+            socialLinks: [],
+            sellerId: ownerId,
         };
 
         if (website && website.trim() !== "") {
             shopData.website = website;
         }
 
-        const shop = await db.shops.create({
-            data: shopData,
+        const shop = await db.shops.create({ data: shopData });
+
+        await db.shopMembers.create({
+            data: {
+                shopId: shop.id,
+                userId: ownerId,
+                role: "owner",
+            },
         });
+
+        setActiveShopCookie(res, shop.id);
 
         res.status(201).json({
             success: true,
@@ -619,7 +760,10 @@ export const loginSeller = async (
         if (!email || !password)
             return next(new ValidationError("Email and password are required!"));
 
-        const seller = await db.sellers.findUnique({ where: { email } });
+        const seller = await db.users.findFirst({
+            where: { email, role: "seller" },
+            include: sellerInclude,
+        });
         if (!seller) return next(new ValidationError("Invalid email or password!"));
 
         // Verify password
@@ -672,11 +816,76 @@ export const getSeller = async (
     next: NextFunction
 ) => {
     try {
-        const seller = req.seller;
+        const account = getAuthenticatedAccount(req);
+
+        if (!account?.id) {
+            return next(new AuthError("Account not found!"));
+        }
+
+        const seller = await db.users.findUnique({
+            where: { id: account.id },
+            include: sellerInclude,
+        });
 
         res.status(201).json({
             success: true,
-            seller,
+            seller: mapSellerAccount({
+                ...seller,
+                activeShopId:
+                    req.cookies["seller-active-shop-id"] ||
+                    req.query?.shopId ||
+                    req.headers["x-shop-id"] ||
+                    null,
+            }),
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const switchActiveShop = async (
+    req: any,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const account = getAuthenticatedAccount(req);
+        const { shopId } = req.body;
+
+        if (!account?.id) {
+            return next(new AuthError("Account not found!"));
+        }
+
+        if (!shopId) {
+            return next(new ValidationError("Shop id is required!"));
+        }
+
+        const shop = await db.shops.findFirst({
+            where: {
+                id: shopId,
+                sellerId: account.id,
+                isDeleted: false,
+            },
+        });
+
+        if (!shop) {
+            return next(new NotFoundError("Shop not found for this seller!"));
+        }
+
+        setActiveShopCookie(res, shop.id);
+
+        const seller = await db.users.findUnique({
+            where: { id: account.id },
+            include: sellerInclude,
+        });
+
+        res.status(200).json({
+            success: true,
+            seller: mapSellerAccount({
+                ...seller,
+                activeShopId: shop.id,
+            }),
+            message: "Active shop updated successfully!",
         });
     } catch (error) {
         next(error);

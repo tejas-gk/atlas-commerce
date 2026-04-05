@@ -9,14 +9,6 @@ import initializeSiteConfig from "./libs/initializeSiteConfig";
 
 const app = express()
 
-app.use(
-    cors({
-        origin: ["http://localhost:3000", "http://localhost:3001","http://localhost:3002/"],
-        allowedHeaders: ["Authorization", "Content-Type"],
-        credentials: true,
-    }),
-)
-
 const isProduction = process.env.NODE_ENV === "production";
 
 
@@ -29,6 +21,33 @@ const allowedOrigins = isProduction
         "http://localhost",
     ]
     : ["http://localhost:3000", "http://localhost:3001", "http://localhost:3002"];
+
+app.use(
+    cors({
+        origin: (origin, callback) => {
+            if (!origin || allowedOrigins.includes(origin)) {
+                return callback(null, true);
+            }
+
+            return callback(new Error(`CORS blocked for origin: ${origin}`));
+        },
+        methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+        allowedHeaders: ["Authorization", "Content-Type", "x-shop-id"],
+        credentials: true,
+    }),
+)
+app.options(/.*/, cors({
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+
+        return callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Authorization", "Content-Type", "x-shop-id"],
+    credentials: true,
+}))
 
 app.use(morgan("dev"))
 app.use(express.json({ limit: "100mb" }))

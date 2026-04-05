@@ -15,6 +15,7 @@ import BreadCrumbs from "@/shared/components/breadcrumbs";
 import DeleteConfirmationModal from "@/shared/components/modals/delete.confirmation.modal";
 import AnalyticsModal from "@/shared/components/modals/analytics.modal";
 import { Input } from "@workspace/ui/components/input";
+import useSeller from "@/hooks/useSeller";
 
 
 const fetchProducts = async () => {
@@ -32,6 +33,7 @@ const restoreProduct = async (productId: string) => {
 };
 
 const ProductList = () => {
+  const { seller } = useSeller();
   const [analyticsData, setAnalyticsData] = useState(null);
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [globalFilter, setGlobalFilter] = useState("");
@@ -40,9 +42,10 @@ const ProductList = () => {
   const queryClient = useQueryClient();
 
   const { data: products = [], isLoading } = useQuery({
-    queryKey: ["shop-products"],
+    queryKey: ["shop-products", seller?.activeShopId],
     queryFn: fetchProducts,
     staleTime: 1000 * 60 * 5,
+    enabled: !!seller?.activeShopId,
   });
 
   // Delete Product Mutation

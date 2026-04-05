@@ -23,10 +23,11 @@ import Image from "next/image";
 import DeleteConfirmationModal from "@/shared/components/modals/delete.confirmation.modal";
 import BreadCrumbs from "@/shared/components/breadcrumbs";
 import AnalyticsModal from "@/shared/components/modals/analytics.modal";
+import useSeller from "@/hooks/useSeller";
 
 const fetchEvents = async () => {
   const res = await axiosInstance.get("/product/api/get-shop-products");
-  const products = res.data.products?.filter((i) => i.starting_date);
+  const products = res.data.products?.filter((i: any) => i.starting_date);
   return products;
 };
 
@@ -39,6 +40,7 @@ const restoreProduct = async (productId: string) => {
 };
 
 const EventList = () => {
+  const { seller } = useSeller();
   const [globalFilter, setGlobalFilter] = useState("");
   const [analyticsData, setAnalyticsData] = useState(null);
   const [showAnalytics, setShowAnalytics] = useState(false);
@@ -46,15 +48,16 @@ const EventList = () => {
   const [selectedProduct, setSelectedProduct] = useState<any>();
   const queryClient = useQueryClient();
   // Handle Opening Analytics Modal
-  const openAnalytics = (product) => {
+  const openAnalytics = (product: any) => {
     setAnalyticsData(product);
     setShowAnalytics(true);
   };
 
   const { data: products = [], isLoading } = useQuery({
-    queryKey: ["shop-events"],
+    queryKey: ["shop-events", seller?.activeShopId],
     queryFn: fetchEvents,
     staleTime: 1000 * 60 * 5,
+    enabled: !!seller?.activeShopId,
   });
 
   // Delete Product Mutation
@@ -187,7 +190,7 @@ const EventList = () => {
     onGlobalFilterChange: setGlobalFilter,
   });
 
-  const openDeleteModal = (product) => {
+  const openDeleteModal = (product: any) => {
     setSelectedProduct(product);
     setShowDeleteModal(true);
   };

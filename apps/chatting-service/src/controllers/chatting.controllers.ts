@@ -11,6 +11,19 @@ import {
 } from "@repo/redis/message.redis";
 import { NextFunction, Response } from "express";
 
+const mapSellerProfile = (seller: any) => ({
+  id: seller?.id || null,
+  name:
+    seller?.shops?.find((shop: any) => !shop.isDeleted)?.name ||
+    seller?.shops?.[0]?.name ||
+    seller?.name ||
+    "Unknown",
+  avatar:
+    seller?.shops?.find((shop: any) => !shop.isDeleted)?.avatar ||
+    seller?.shops?.[0]?.avatar ||
+    null,
+});
+
 // create a new conversation
 export const newConversation = async (
   req: any,
@@ -103,12 +116,13 @@ export const getUserConversations = async (
         // Get the seller's full info
         let seller = null;
         if (sellerParticipant?.sellerId) {
-          seller = await prisma.sellers.findUnique({
+          seller = await prisma.users.findFirst({
             where: {
               id: sellerParticipant.sellerId,
+              role: "seller",
             },
             include: {
-              shop: true,
+              shops: true,
             },
           });
         }
@@ -136,10 +150,8 @@ export const getUserConversations = async (
         return {
           conversationId: group.id,
           seller: {
-            id: seller?.id || null,
-            name: seller?.shop?.name || "Unknown",
+            ...mapSellerProfile(seller),
             isOnline,
-            avatar: seller?.shop?.avatar,
           },
           lastMessage:
             lastMessage?.content || "Say something to start a conversation",
@@ -286,10 +298,10 @@ export const fetchMessages = async (
     let isOnline = false;
 
     if (sellerParticipant?.sellerId) {
-      seller = await prisma.sellers.findUnique({
-        where: { id: sellerParticipant.sellerId },
+      seller = await prisma.users.findFirst({
+        where: { id: sellerParticipant.sellerId, role: "seller" },
         include: {
-          shop: true,
+          shops: true,
         },
       });
 
@@ -309,9 +321,7 @@ export const fetchMessages = async (
     return res.status(200).json({
       messages,
       seller: {
-        id: seller?.id || null,
-        name: seller?.shop?.name || "Unknown",
-        avatar: seller?.shop?.avatar || null,
+        ...mapSellerProfile(seller),
         isOnline,
       },
       currentPage: page,

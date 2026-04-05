@@ -83,24 +83,21 @@ const ProductDetails = ({ productDetails }: { productDetails: any }) => {
 
   const fetchFilteredProducts = async () => {
     try {
-      const query = new URLSearchParams();
-
-      query.set("priceRange", priceRange.join(","));
-      query.set("page", "1");
-      query.set("limit", "5");
-
       const res = await axiosInstance.get(
-        `/product/api/get-filtered-products?${query.toString()}`
+        `/product/api/get-all-products?page=1&limit=8&type=latest`
       );
-      setRecommendedProducts(res.data.products);
+      const products = (res.data.products || []).filter(
+        (item: any) => item.id !== productDetails?.id
+      );
+      setRecommendedProducts(products.slice(0, 5));
     } catch (error) {
-      console.error("Failed to fetch filtered products", error);
+      console.error("Failed to fetch recommended products", error);
     }
   };
 
   useEffect(() => {
     fetchFilteredProducts();
-  }, [priceRange]);
+  }, [productDetails?.id]);
 
   const handleChat = async () => {
     if (isChatLoading) {
