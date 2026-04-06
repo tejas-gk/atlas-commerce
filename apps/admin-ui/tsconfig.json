@@ -1,5 +1,5 @@
 {
-  "extends": "@workspace/typescript-config/nextjs.json",
+  "extends": "../../packages/typescript-config/base.json",
   "compilerOptions": {
     "baseUrl": ".",
     "ignoreDeprecations": "6.0",
@@ -15,10 +15,7 @@
     ]
   },
   "include": [
-    "next-env.d.ts",
-    "next.config.ts",
-    "**/*.ts",
-    "**/*.tsx",
+    "src",
     ".next/types/**/*.ts"
   ],
   "exclude": [

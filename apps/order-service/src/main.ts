@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
-import { errorMiddleware } from "@packages/error-handler/error-middleware";
+import { errorMiddleware } from "@repo/error-handler/error-middleware";
 import router from "./routes/order.route";
 import { createOrder } from "./controllers/order.controller";
 

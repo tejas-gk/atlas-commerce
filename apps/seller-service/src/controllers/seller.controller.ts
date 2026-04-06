@@ -7,6 +7,7 @@ import {
   ValidationError,
 } from "@repo/error-handler";
 import { imagekit } from "@atlas/imagekit";
+import crypto from "crypto";
 
 const getPrimaryShop = (seller: any, requestedShopId?: string) => {
   if (!seller?.shops?.length) return null;
@@ -25,6 +26,88 @@ const getAccessibleShop = async (sellerId: string, requestedShopId?: string) => 
   });
 
   return shop;
+};
+
+const WEBSITE_ALLOWED_STATUSES = new Set(["draft", "published", "archived"]);
+
+const normalizeSlug = (value: string) =>
+  value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "shop-home";
+
+const normalizeDomain = (value: string) =>
+  value
+    .trim()
+    .toLowerCase()
+    .replace(/^https?:\/\//, "")
+    .replace(/^www\./, "")
+    .replace(/\/.*$/, "");
+
+const buildDomainInstructions = (domain: {
+  verificationToken: string;
+  verificationTarget: string;
+  domain: string;
+}) => ({
+  type: "TXT",
+  host: `_atlas-verify.${domain.domain}`,
+  value: domain.verificationTarget,
+  token: domain.verificationToken,
+});
+
+const getWebsiteAccess = async (
+  sellerId: string,
+  websiteId: string,
+  requestedShopId?: string
+) => {
+  const website = await db.shopWebsites.findUnique({
+    where: { id: websiteId },
+    include: {
+      shop: true,
+      domains: {
+        orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }],
+      },
+    },
+  });
+
+  if (!website || website.shop.sellerId !== sellerId) {
+    return null;
+  }
+
+  if (requestedShopId && website.shopId !== requestedShopId) {
+    return null;
+  }
+
+  return website;
+};
+
+const ensureWebsitePayload = (payload: any) => {
+  if (!payload?.name?.trim()) {
+    throw new ValidationError("Website name is required!");
+  }
+
+  if (!Array.isArray(payload?.pages) || payload.pages.length === 0) {
+    throw new ValidationError("At least one page is required for a website.");
+  }
+
+  return {
+    name: payload.name.trim(),
+    slug: normalizeSlug(payload.slug || payload.name),
+    description: payload.description?.trim() || null,
+    templateKey: payload.templateKey?.trim() || "ecommerce-starter",
+    pages: payload.pages,
+    theme: payload.theme || {},
+    settings: payload.settings || {},
+    seo: payload.seo || {},
+    previewImage: payload.previewImage?.trim() || null,
+    status:
+      typeof payload.status === "string" &&
+      WEBSITE_ALLOWED_STATUSES.has(payload.status)
+        ? payload.status
+        : "draft",
+    isPublished: Boolean(payload.isPublished),
+  };
 };
 
 // delete shop (soft delete)
@@ -565,6 +648,519 @@ export const getShopMembers = async (
     res.status(200).json({
       success: true,
       members,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getShopWebsites = async (
+  req: any,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const shop = await getAccessibleShop(req.seller.id, req.query.shopId);
+
+    if (!shop || shop.isDeleted) {
+      return next(new NotFoundError("Active shop not found for this seller!"));
+    }
+
+    const websites = await db.shopWebsites.findMany({
+      where: {
+        shopId: shop.id,
+        isArchived: false,
+      },
+      include: {
+        domains: {
+          orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }],
+        },
+      },
+      orderBy: { updatedAt: "desc" },
+    });
+
+    res.status(200).json({
+      success: true,
+      shop: {
+        id: shop.id,
+        name: shop.name,
+        website: shop.website,
+      },
+      websites,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const createShopWebsite = async (
+  req: any,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const shop = await getAccessibleShop(
+      req.seller.id,
+      req.body.shopId || req.query.shopId
+    );
+
+    if (!shop || shop.isDeleted) {
+      return next(new NotFoundError("Active shop not found for this seller!"));
+    }
+
+    const payload = ensureWebsitePayload(req.body);
+    const existingWebsite = await db.shopWebsites.findFirst({
+      where: {
+        shopId: shop.id,
+        slug: payload.slug,
+      },
+    });
+
+    if (existingWebsite) {
+      return next(
+        new ValidationError("A website with this slug already exists for the shop.")
+      );
+    }
+
+    const website = await db.shopWebsites.create({
+      data: {
+        ...payload,
+        shopId: shop.id,
+        isPublished: payload.status === "published" || payload.isPublished,
+        publishedAt:
+          payload.status === "published" || payload.isPublished ? new Date() : null,
+        publishedSnapshot:
+          payload.status === "published" || payload.isPublished
+            ? {
+                pages: payload.pages,
+                theme: payload.theme,
+                settings: payload.settings,
+                seo: payload.seo,
+              }
+            : null,
+      },
+      include: {
+        domains: true,
+      },
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Storefront website created successfully.",
+      website,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getShopWebsite = async (
+  req: any,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const website = await getWebsiteAccess(
+      req.seller.id,
+      req.params.websiteId,
+      req.query.shopId
+    );
+
+    if (!website || website.isArchived) {
+      return next(new NotFoundError("Website not found for this shop!"));
+    }
+
+    res.status(200).json({
+      success: true,
+      website,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateShopWebsite = async (
+  req: any,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const existingWebsite = await getWebsiteAccess(
+      req.seller.id,
+      req.params.websiteId,
+      req.body.shopId || req.query.shopId
+    );
+
+    if (!existingWebsite || existingWebsite.isArchived) {
+      return next(new NotFoundError("Website not found for this shop!"));
+    }
+
+    const payload = ensureWebsitePayload(req.body);
+
+    if (payload.slug !== existingWebsite.slug) {
+      const conflicting = await db.shopWebsites.findFirst({
+        where: {
+          shopId: existingWebsite.shopId,
+          slug: payload.slug,
+          NOT: { id: existingWebsite.id },
+        },
+      });
+
+      if (conflicting) {
+        return next(
+          new ValidationError("A website with this slug already exists for the shop.")
+        );
+      }
+    }
+
+    const shouldPublish = payload.status === "published" || payload.isPublished;
+    const website = await db.shopWebsites.update({
+      where: { id: existingWebsite.id },
+      data: {
+        ...payload,
+        isPublished: shouldPublish,
+        publishedAt: shouldPublish
+          ? existingWebsite.publishedAt || new Date()
+          : null,
+        publishedSnapshot: shouldPublish
+          ? {
+              pages: payload.pages,
+              theme: payload.theme,
+              settings: payload.settings,
+              seo: payload.seo,
+            }
+          : existingWebsite.publishedSnapshot,
+      },
+      include: {
+        domains: {
+          orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }],
+        },
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Storefront website updated successfully.",
+      website,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const publishShopWebsite = async (
+  req: any,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const website = await getWebsiteAccess(
+      req.seller.id,
+      req.params.websiteId,
+      req.body.shopId || req.query.shopId
+    );
+
+    if (!website || website.isArchived) {
+      return next(new NotFoundError("Website not found for this shop!"));
+    }
+
+    const publishedWebsite = await db.shopWebsites.update({
+      where: { id: website.id },
+      data: {
+        status: "published",
+        isPublished: true,
+        publishedAt: new Date(),
+        publishedSnapshot: {
+          pages: website.pages,
+          theme: website.theme,
+          settings: website.settings,
+          seo: website.seo,
+        },
+      },
+      include: {
+        domains: {
+          orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }],
+        },
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Website published successfully.",
+      website: publishedWebsite,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteShopWebsite = async (
+  req: any,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const website = await getWebsiteAccess(
+      req.seller.id,
+      req.params.websiteId,
+      req.body.shopId || req.query.shopId
+    );
+
+    if (!website) {
+      return next(new NotFoundError("Website not found for this shop!"));
+    }
+
+    await db.shopWebsites.update({
+      where: { id: website.id },
+      data: {
+        isArchived: true,
+        status: "archived",
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Website archived successfully.",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const createWebsiteDomain = async (
+  req: any,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const website = await getWebsiteAccess(
+      req.seller.id,
+      req.params.websiteId,
+      req.body.shopId || req.query.shopId
+    );
+
+    if (!website || website.isArchived) {
+      return next(new NotFoundError("Website not found for this shop!"));
+    }
+
+    const domainName = normalizeDomain(req.body.domain || "");
+
+    if (!domainName || !domainName.includes(".")) {
+      return next(new ValidationError("A valid custom domain is required."));
+    }
+
+    const existingDomain = await db.websiteDomains.findUnique({
+      where: { domain: domainName },
+    });
+
+    if (existingDomain) {
+      return next(new ValidationError("This domain is already connected."));
+    }
+
+    const verificationToken = crypto.randomBytes(12).toString("hex");
+    const domain = await db.websiteDomains.create({
+      data: {
+        websiteId: website.id,
+        domain: domainName,
+        status: "pending",
+        isPrimary: website.domains.length === 0,
+        verificationToken,
+        verificationTarget: `atlas-site-verification=${verificationToken}`,
+      },
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Domain added. Complete DNS setup to connect it.",
+      domain: {
+        ...domain,
+        instructions: buildDomainInstructions(domain),
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const markWebsiteDomainConnected = async (
+  req: any,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const website = await getWebsiteAccess(
+      req.seller.id,
+      req.params.websiteId,
+      req.body.shopId || req.query.shopId
+    );
+
+    if (!website || website.isArchived) {
+      return next(new NotFoundError("Website not found for this shop!"));
+    }
+
+    const domain = website.domains.find(
+      (item: any) => item.id === req.params.domainId
+    );
+
+    if (!domain) {
+      return next(new NotFoundError("Domain not found for this website."));
+    }
+
+    const updatedDomain = await db.websiteDomains.update({
+      where: { id: domain.id },
+      data: {
+        status: "connected",
+        verifiedAt: new Date(),
+        isPrimary:
+          typeof req.body.isPrimary === "boolean"
+            ? req.body.isPrimary
+            : domain.isPrimary,
+      },
+    });
+
+    if (updatedDomain.isPrimary) {
+      await db.websiteDomains.updateMany({
+        where: {
+          websiteId: website.id,
+          NOT: { id: updatedDomain.id },
+        },
+        data: {
+          isPrimary: false,
+        },
+      });
+    }
+
+    await db.shops.update({
+      where: { id: website.shopId },
+      data: {
+        website: `https://${updatedDomain.domain}`,
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      message:
+        "Domain marked as connected. You can now point traffic to the published website.",
+      domain: {
+        ...updatedDomain,
+        instructions: buildDomainInstructions(updatedDomain),
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteWebsiteDomain = async (
+  req: any,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const website = await getWebsiteAccess(
+      req.seller.id,
+      req.params.websiteId,
+      req.body.shopId || req.query.shopId
+    );
+
+    if (!website) {
+      return next(new NotFoundError("Website not found for this shop!"));
+    }
+
+    const domain = website.domains.find(
+      (item: any) => item.id === req.params.domainId
+    );
+
+    if (!domain) {
+      return next(new NotFoundError("Domain not found for this website."));
+    }
+
+    await db.websiteDomains.delete({
+      where: { id: domain.id },
+    });
+
+    const nextPrimary = website.domains.find((item: any) => item.id !== domain.id);
+
+    if (domain.isPrimary && nextPrimary) {
+      await db.websiteDomains.update({
+        where: { id: nextPrimary.id },
+        data: { isPrimary: true },
+      });
+      await db.shops.update({
+        where: { id: website.shopId },
+        data: {
+          website: `https://${nextPrimary.domain}`,
+        },
+      });
+    } else if (domain.isPrimary) {
+      await db.shops.update({
+        where: { id: website.shopId },
+        data: {
+          website: null,
+        },
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Domain removed successfully.",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const resolvePublishedWebsiteByDomain = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const domainName = normalizeDomain(String(req.query.domain || ""));
+
+    if (!domainName) {
+      return next(new ValidationError("Domain query is required."));
+    }
+
+    const domain = await db.websiteDomains.findUnique({
+      where: { domain: domainName },
+      include: {
+        website: {
+          include: {
+            shop: true,
+          },
+        },
+      },
+    });
+
+    if (
+      !domain ||
+      domain.status !== "connected" ||
+      !domain.website.isPublished ||
+      domain.website.isArchived
+    ) {
+      return next(new NotFoundError("No published website found for this domain."));
+    }
+
+    res.status(200).json({
+      success: true,
+      website: {
+        id: domain.website.id,
+        name: domain.website.name,
+        slug: domain.website.slug,
+        description: domain.website.description,
+        pages: domain.website.publishedSnapshot || domain.website.pages,
+        theme: domain.website.theme,
+        settings: domain.website.settings,
+        seo: domain.website.seo,
+        publishedAt: domain.website.publishedAt,
+        domain: domain.domain,
+      },
+      shop: {
+        id: domain.website.shop.id,
+        name: domain.website.shop.name,
+        sellerId: domain.website.shop.sellerId,
+      },
     });
   } catch (error) {
     next(error);
