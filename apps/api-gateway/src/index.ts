@@ -14,13 +14,13 @@ const isProduction = process.env.NODE_ENV === "production";
 
 const allowedOrigins = isProduction
     ? [
-        "https://shondhane.com",
-        "https://sellers.shondhane.com",
-        "https://admin.shondhane.com",
+        "https://penderghast.com",
+        "https://sellers.penderghast.com",
+        "https://admin.penderghast.com",
         "http://nginx",
         "http://localhost",
     ]
-    : ["http://localhost:3000", "http://localhost:3001", "http://localhost:3002"];
+    : ["http://localhost:3000", "http://localhost:3001", "http://localhost:3002", "http://localhost:3003", "http://localhost:3004", "http://localhost:8080"];
 
 app.use(
     cors({
@@ -74,7 +74,9 @@ app.get("/gateway-health", (req, res) => {
 app.use("/auth", proxy("http://localhost:6001"))
 app.use("/product", proxy("http://localhost:6002"))
 app.use("/recommendation", proxy("http://localhost:6007"))
-
+app.use("/seller", proxy("http://localhost:6003"))
+app.use("/order", proxy("http://localhost:6004"))
+app.use("/admin", proxy("http://localhost:6005"))
 app.use("/assets", express.static(path.join(__dirname, "assets")))
 
 const port = process.env.PORT || 8080;

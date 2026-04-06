@@ -756,7 +756,7 @@ export const loginSeller = async (
 ) => {
     try {
         const { email, password } = req.body;
-
+        console.log("Seller Login Attempt:", email);
         if (!email || !password)
             return next(new ValidationError("Email and password are required!"));
 
@@ -764,6 +764,7 @@ export const loginSeller = async (
             where: { email, role: "seller" },
             include: sellerInclude,
         });
+        console.log("Seller Found:", seller?.email);
         if (!seller) return next(new ValidationError("Invalid email or password!"));
 
         // Verify password

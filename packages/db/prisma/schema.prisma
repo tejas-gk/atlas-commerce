@@ -24,22 +24,22 @@ model images {
 }
 
 model users {
-  id          String        @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
-  email       String        @unique
-  role        String        @default("user")
-  password    String?
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  email        String        @unique
+  role         String        @default("user")
+  password     String?
   phone_number String?
-  country     String?
-  stripeId    String?
-  following   String[]
-  avatar      images?       @relation(fields: [imagesId], references: [id])
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  shopReviews shopReviews[]
-  imagesId    String?       @db.ObjectId
-  followings  followers[]
-  orders      orders[]
+  country      String?
+  stripeId     String?
+  following    String[]
+  avatar       images?       @relation(fields: [imagesId], references: [id])
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  shopReviews  shopReviews[]
+  imagesId     String?       @db.ObjectId
+  followings   followers[]
+  orders       orders[]
 
   isDeleted   Boolean       @default(false)
   deletedAt   DateTime?
@@ -72,7 +72,7 @@ model followers {
 }
 
 model shops {
-  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  id            String         @id @default(auto()) @map("_id") @db.ObjectId
   name          String
   bio           String?
   category      String
@@ -82,19 +82,60 @@ model shops {
   opening_hours String?
   website       String?
   socialLinks   Json[]
-  ratings       Float         @default(0)
+  ratings       Float          @default(0)
   reviews       shopReviews[]
   followers     followers[]
-  sellerId      String        @db.ObjectId
-  seller        users         @relation(fields: [sellerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  sellerId      String         @db.ObjectId
+  seller        users          @relation(fields: [sellerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
   products      products[]
-  isDeleted     Boolean       @default(false)
+  isDeleted     Boolean        @default(false)
   deletedAt     DateTime?
-  imagesId      String?       @db.ObjectId
+  imagesId      String?        @db.ObjectId
   orders        orders[]
   shopMembers   shopMembers[]
+  websites      shopWebsites[]
+}
+
+model shopWebsites {
+  id                String           @id @default(auto()) @map("_id") @db.ObjectId
+  name              String
+  slug              String
+  description       String?
+  status            String           @default("draft")
+  templateKey       String           @default("ecommerce-starter")
+  isPublished       Boolean          @default(false)
+  isArchived        Boolean          @default(false)
+  shopId            String           @db.ObjectId
+  shop              shops            @relation(fields: [shopId], references: [id])
+  seo               Json?
+  theme             Json?
+  pages             Json
+  settings          Json?
+  publishedSnapshot Json?
+  previewImage      String?
+  publishedAt       DateTime?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  domains           websiteDomains[]
+
+  @@unique([shopId, slug])
+}
+
+model websiteDomains {
+  id                 String       @id @default(auto()) @map("_id") @db.ObjectId
+  websiteId          String       @db.ObjectId
+  website            shopWebsites @relation(fields: [websiteId], references: [id])
+  domain             String       @unique
+  status             String       @default("pending")
+  isPrimary          Boolean      @default(false)
+  verificationToken  String
+  verificationTarget String
+  verificationRecord String       @default("TXT")
+  verifiedAt         DateTime?
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
 }
 
 model shopMembers {

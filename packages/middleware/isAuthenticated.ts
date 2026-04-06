@@ -2,6 +2,15 @@ import db from "@repo/db";
 import { NextFunction, Response } from "express";
 import jwt, { TokenExpiredError } from "jsonwebtoken";
 
+type DecodedToken = {
+  id: string;
+  role: "user" | "seller" | "admin";
+};
+
+type ExpiredToken = {
+  expired: true;
+};
+
 const getPrimaryShop = (shops: any[] = [], activeShopId?: string) => {
   if (activeShopId) {
     const activeShop = shops.find(
@@ -15,7 +24,7 @@ const getPrimaryShop = (shops: any[] = [], activeShopId?: string) => {
   return shops.find((shop) => !shop.isDeleted) ?? shops[0] ?? null;
 };
 
-const getDecodedToken = (token?: string | null) => {
+const getDecodedToken = (token?: string | null): DecodedToken | ExpiredToken | null => {
   if (!token) {
     return null;
   }
@@ -34,6 +43,14 @@ const getDecodedToken = (token?: string | null) => {
   }
 };
 
+const isExpiredToken = (
+  value: DecodedToken | ExpiredToken | null
+): value is ExpiredToken => Boolean(value && "expired" in value);
+
+const isDecodedToken = (
+  value: DecodedToken | ExpiredToken | null
+): value is DecodedToken => Boolean(value && "role" in value);
+
 const isAuthenticated = async (req: any, res: Response, next: NextFunction) => {
   try {
     const authHeaderToken = req.headers.authorization?.split(" ")[1];
@@ -44,14 +61,14 @@ const isAuthenticated = async (req: any, res: Response, next: NextFunction) => {
     const decodedFromSellerCookie = getDecodedToken(sellerAccessToken);
 
     const decoded =
-      ("role" in (decodedFromHeader || {}) && decodedFromHeader) ||
-      ("role" in (decodedFromAccessCookie || {}) && decodedFromAccessCookie) ||
-      ("role" in (decodedFromSellerCookie || {}) && decodedFromSellerCookie);
+      (isDecodedToken(decodedFromHeader) && decodedFromHeader) ||
+      (isDecodedToken(decodedFromAccessCookie) && decodedFromAccessCookie) ||
+      (isDecodedToken(decodedFromSellerCookie) && decodedFromSellerCookie);
 
     const hasExpiredToken =
-      decodedFromHeader?.expired ||
-      decodedFromAccessCookie?.expired ||
-      decodedFromSellerCookie?.expired;
+      isExpiredToken(decodedFromHeader) ||
+      isExpiredToken(decodedFromAccessCookie) ||
+      isExpiredToken(decodedFromSellerCookie);
 
     if (!decoded) {
       if (hasExpiredToken) {

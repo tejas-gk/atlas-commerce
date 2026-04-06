@@ -47,7 +47,7 @@ const CustomDomains = () => {
       if (domains.length > 0) {
         throw new Error("You can only add one custom domain per shop.");
       }
-      const res = await axiosInstance.post("/product/api/add-seller-domain", {
+      const res = await axiosInstance.post("/seller/api/add-seller-domain", {
         domain: data.domainName,
       });
       return res.data;
@@ -165,8 +165,8 @@ const CustomDomains = () => {
                     <p className="text-white font-semibold">{domain.domain}</p>
                     <p
                       className={`text-sm ${domain.status === "VERIFIED"
-                          ? "text-green-400"
-                          : "text-yellow-400"
+                        ? "text-green-400"
+                        : "text-yellow-400"
                         }`}
                     >
                       {domain.status}
@@ -220,7 +220,7 @@ const CustomDomains = () => {
             <li>
               <strong>CNAME:</strong> Set{" "}
               <span className="text-green-400">www</span> to point to{" "}
-              <span className="text-blue-400">seller.shondhane.com</span>
+              <span className="text-blue-400">seller.penderghast.com</span>
             </li>
             <li>
               <strong>A Record:</strong> Point your root domain to{" "}
