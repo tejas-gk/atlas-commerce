@@ -28,6 +28,9 @@ const getAccessibleShop = async (sellerId: string, requestedShopId?: string) => 
   return shop;
 };
 
+const getRequestedShopId = (req: any) =>
+  req.body?.shopId || req.query?.shopId || req.seller?.activeShopId
+
 const WEBSITE_ALLOWED_STATUSES = new Set(["draft", "published", "archived"]);
 
 const normalizeSlug = (value: string) =>
@@ -103,7 +106,7 @@ const ensureWebsitePayload = (payload: any) => {
     previewImage: payload.previewImage?.trim() || null,
     status:
       typeof payload.status === "string" &&
-      WEBSITE_ALLOWED_STATUSES.has(payload.status)
+        WEBSITE_ALLOWED_STATUSES.has(payload.status)
         ? payload.status
         : "draft",
     isPublished: Boolean(payload.isPublished),
@@ -269,9 +272,8 @@ export const updateProfilePictures = async (
 
     res.status(200).json({
       success: true,
-      message: `${
-        editType === "cover" ? "Cover photo" : "Avatar"
-      } updated successfully!`,
+      message: `${editType === "cover" ? "Cover photo" : "Avatar"
+        } updated successfully!`,
       updatedSeller,
     });
   } catch (error) {
@@ -615,7 +617,7 @@ export const sellerNotifications = async (
       success: true,
       notifications,
     });
-  } catch (error) {}
+  } catch (error) { }
 };
 
 export const getShopMembers = async (
@@ -624,7 +626,7 @@ export const getShopMembers = async (
   next: NextFunction
 ) => {
   try {
-    const shop = await getAccessibleShop(req.seller.id, req.query.shopId);
+    const shop = await getAccessibleShop(req.seller.id, getRequestedShopId(req));
 
     if (!shop) {
       return next(new NotFoundError("Shop not found!"));
@@ -660,7 +662,7 @@ export const getShopWebsites = async (
   next: NextFunction
 ) => {
   try {
-    const shop = await getAccessibleShop(req.seller.id, req.query.shopId);
+    const shop = await getAccessibleShop(req.seller.id, getRequestedShopId(req));
 
     if (!shop || shop.isDeleted) {
       return next(new NotFoundError("Active shop not found for this seller!"));
@@ -701,7 +703,7 @@ export const createShopWebsite = async (
   try {
     const shop = await getAccessibleShop(
       req.seller.id,
-      req.body.shopId || req.query.shopId
+      getRequestedShopId(req)
     );
 
     if (!shop || shop.isDeleted) {
@@ -732,11 +734,11 @@ export const createShopWebsite = async (
         publishedSnapshot:
           payload.status === "published" || payload.isPublished
             ? {
-                pages: payload.pages,
-                theme: payload.theme,
-                settings: payload.settings,
-                seo: payload.seo,
-              }
+              pages: payload.pages,
+              theme: payload.theme,
+              settings: payload.settings,
+              seo: payload.seo,
+            }
             : null,
       },
       include: {
@@ -763,7 +765,7 @@ export const getShopWebsite = async (
     const website = await getWebsiteAccess(
       req.seller.id,
       req.params.websiteId,
-      req.query.shopId
+      getRequestedShopId(req)
     );
 
     if (!website || website.isArchived) {
@@ -788,7 +790,7 @@ export const updateShopWebsite = async (
     const existingWebsite = await getWebsiteAccess(
       req.seller.id,
       req.params.websiteId,
-      req.body.shopId || req.query.shopId
+      getRequestedShopId(req)
     );
 
     if (!existingWebsite || existingWebsite.isArchived) {
@@ -824,11 +826,11 @@ export const updateShopWebsite = async (
           : null,
         publishedSnapshot: shouldPublish
           ? {
-              pages: payload.pages,
-              theme: payload.theme,
-              settings: payload.settings,
-              seo: payload.seo,
-            }
+            pages: payload.pages,
+            theme: payload.theme,
+            settings: payload.settings,
+            seo: payload.seo,
+          }
           : existingWebsite.publishedSnapshot,
       },
       include: {
@@ -857,7 +859,7 @@ export const publishShopWebsite = async (
     const website = await getWebsiteAccess(
       req.seller.id,
       req.params.websiteId,
-      req.body.shopId || req.query.shopId
+      getRequestedShopId(req)
     );
 
     if (!website || website.isArchived) {
@@ -903,7 +905,7 @@ export const deleteShopWebsite = async (
     const website = await getWebsiteAccess(
       req.seller.id,
       req.params.websiteId,
-      req.body.shopId || req.query.shopId
+      getRequestedShopId(req)
     );
 
     if (!website) {
@@ -936,7 +938,7 @@ export const createWebsiteDomain = async (
     const website = await getWebsiteAccess(
       req.seller.id,
       req.params.websiteId,
-      req.body.shopId || req.query.shopId
+      getRequestedShopId(req)
     );
 
     if (!website || website.isArchived) {
@@ -991,7 +993,7 @@ export const markWebsiteDomainConnected = async (
     const website = await getWebsiteAccess(
       req.seller.id,
       req.params.websiteId,
-      req.body.shopId || req.query.shopId
+      getRequestedShopId(req)
     );
 
     if (!website || website.isArchived) {
@@ -1060,7 +1062,7 @@ export const deleteWebsiteDomain = async (
     const website = await getWebsiteAccess(
       req.seller.id,
       req.params.websiteId,
-      req.body.shopId || req.query.shopId
+      getRequestedShopId(req)
     );
 
     if (!website) {

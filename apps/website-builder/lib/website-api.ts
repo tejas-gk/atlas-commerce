@@ -73,10 +73,10 @@ export const websiteApi = {
       `/seller/api/websites/${websiteId}${suffix}`
     )
   },
-  create: async (payload: Record<string, unknown>) =>
+  create: async (payload: Record<string, unknown>, shopId?: string) =>
     request<{ website: WebsiteRecord }>(`/seller/api/websites`, {
       method: "POST",
-      body: JSON.stringify(payload),
+      body: JSON.stringify({ ...(shopId ? { shopId } : {}), ...payload }),
     }),
   update: async (websiteId: string, payload: Record<string, unknown>) =>
     request<{ website: WebsiteRecord }>(`/seller/api/websites/${websiteId}`, {
