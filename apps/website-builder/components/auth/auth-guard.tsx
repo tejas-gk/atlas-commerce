@@ -1,16 +1,24 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { usePathname, useRouter } from "next/navigation"
-import { authApi, type SellerAuthRecord } from "@/lib/auth-api"
+import * as React from "react"
+import { authApi } from "@/lib/auth-api"
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname()
-  const router = useRouter()
-  const [isChecking, setIsChecking] = useState(pathname !== "/login")
-  const [seller, setSeller] = useState<SellerAuthRecord | null>(null)
+  const [isChecking, setIsChecking] = React.useState(true)
+  const [pathname, setPathname] = React.useState(
+    typeof window !== "undefined" ? window.location.pathname : "/"
+  )
 
-  useEffect(() => {
+  React.useEffect(() => {
+    if (typeof window === "undefined") return
+
+    const updatePathname = () => setPathname(window.location.pathname)
+    window.addEventListener("popstate", updatePathname)
+
+    return () => window.removeEventListener("popstate", updatePathname)
+  }, [])
+
+  React.useEffect(() => {
     if (pathname === "/login") {
       setIsChecking(false)
       return
@@ -20,16 +28,14 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
 
     const loadSession = async () => {
       try {
-        const response = await authApi.getLoggedInSeller()
-
+        await authApi.getLoggedInSeller()
         if (!isMounted) return
 
-        setSeller(response.seller)
         setIsChecking(false)
       } catch {
         if (!isMounted) return
 
-        router.replace("/login")
+        window.location.replace("/login")
       }
     }
 
@@ -38,9 +44,9 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     return () => {
       isMounted = false
     }
-  }, [pathname, router])
+  }, [pathname])
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (pathname !== "/login" || isChecking) {
       return
     }
@@ -49,16 +55,12 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
 
     const loadSeller = async () => {
       try {
-        const response = await authApi.getLoggedInSeller()
-
+        await authApi.getLoggedInSeller()
         if (!isMounted) return
 
-        setSeller(response.seller)
-        router.replace("/dashboard")
+        window.location.replace("/dashboard")
       } catch {
         if (!isMounted) return
-
-        setSeller(null)
       }
     }
 
@@ -67,7 +69,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     return () => {
       isMounted = false
     }
-  }, [isChecking, pathname, router])
+  }, [isChecking, pathname])
 
   if (pathname !== "/login" && isChecking) {
     return (

@@ -7,6 +7,7 @@ import { BuilderCanvas } from "@/components/builder/builder-canvas"
 import { BuilderSidebar, PropertiesPanel } from "@/components/builder/builder-sidebar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { authApi } from "@/lib/auth-api"
 import { websiteApi, type WebsiteDomainRecord, type WebsiteRecord } from "@/lib/website-api"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import {
@@ -61,6 +62,7 @@ export default function BuilderPageComponent({
   const [pages, setPages] = useState<PageType[]>(getDefaultPages)
   const [activePageId, setActivePageId] = useState<string>(() => getDefaultPages()[0].id)
   const [website, setWebsite] = useState<WebsiteRecord | null>(null)
+  const [activeShopId, setActiveShopId] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [domainName, setDomainName] = useState("")
@@ -166,6 +168,19 @@ export default function BuilderPageComponent({
     },
     [updatePages, activePageId]
   )
+
+  useEffect(() => {
+    const loadSeller = async () => {
+      try {
+        const response = await authApi.getLoggedInSeller()
+        setActiveShopId(response.seller.activeShopId ?? null)
+      } catch (loadError) {
+        setError(loadError instanceof Error ? loadError.message : "Failed to load seller session")
+      }
+    }
+
+    loadSeller()
+  }, [])
 
   // ─── Undo / Redo ───
   const undo = useCallback(() => {
@@ -486,7 +501,7 @@ export default function BuilderPageComponent({
       const payload = getWebsitePayload()
       const response =
         params.id === "new" && !website
-          ? await websiteApi.create(payload)
+          ? await websiteApi.create(payload, activeShopId ?? undefined)
           : await websiteApi.update(params.id, payload)
       setWebsite(response.website)
       if (params.id === "new") {
@@ -496,7 +511,7 @@ export default function BuilderPageComponent({
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : "Failed to save website")
     }
-  }, [getWebsitePayload, params.id, website])
+  }, [activeShopId, getWebsitePayload, params.id, website])
 
   const handlePublishWebsite = useCallback(async () => {
     try {
@@ -505,7 +520,7 @@ export default function BuilderPageComponent({
       const payload = getWebsitePayload()
       const currentWebsite =
         params.id === "new" && !website
-          ? (await websiteApi.create(payload)).website
+          ? (await websiteApi.create(payload, activeShopId ?? undefined)).website
           : (await websiteApi.update(params.id, payload)).website
       const response = await websiteApi.publish(currentWebsite.id, {})
       setWebsite(response.website)
@@ -520,7 +535,7 @@ export default function BuilderPageComponent({
     } finally {
       setIsPublishing(false)
     }
-  }, [getWebsitePayload, params.id, website])
+  }, [activeShopId, getWebsitePayload, params.id, website])
 
   const handleAddDomain = useCallback(async () => {
     if (!website?.id || !domainName.trim()) return
@@ -553,13 +568,13 @@ export default function BuilderPageComponent({
         setWebsite((current) =>
           current
             ? {
-                ...current,
-                domains: current.domains.map((domain) =>
-                  domain.id === domainId
-                    ? response.domain
-                    : { ...domain, isPrimary: false }
-                ),
-              }
+              ...current,
+              domains: current.domains.map((domain) =>
+                domain.id === domainId
+                  ? response.domain
+                  : { ...domain, isPrimary: false }
+              ),
+            }
             : current
         )
       } catch (connectError) {
@@ -580,9 +595,9 @@ export default function BuilderPageComponent({
         setWebsite((current) =>
           current
             ? {
-                ...current,
-                domains: current.domains.filter((domain) => domain.id !== domainId),
-              }
+              ...current,
+              domains: current.domains.filter((domain) => domain.id !== domainId),
+            }
             : current
         )
       } catch (deleteError) {
@@ -664,8 +679,8 @@ export default function BuilderPageComponent({
                   <button
                     onClick={() => setActiveDevice(id)}
                     className={`h-7 w-7 flex items-center justify-center rounded-md transition-colors ${activeDevice === id
-                        ? "bg-background shadow-sm text-foreground"
-                        : "text-muted-foreground hover:text-foreground"
+                      ? "bg-background shadow-sm text-foreground"
+                      : "text-muted-foreground hover:text-foreground"
                       }`}
                   >
                     <Icon className="h-3.5 w-3.5" />

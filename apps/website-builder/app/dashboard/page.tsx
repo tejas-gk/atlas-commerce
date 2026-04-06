@@ -12,6 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { createStarterWebsitePayload } from "@/lib/builder-types"
+import { authApi } from "@/lib/auth-api"
 import { websiteApi, type WebsiteRecord } from "@/lib/website-api"
 import { Globe, PlusCircle, Settings, Trash2 } from "lucide-react"
 
@@ -26,15 +27,16 @@ function getRelativeDate(value: string) {
 
 export default function DashboardPage() {
   const [websites, setWebsites] = useState<WebsiteRecord[]>([])
+  const [activeShopId, setActiveShopId] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isCreating, setIsCreating] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const loadWebsites = async () => {
+  const loadWebsites = async (shopId?: string | null) => {
     try {
       setIsLoading(true)
       setError(null)
-      const response = await websiteApi.list()
+      const response = await websiteApi.list(shopId || undefined)
       setWebsites(response.websites)
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : "Failed to load websites")
@@ -44,13 +46,28 @@ export default function DashboardPage() {
   }
 
   useEffect(() => {
-    loadWebsites()
+    const fetchSellerAndWebsites = async () => {
+      try {
+        const sellerResponse = await authApi.getLoggedInSeller()
+        const seller = sellerResponse.seller
+        setActiveShopId(seller.activeShopId ?? null)
+        await loadWebsites(seller.activeShopId ?? null)
+      } catch (loadError) {
+        setError(loadError instanceof Error ? loadError.message : "Failed to load seller or websites")
+        setIsLoading(false)
+      }
+    }
+
+    fetchSellerAndWebsites()
   }, [])
 
   const handleCreateWebsite = async () => {
     try {
       setIsCreating(true)
-      const response = await websiteApi.create(createStarterWebsitePayload())
+      const response = await websiteApi.create(
+        createStarterWebsitePayload(),
+        activeShopId ?? undefined
+      )
       window.location.href = `/dashboard/builder/${response.website.id}`
     } catch (createError) {
       setError(createError instanceof Error ? createError.message : "Failed to create website")
