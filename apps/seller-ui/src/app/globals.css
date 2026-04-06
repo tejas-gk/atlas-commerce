@@ -1,41 +1,114 @@
 @import "tailwindcss";
 @import "@workspace/ui/globals.css";
 
+/* ── Design-system token overrides (light mode) ──────────────── */
+:root {
+  --chart-1: 350 89% 55%;
+  --chart-2: 160 60% 45%;
+  --chart-3: 43 96% 56%;
+  --chart-4: 199 89% 48%;
+  --chart-5: 340 75% 55%;
+}
+
 /* ── Design-system token overrides (dark mode) ───────────────── */
 .dark {
-  --background: oklch(0.09 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.12 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --border: oklch(0.22 0 0);
-  --input: oklch(0.22 0 0);
-  --muted: oklch(0.22 0 0);
-  --muted-foreground: oklch(0.65 0 0);
-  --accent: oklch(0.22 0 0);
-  --primary: oklch(0.5 0.25 270);
-  --primary-foreground: oklch(0.985 0 0);
-  --radius: 0.75rem;
+  /* Canvas */
+  --background: 224 25% 5%;
+  --foreground: 220 15% 97%;
+
+  /* Cards & surfaces */
+  --card: 224 20% 9%;
+  --card-foreground: 220 15% 97%;
+  --popover: 224 20% 9%;
+  --popover-foreground: 220 15% 97%;
+
+  /* Rose-red primary accent */
+  --primary: 350 89% 60%;
+  --primary-foreground: 0 0% 100%;
+
+  /* Subtle surfaces */
+  --secondary: 224 18% 14%;
+  --secondary-foreground: 220 15% 97%;
+  --muted: 224 18% 13%;
+  --muted-foreground: 220 10% 55%;
+  --accent: 224 18% 14%;
+  --accent-foreground: 220 15% 97%;
+
+  /* Status */
+  --destructive: 0 62.8% 40%;
+  --destructive-foreground: 0 0% 98%;
+
+  /* Structure */
+  --border: 224 18% 16%;
+  --input: 224 18% 13%;
+  --ring: 350 89% 60%;
+  --radius: 0.625rem;
+
+  /* Charts — vibrant palette */
+  --chart-1: 350 89% 60%;
+  --chart-2: 160 60% 48%;
+  --chart-3: 43 96% 56%;
+  --chart-4: 199 89% 55%;
+  --chart-5: 340 75% 60%;
+
+  /* Sidebar */
+  --sidebar-background: 224 25% 5%;
+  --sidebar-foreground: 220 10% 70%;
+  --sidebar-primary: 350 89% 60%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 224 18% 12%;
+  --sidebar-accent-foreground: 220 15% 97%;
+  --sidebar-border: 224 15% 9%;
+  --sidebar-ring: 350 89% 60%;
 }
 
 @theme inline {
   --font-sans: var(--font-dm-sans);
-  --color-base: #0d0d0d;
-  --color-surface: #111111;
-  --color-surface-2: #1a1a1a;
-  --color-accent: #7c3aed;
-  --color-accent-2: #ec4899;
-  --color-border: rgba(255,255,255,0.08);
-  --color-text-muted: rgba(255,255,255,0.4);
+}
+
+/* ── Smooth scrolling ────────────────────────────────────────── */
+html { scroll-behavior: smooth; }
+
+/* ── Card glow hover effect ──────────────────────────────────── */
+.dark .card-glow:hover {
+  box-shadow: 0 0 0 1px hsl(350 89% 60% / 0.2), 0 8px 32px hsl(350 89% 60% / 0.08);
 }
 
 /* ── Autofill override ───────────────────────────────────────── */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0px 1000px #141414 inset !important;
-  -webkit-text-fill-color: white !important;
-  caret-color: white !important;
+  -webkit-box-shadow: 0 0 0px 1000px hsl(224 20% 9%) inset !important;
+  -webkit-text-fill-color: hsl(220 15% 97%) !important;
+  caret-color: hsl(220 15% 97%) !important;
 }
 
 /* ── Always hide scrollbars ──────────────────────────────────── */
 *::-webkit-scrollbar { display: none !important; }
+
+/* ── Sidebar/content separator: ultra-subtle ─────────────────── */
+[data-slot="sidebar-container"] {
+  border-color: rgba(255, 255, 255, 0.04) !important;
+}
+
+/* ── Chart fix: override aspect-video from ChartContainer ───── */
+[data-slot="chart"] {
+  aspect-ratio: auto !important;
+}
+[data-slot="chart"] > .recharts-responsive-container {
+  flex: 1 1 0%;
+  min-width: 0;
+}
+
+/*
+ * BACKGROUND FIX:
+ * packages/ui/src/styles/globals.css uses Tailwind v4's @theme inline which
+ * maps --color-background → var(--background) and its .dark block defines
+ * --background: oklch(0.145 0 0) (neutral grey). This wins the CSS cascade
+ * over our HSL-format override because the package CSS processes via Tailwind
+ * layers after local definitions. Fix: set background-color directly on body
+ * to bypass the --background variable chain entirely.
+ */
+.dark body {
+  background-color: hsl(224 25% 5%);
+}

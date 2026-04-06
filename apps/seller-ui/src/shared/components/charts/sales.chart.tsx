@@ -1,6 +1,8 @@
 ﻿"use client";
 import React from "react";
-import Chart, { Props } from "react-apexcharts";
+import dynamic from "next/dynamic";
+
+const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 export const SalesChart = ({
   ordersData,
@@ -10,7 +12,7 @@ export const SalesChart = ({
     count: number;
   }[];
 }) => {
-  const chartSeries: Props["series"] = [
+  const chartSeries: any[] = [
     {
       name: "Revenue",
       data: ordersData?.map((data) => data.count) || [
@@ -19,11 +21,10 @@ export const SalesChart = ({
     },
   ];
 
-  const chartOptions: Props["options"] = {
+  const chartOptions: any = {
     chart: {
       type: "area",
       animations: {
-        // @ts-ignore
         easing: "easeinout",
         speed: 400,
       },

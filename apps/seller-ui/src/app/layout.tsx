@@ -24,7 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`min-h-screen bg-[#0d0d0d] font-sans antialiased ${dmSans.variable}`}
+        className={`min-h-screen bg-background font-sans antialiased ${dmSans.variable}`}
       >
         <Providers>{children}</Providers>
       </body>

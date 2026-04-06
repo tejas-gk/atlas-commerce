@@ -60,7 +60,7 @@ const Page = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-[40vh]">
-        <div className="w-8 h-8 rounded-full border-2 border-violet-500/30 border-t-violet-500 animate-spin" />
+        <div className="w-8 h-8 rounded-full border-2 border-rose-500/30 border-t-rose-500 animate-spin" />
       </div>
     );
   }
@@ -93,12 +93,12 @@ const Page = () => {
         <div className="flex items-center justify-between">
           <h2 className="text-white font-semibold text-sm">Delivery Status</h2>
           <div className="flex items-center gap-2">
-            {updating && <Loader2 size={14} className="animate-spin text-violet-400" />}
+            {updating && <Loader2 size={14} className="animate-spin text-rose-400" />}
             <select
               value={order.deliveryStatus}
               onChange={handleStatusChange}
               disabled={updating}
-              className="h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-white/80 text-xs outline-none focus:border-violet-500/50 transition-all"
+              className="h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-white/80 text-xs outline-none focus:border-rose-500/50 transition-all"
             >
               {statuses.map((status) => {
                 const currentIndex = statuses.indexOf(order.deliveryStatus);
@@ -122,14 +122,14 @@ const Page = () => {
               <div key={step} className="flex-1 flex flex-col items-center gap-1.5">
                 <div className="w-full flex items-center">
                   {idx > 0 && (
-                    <div className={`flex-1 h-0.5 ${reached ? "bg-violet-600" : "bg-white/10"}`} />
+                    <div className={`flex-1 h-0.5 ${reached ? "bg-rose-600" : "bg-white/10"}`} />
                   )}
-                  <div className={`w-3.5 h-3.5 rounded-full flex-shrink-0 ${current ? "bg-violet-600 ring-2 ring-violet-500/30" : reached ? "bg-violet-600" : "bg-white/10"}`} />
+                  <div className={`w-3.5 h-3.5 rounded-full flex-shrink-0 ${current ? "bg-rose-600 ring-2 ring-rose-500/30" : reached ? "bg-rose-600" : "bg-white/10"}`} />
                   {idx < statuses.length - 1 && (
-                    <div className={`flex-1 h-0.5 ${reached && idx < statuses.indexOf(order.deliveryStatus) ? "bg-violet-600" : "bg-white/10"}`} />
+                    <div className={`flex-1 h-0.5 ${reached && idx < statuses.indexOf(order.deliveryStatus) ? "bg-rose-600" : "bg-white/10"}`} />
                   )}
                 </div>
-                <span className={`text-[10px] text-center leading-tight ${current ? "text-violet-400 font-semibold" : reached ? "text-white/50" : "text-white/25"}`}>
+                <span className={`text-[10px] text-center leading-tight ${current ? "text-rose-400 font-semibold" : reached ? "text-white/50" : "text-white/25"}`}>
                   {step}
                 </span>
               </div>
@@ -161,7 +161,7 @@ const Page = () => {
           {order.couponCode && (
             <div className="flex justify-between text-sm">
               <span className="text-white/50">Coupon Used</span>
-              <span className="text-violet-400 font-mono text-xs">{order.couponCode.public_name}</span>
+              <span className="text-rose-400 font-mono text-xs">{order.couponCode.public_name}</span>
             </div>
           )}
           <div className="border-t border-white/5 pt-2 flex justify-between text-sm">

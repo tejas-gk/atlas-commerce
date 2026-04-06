@@ -6,6 +6,15 @@ import { BellIcon, SearchIcon } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
 import { Separator } from "@workspace/ui/components/separator";
 import { Avatar, AvatarFallback } from "@workspace/ui/components/avatar";
+import { Badge } from "@workspace/ui/components/badge";
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@workspace/ui/components/breadcrumb";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,16 +23,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
-import { Input } from "@workspace/ui/components/input";
+import { SidebarTrigger } from "@workspace/ui/components/sidebar";
 import useSeller from "@/hooks/useSeller";
 import axiosInstance from "@/utils/axiosInstance";
 import { useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export function SellerSiteHeader() {
   const { seller } = useSeller();
   const queryClient = useQueryClient();
   const router = useRouter();
+  const pathname = usePathname();
 
   const handleLogout = async () => {
     try {
@@ -37,62 +47,98 @@ export function SellerSiteHeader() {
 
   const sellerInitial = seller?.name?.[0]?.toUpperCase() ?? "S";
 
+  // Derive breadcrumb from current pathname
+  const segments = pathname.replace("/dashboard", "").split("/").filter(Boolean);
+  const currentPage = segments.length > 0
+    ? segments[segments.length - 1]!.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+    : "Dashboard";
+
   return (
-    <header className="sticky top-0 z-[10] flex h-14 shrink-0 items-center gap-2 border-b border-white/5 bg-[#111111]/80 backdrop-blur-lg px-6 justify-between">
-      {/* Search */}
-      <div className="relative hidden md:flex items-center w-64">
-        <SearchIcon className="absolute left-2.5 size-3.5 text-white/25 pointer-events-none" />
-        <Input
-          placeholder="Search orders, products…"
-          className="pl-8 h-8 bg-white/5 border-white/10 text-white/70 placeholder:text-white/25 focus-visible:ring-violet-500 focus-visible:border-violet-500/50 text-sm rounded-lg"
-        />
-      </div>
+    <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-4 border-b border-white/[0.04] bg-background/90 backdrop-blur-xl px-6">
+      {/* Sidebar trigger */}
+      <SidebarTrigger className="-ml-2 text-muted-foreground hover:text-foreground" />
 
-      {/* Right section */}
-      <div className="flex items-center gap-1">
-        {/* Notification bell */}
-        <Button variant="ghost" size="icon" asChild
-          className="relative text-white/40 hover:text-white hover:bg-white/5 transition-colors h-8 w-8 rounded-lg">
-          <Link href="/dashboard/notifications">
-            <BellIcon size={15} />
-            <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-violet-500" />
-          </Link>
-        </Button>
+      <Separator orientation="vertical" className="h-5 bg-border/40" />
 
-        {/* Avatar + dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon"
-              className="rounded-full h-8 w-8 hover:bg-white/5 transition-colors">
-              <Avatar className="h-7 w-7">
-                <AvatarFallback className="bg-violet-600 text-white text-xs font-bold">
-                  {sellerInitial}
-                </AvatarFallback>
-              </Avatar>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-52 bg-[#111111] border-white/10 text-white/80">
-            <DropdownMenuLabel className="pb-2">
-              <p className="font-semibold text-sm text-white">{seller?.name ?? "Seller"}</p>
-              <p className="text-xs text-white/40 font-normal truncate">{seller?.email ?? ""}</p>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator className="bg-white/5" />
-            <DropdownMenuItem asChild className="focus:bg-white/5 focus:text-white cursor-pointer">
-              <Link href="/dashboard/settings">Settings</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild className="focus:bg-white/5 focus:text-white cursor-pointer">
-              <Link href="/edit-profile">Edit Profile</Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator className="bg-white/5" />
-            <DropdownMenuItem
-              onClick={handleLogout}
-              className="text-red-400 focus:bg-red-500/10 focus:text-red-400 cursor-pointer"
-            >
-              Logout
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+      {/* Breadcrumb */}
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/dashboard" className="text-muted-foreground hover:text-foreground text-sm">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          {currentPage !== "Dashboard" && (
+            <>
+              <BreadcrumbSeparator className="text-border" />
+              <BreadcrumbItem>
+                <BreadcrumbPage className="text-sm font-medium">{currentPage}</BreadcrumbPage>
+              </BreadcrumbItem>
+            </>
+          )}
+          {currentPage === "Dashboard" && (
+            <BreadcrumbItem>
+              <BreadcrumbPage className="sr-only">Dashboard</BreadcrumbPage>
+            </BreadcrumbItem>
+          )}
+        </BreadcrumbList>
+      </Breadcrumb>
+
+      {/* Spacer */}
+      <div className="flex-1" />
+
+      {/* Search trigger */}
+      <Button
+        variant="outline"
+        className="hidden md:flex items-center gap-2 text-muted-foreground/60 text-[13px] h-8 w-64 justify-start border-border/40 bg-white/[0.03] hover:bg-white/[0.05] hover:text-foreground transition-colors duration-150"
+      >
+        <SearchIcon size={13} className="shrink-0" />
+        <span>Search orders, products…</span>
+        <kbd className="ml-auto pointer-events-none hidden h-5 select-none items-center gap-1 rounded border border-border/60 bg-background px-1.5 font-mono text-[10px] font-medium text-muted-foreground sm:flex">
+          ⌘K
+        </kbd>
+      </Button>
+
+      {/* Notification bell */}
+      <Button variant="ghost" size="icon" asChild className="relative h-8 w-8 text-muted-foreground hover:text-foreground">
+        <Link href="/dashboard/notifications">
+          <BellIcon size={16} />
+          <Badge className="absolute -top-1 -right-1 h-4 w-4 rounded-full p-0 flex items-center justify-center text-[10px] bg-rose-600/90 border-0">
+            3
+          </Badge>
+        </Link>
+      </Button>
+
+      {/* Avatar + dropdown */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 ring-1 ring-border/40 hover:ring-rose-500/30 transition-all duration-150">
+            <Avatar className="h-7 w-7">
+              <AvatarFallback className="bg-rose-600/90 text-white text-xs font-semibold">
+                {sellerInitial}
+              </AvatarFallback>
+            </Avatar>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-52">
+          <DropdownMenuLabel className="pb-2">
+            <p className="font-semibold text-sm">{seller?.name ?? "Seller"}</p>
+            <p className="text-xs text-muted-foreground font-normal truncate">{seller?.email ?? ""}</p>
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem asChild className="cursor-pointer">
+            <Link href="/dashboard/settings">Settings</Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild className="cursor-pointer">
+            <Link href="/edit-profile">Edit Profile</Link>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onClick={handleLogout}
+            className="text-destructive focus:text-destructive cursor-pointer"
+          >
+            Logout
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </header>
   );
 }

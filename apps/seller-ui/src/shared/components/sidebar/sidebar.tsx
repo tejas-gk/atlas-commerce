@@ -1,79 +1,97 @@
 ﻿"use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+import React from "react";
 import Link from "next/link";
 import {
-  BellRing,
-  CalendarPlus,
   ChevronsUpDown,
-  Home,
-  ListOrdered,
   LogOut,
-  Mail,
-  PackageSearch,
-  PartyPopper,
+  LayoutDashboard,
+  ShoppingBag,
+  CreditCard,
+  PackagePlus,
+  Boxes,
+  CalendarPlus,
+  CalendarDays,
+  Inbox,
+  Bell,
   Settings,
-  SquarePlus,
-  TicketPercent,
-  BellPlus,
+  Tag,
+  type LucideIcon,
 } from "lucide-react";
-import { Separator } from "@workspace/ui/components/separator";
-import { Avatar, AvatarFallback } from "@workspace/ui/components/avatar";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@workspace/ui/components/tooltip";
-import useSidebar from "@/hooks/useSidebar.tsx";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@workspace/ui/components/dropdown-menu";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarRail,
+} from "@workspace/ui/components/sidebar";
 import useRequireAuth from "@/hooks/useRequiredAuth";
 import axiosInstance from "@/utils/axiosInstance";
 import { useQueryClient } from "@tanstack/react-query";
 
-const navGroups = [
+interface NavItem {
+  title: string;
+  href: string;
+  icon: LucideIcon;
+}
+
+interface NavSection {
+  label: string;
+  items: NavItem[];
+}
+
+const navData: NavSection[] = [
   {
     label: "Main Menu",
     items: [
-      { title: "Dashboard",   href: "/dashboard",          icon: Home         },
-      { title: "Orders",      href: "/dashboard/orders",   icon: ListOrdered  },
-      { title: "Payments",    href: "/dashboard/payments", icon: PartyPopper  },
+      { title: "Dashboard",  href: "/dashboard",          icon: LayoutDashboard },
+      { title: "Orders",     href: "/dashboard/orders",   icon: ShoppingBag },
+      { title: "Payments",   href: "/dashboard/payments", icon: CreditCard },
     ],
   },
   {
     label: "Products",
     items: [
-      { title: "Create Product", href: "/dashboard/create-product", icon: SquarePlus    },
-      { title: "All Products",   href: "/dashboard/all-products",   icon: PackageSearch },
+      { title: "Create Product", href: "/dashboard/create-product", icon: PackagePlus },
+      { title: "All Products",   href: "/dashboard/all-products",   icon: Boxes },
     ],
   },
   {
     label: "Events",
     items: [
       { title: "Create Event", href: "/dashboard/create-event", icon: CalendarPlus },
-      { title: "All Events",   href: "/dashboard/all-events",   icon: BellPlus     },
+      { title: "All Events",   href: "/dashboard/all-events",   icon: CalendarDays },
     ],
   },
   {
     label: "Controllers",
     items: [
-      { title: "Inbox",          href: "/dashboard/inbox",           icon: Mail          },
-      { title: "Notifications",  href: "/dashboard/notifications",   icon: BellRing      },
-      { title: "Settings",       href: "/dashboard/settings",        icon: Settings      },
-      { title: "Discount Codes", href: "/dashboard/discount-codes",  icon: TicketPercent },
+      { title: "Inbox",          href: "/dashboard/inbox",          icon: Inbox },
+      { title: "Notifications",  href: "/dashboard/notifications",  icon: Bell },
+      { title: "Settings",       href: "/dashboard/settings",       icon: Settings },
+      { title: "Discount Codes", href: "/dashboard/discount-codes", icon: Tag },
     ],
   },
 ];
 
 const SellerSidebar = () => {
-  const { activeSidebar, setActiveSidebar } = useSidebar();
-  const pathName = usePathname();
+  const pathname = usePathname();
   const router = useRouter();
   const queryClient = useQueryClient();
   const { seller } = useRequireAuth();
-
-  useEffect(() => {
-    setActiveSidebar(pathName);
-  }, [pathName, setActiveSidebar]);
 
   const handleLogout = async () => {
     try {
@@ -86,76 +104,96 @@ const SellerSidebar = () => {
   };
 
   const shopInitial = seller?.shop?.name?.[0]?.toUpperCase() ?? "S";
-  const shopName    = seller?.shop?.name ?? "My Store";
+  const shopName = seller?.shop?.name ?? "My Store";
 
   return (
-    <div className="bg-[#0a0a0a] border-r border-white/5 h-screen flex flex-col w-[220px] shrink-0">
+    <Sidebar className="border-r border-white/[0.04]">
       {/* Store header */}
-      <div className="mx-3 mt-3 mb-2 p-3 bg-white/5 rounded-xl border border-white/8
-                      flex items-center gap-3 cursor-pointer hover:bg-white/8 transition-all">
-        <Avatar className="w-8 h-8 rounded-lg shrink-0">
-          <AvatarFallback className="bg-violet-600 text-white text-xs font-bold rounded-lg">
-            {shopInitial}
-          </AvatarFallback>
-        </Avatar>
-        <div className="flex-1 min-w-0">
-          <p className="text-white text-sm font-semibold truncate">{shopName}</p>
-          <p className="text-white/40 text-xs">Seller Dashboard</p>
-        </div>
-        <ChevronsUpDown className="w-4 h-4 text-white/30 shrink-0" />
-      </div>
+      <SidebarHeader className="h-14 border-b border-white/[0.04] flex-row items-center px-2 py-0 gap-0">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton size="lg" className="hover:bg-sidebar-accent/50 transition-colors duration-150">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-600/90 text-white shrink-0">
+                    <span className="text-xs font-semibold">{shopInitial}</span>
+                  </div>
+                  <div className="flex flex-col gap-0.5 leading-none">
+                    <span className="font-semibold text-sm text-sidebar-foreground">{shopName}</span>
+                    <span className="text-[11px] text-sidebar-foreground/40">Seller Dashboard</span>
+                  </div>
+                  <ChevronsUpDown className="ml-auto size-3.5 text-sidebar-foreground/40" />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-[--radix-dropdown-menu-trigger-width]">
+                <DropdownMenuItem>Switch Store</DropdownMenuItem>
+                <DropdownMenuItem>Store Settings</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
 
-      {/* Nav groups */}
-      <nav className="flex-1 overflow-y-auto py-2">
-        {navGroups.map((group, gi) => (
-          <div key={group.label}>
-            {gi > 0 && (
-              <Separator className="opacity-10 my-2 mx-3" />
-            )}
-            <p className="text-white/25 text-[10px] font-semibold uppercase tracking-widest px-4 mb-1 mt-4">
-              {group.label}
-            </p>
-            {group.items.map((item) => {
-              const isActive = activeSidebar === item.href;
-              const Icon = item.icon;
-              return (
-                <Tooltip key={item.href}>
-                  <TooltipTrigger asChild>
-                    <Link
-                      href={item.href}
-                      className={`flex items-center gap-3 px-3 py-2 mx-2 rounded-lg text-sm transition-all duration-150 ${
-                        isActive
-                          ? "text-white font-medium bg-white/8 border-l-2 border-violet-500"
-                          : "text-white/50 hover:bg-white/5 hover:text-white/80"
-                      }`}
-                    >
-                      <Icon className={`w-4 h-4 ${isActive ? "text-white/70" : "text-white/40"}`} />
-                      {item.title}
-                    </Link>
-                  </TooltipTrigger>
-                  <TooltipContent side="right" className="bg-[#111] border-white/10 text-white text-xs">
-                    {item.title}
-                  </TooltipContent>
-                </Tooltip>
-              );
-            })}
-          </div>
+      {/* Navigation */}
+      <SidebarContent className="pt-2">
+        {navData.map((section) => (
+          <SidebarGroup key={section.label}>
+            <SidebarGroupLabel className="text-[10px] uppercase tracking-widest text-sidebar-foreground/30 px-3 mb-1">
+              {section.label}
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {section.items.map((item) => {
+                  const isActive = pathname === item.href;
+                  const Icon = item.icon;
+                  return (
+                    <SidebarMenuItem key={item.href}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={isActive}
+                        className={
+                          isActive
+                            ? "bg-rose-600/10 text-rose-400 hover:bg-rose-600/15 hover:text-rose-400 font-medium transition-colors duration-150"
+                            : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/40 transition-colors duration-150"
+                        }
+                      >
+                        <Link href={item.href} className="flex items-center gap-2.5">
+                          <Icon
+                            size={15}
+                            className={isActive ? "text-rose-400" : "text-sidebar-foreground/35"}
+                          />
+                          <span className="text-[13px]">{item.title}</span>
+                          {isActive && (
+                            <span className="ml-auto h-1.5 w-1.5 rounded-full bg-rose-400 shrink-0" />
+                          )}
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
         ))}
-      </nav>
+      </SidebarContent>
 
-      {/* Logout — pinned bottom */}
-      <div className="border-t border-white/5 p-3 mt-auto">
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-3 px-3 py-2 w-full rounded-lg
-                     text-white/40 text-sm hover:text-red-400 hover:bg-red-500/5
-                     transition-all duration-150"
-        >
-          <LogOut className="w-4 h-4" />
-          Logout
-        </button>
-      </div>
-    </div>
+      {/* Footer — logout */}
+      <SidebarFooter className="border-t border-white/[0.04] pt-3">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              onClick={handleLogout}
+              className="text-sidebar-foreground/40 hover:text-red-400 hover:bg-red-500/8 transition-colors duration-150"
+            >
+              <LogOut size={15} />
+              <span className="text-[13px]">Logout</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
+
+      <SidebarRail />
+    </Sidebar>
   );
 };
 

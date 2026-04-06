@@ -135,281 +135,121 @@ const Page = () => {
   };
 
   return (
-    <form
-      className="w-full mx-auto"
-      onSubmit={handleSubmit(onSubmit)}
-    >
-      {/* Heading & Breadcrumbs */}
-      <h2 className="text-2xl font-bold tracking-tight text-white">
-        Create Product
-      </h2>
-      <BreadCrumbs title="Create Product" />
+    <form className="w-full pb-8" onSubmit={handleSubmit(onSubmit)}>
 
-      {/* Content Layout */}
-      <div className="py-4 w-full flex gap-6">
-        {/* Left side - Image upload section */}
-        <div className="md:w-[35%]">
-          {images?.length > 0 && (
-            <ImagePlaceHolder
-              size="765 x 850"
-              small={false}
-              images={images}
-              setImages={setImages}
-              setValue={setValue}
-              index={0}
-            />
-          )}
+      {/* ── Page header ─────────────────────────────────────────── */}
+      <div className="flex items-start justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Create Product</h1>
+          <BreadCrumbs title="Create Product" />
+        </div>
+        <Button
+          type="submit"
+          disabled={loading}
+          className="gap-2 bg-rose-600 hover:bg-rose-700 text-white font-semibold border-0 disabled:opacity-60"
+        >
+          {loading ? "Creating…" : "Create Product"}
+        </Button>
+      </div>
 
-          <div className="grid grid-cols-2 gap-3 mt-4">
-            {images.slice(1).map((_, index) => (
+      {/* ── Layout ──────────────────────────────────────────────── */}
+      <div className="flex gap-6 items-start">
+
+        {/* ── Left column: Images ─────────────────────────────────── */}
+        <div className="w-[35%] shrink-0">
+          <div className="rounded-xl border border-white/[0.06] bg-card/50 p-5">
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/60 mb-4">Product Images</p>
+            {images?.length > 0 && (
               <ImagePlaceHolder
                 size="765 x 850"
+                small={false}
                 images={images}
                 setImages={setImages}
-                key={index}
-                small
                 setValue={setValue}
-                index={index + 1}
+                index={0}
               />
-            ))}
+            )}
+            <div className="grid grid-cols-2 gap-3 mt-4">
+              {images.slice(1).map((_, index) => (
+                <ImagePlaceHolder
+                  size="765 x 850"
+                  images={images}
+                  setImages={setImages}
+                  key={index}
+                  small
+                  setValue={setValue}
+                  index={index + 1}
+                />
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Right side - form inputs */}
-        <div className="md:w-[65%]">
-          <div className="w-full flex gap-6">
-            {/* Product Title Input */}
-            <div className="w-2/4">
-              <div>
-                <Label className="text-white/50 text-xs font-semibold uppercase tracking-wider mb-1.5">Product Title *</Label>
+        {/* ── Right column: Form ──────────────────────────────────── */}
+        <div className="flex-1 min-w-0 space-y-5">
+
+          {/* Section 1: Product Details ─────────────────────────── */}
+          <div className="rounded-xl border border-white/[0.06] bg-card/50 p-5">
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/60 mb-4">Product Details</p>
+            <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+              {/* Title */}
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-muted-foreground">Product Title *</Label>
                 <Input
                   placeholder="Enter product title"
-                  className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus-visible:border-violet-500"
+                  className="h-9 border-white/[0.08] bg-white/[0.03] focus-visible:border-rose-500/60 focus-visible:bg-white/[0.05]"
                   {...register("title", { required: "Title is required" })}
                 />
+                {errors.title && <p className="text-red-400 text-xs">{errors.title.message as string}</p>}
               </div>
-              {errors.title && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.title.message as string}
-                </p>
-              )}
 
-              <div className="mt-2">
-                <Label className="text-white/50 text-xs font-semibold uppercase tracking-wider mb-1.5">Short Description * (Max 150 words)</Label>
+              {/* Category */}
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-muted-foreground">Category *</Label>
+                {isLoading ? (
+                  <p className="text-muted-foreground/60 text-xs h-9 flex items-center">Loading…</p>
+                ) : (
+                  <Controller
+                    name="category"
+                    control={control}
+                    rules={{ required: "Category is required" }}
+                    render={({ field }) => (
+                      <select
+                        {...field}
+                        className="w-full h-9 px-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-foreground text-sm outline-none focus:border-rose-500/60 transition-colors"
+                      >
+                        <option value="" className="bg-card">Select Category</option>
+                        {categories?.map((c: string) => (
+                          <option value={c} key={c} className="bg-card">{c}</option>
+                        ))}
+                      </select>
+                    )}
+                  />
+                )}
+                {errors.category && <p className="text-red-400 text-xs">{errors.category.message as string}</p>}
+              </div>
+
+              {/* Short Description */}
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-muted-foreground">Short Description * <span className="text-muted-foreground/50">(max 150 words)</span></Label>
                 <Textarea
-                  rows={7}
+                  rows={5}
                   placeholder="Enter product description for quick view"
-                  className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus-visible:border-violet-500 resize-none"
+                  className="border-white/[0.08] bg-white/[0.03] resize-none focus-visible:border-rose-500/60 focus-visible:bg-white/[0.05]"
                   {...register("short_description", {
                     required: "Description is required",
-                    validate: (value) => {
-                      const wordCount = value.trim().split(/\s+/).length;
-                      return (
-                        wordCount <= 150 ||
-                        `Description cannot exceed 150 words (Current: ${wordCount})`
-                      );
+                    validate: (v) => {
+                      const wc = v.trim().split(/\s+/).length;
+                      return wc <= 150 || `Exceeds 150 words (${wc})`;
                     },
                   })}
                 />
-                {errors.description && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.description.message as string}
-                  </p>
-                )}
+                {errors.short_description && <p className="text-red-400 text-xs">{errors.short_description.message as string}</p>}
               </div>
 
-              <div className="mt-2">
-                <Label className="text-white/50 text-xs font-semibold uppercase tracking-wider mb-1.5">Tags *</Label>
-                <Input
-                  placeholder="apple,flagship"
-                  className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus-visible:border-violet-500"
-                  {...register("tags", {
-                    required: "Seperate related products tags with a coma,",
-                  })}
-                />
-                {errors.tags && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.tags.message as string}
-                  </p>
-                )}
-              </div>
-
-              <div className="mt-2">
-                <Label className="text-white/50 text-xs font-semibold uppercase tracking-wider mb-1.5">Warranty *</Label>
-                <Input
-                  placeholder="1 Year / No Warranty"
-                  className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus-visible:border-violet-500"
-                  {...register("warranty", {
-                    required: "Warranty is required!",
-                  })}
-                />
-                {errors.tags && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.tags.message as string}
-                  </p>
-                )}
-              </div>
-
-              <div className="mt-2">
-                <div className="relative">
-                  <Label className="text-white/50 text-xs font-semibold uppercase tracking-wider mb-1.5">Slug *</Label>
-                  <Input
-                    placeholder="product_slug"
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      setSlugValue(e.target.value);
-                      setValue("slug", e.target.value);
-                      formOnChange(e);
-                    }}
-                    value={watch("slug") ?? ""}
-                    className="bg-white/5 border-white/10 text-white pr-10 placeholder:text-white/30 focus-visible:border-violet-500"
-                    {...restSlugProps}
-                  />
-
-                  <div className="absolute w-7 h-7 flex items-center justify-center bg-violet-600 !rounded shadow top-[70%] right-3 transform -translate-y-1/2 text-white cursor-pointer hover:bg-violet-700">
-                    <Wand2
-                      size={16}
-                      onClick={async () => {
-                        const title = getValues("title");
-                        if (!title) {
-                          toast.error(
-                            "Please enter a product title to generate a slug!"
-                          );
-                          return;
-                        }
-
-                        // Generate slug from title
-                        const rawSlug = title
-                          .toLowerCase()
-                          .trim()
-                          .replace(/[^a-z0-9\s-]/g, "")
-                          .replace(/\s+/g, "-")
-                          .replace(/-+/g, "-");
-
-                        try {
-                          // Check slug validity via API
-                          const res = await axiosInstance.post(
-                            "/product/api/slug-validator",
-                            { slug: rawSlug }
-                          );
-                          const { available, suggestedSlug } = res.data;
-
-                          if (available) {
-                            setValue("slug", rawSlug);
-                            toast.success("Slug is available!");
-                          } else if (suggestedSlug) {
-                            setValue("slug", suggestedSlug);
-                            toast.info(
-                              "Slug not available, suggested new one!"
-                            );
-                          } else {
-                            toast.error(
-                              "Slug is already taken, try editing it."
-                            );
-                          }
-                        } catch (err) {
-                          toast.error("Failed to validate slug. Try again.");
-                        }
-                      }}
-                    />
-                  </div>
-                </div>
-
-                {errors.slug && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.slug.message as string}
-                  </p>
-                )}
-              </div>
-
-              <div className="mt-2">
-                <Label className="text-white/50 text-xs font-semibold uppercase tracking-wider mb-1.5">Brand</Label>
-                <Input
-                  placeholder="Apple"
-                  className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus-visible:border-violet-500"
-                  {...register("brand")}
-                />
-                {errors.tags && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.tags.message as string}
-                  </p>
-                )}
-              </div>
-
-              <div className="mt-2">
-                <ColorSelector control={control} errors={errors} />
-              </div>
-
-              <div className="mt-2">
-                <CustomSpecifications control={control} errors={errors} />
-              </div>
-
-              <div className="mt-2">
-                <CustomProperties control={control} errors={errors} />
-              </div>
-
-              <div className="mt-2">
-                <Label className="text-white/50 text-xs font-semibold uppercase tracking-wider mb-1.5">
-                  Cash On Delivery *
-                </Label>
-                <select
-                  {...register("cash_on_delivery", {
-                    required: "Cash on Delivery is required",
-                  })}
-                  defaultValue="yes"
-                  className="w-full h-10 px-3 rounded-xl bg-white/5 border border-white/10 text-white/80 text-sm outline-none focus:border-violet-500/50 transition-all"
-                >
-                  <option value="yes" className="bg-[#111]">Yes</option>
-                  <option value="no" className="bg-[#111]">No</option>
-                </select>
-                {errors.cash_on_delivery && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.cash_on_delivery.message as string}
-                  </p>
-                )}
-              </div>
-            </div>
-            <div className="w-2/4">
-              <Label className="text-white/50 text-xs font-semibold uppercase tracking-wider mb-1.5">
-                Category *
-              </Label>
-              {isLoading ? (
-                <p className="text-white/40 text-sm">Loading categories...</p>
-              ) : isError ? (
-                <p className="text-red-500">Failed to load categories</p>
-              ) : (
-                <Controller
-                  name="category"
-                  control={control}
-                  rules={{ required: "Category is required" }}
-                  render={({ field }) => (
-                    <select
-                      {...field}
-                      className="w-full h-10 px-3 rounded-xl bg-white/5 border border-white/10 text-white/80 text-sm outline-none focus:border-violet-500/50 transition-all"
-                    >
-                      <option value="" className="bg-[#111]">Select Category</option>
-                      {categories?.map((category: string) => (
-                        <option
-                          value={category}
-                          key={category}
-                          className="bg-black"
-                        >
-                          {category}
-                        </option>
-                      ))}
-                    </select>
-                  )}
-                />
-              )}
-              {errors.category && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.category.message as string}
-                </p>
-              )}
-
-              <div className="mt-2">
-                <Label className="text-white/50 text-xs font-semibold uppercase tracking-wider mb-1.5">
-                  Subcategory *
-                </Label>
+              {/* Subcategory */}
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-muted-foreground">Subcategory *</Label>
                 <Controller
                   name="subCategory"
                   control={control}
@@ -417,215 +257,253 @@ const Page = () => {
                   render={({ field }) => (
                     <select
                       {...field}
-                      className="w-full h-10 px-3 rounded-xl bg-white/5 border border-white/10 text-white/80 text-sm outline-none focus:border-violet-500/50 transition-all"
+                      className="w-full h-9 px-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-foreground text-sm outline-none focus:border-rose-500/60 transition-colors"
                     >
-                      <option value="" className="bg-[#111]">Select Subcategory</option>
-                      {subcategories?.map((subcategory: string) => (
-                        <option
-                          key={subcategory}
-                          value={subcategory}
-                          className="bg-black"
-                        >
-                          {subcategory}
-                        </option>
+                      <option value="" className="bg-card">Select Subcategory</option>
+                      {subcategories?.map((s: string) => (
+                        <option key={s} value={s} className="bg-card">{s}</option>
                       ))}
                     </select>
                   )}
                 />
-                {errors.subcategory && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.subcategory.message as string}
-                  </p>
-                )}
+                {errors.subCategory && <p className="text-red-400 text-xs">{errors.subCategory.message as string}</p>}
               </div>
 
-              <div className="mt-2">
-                <Label className="text-white/50 text-xs font-semibold uppercase tracking-wider mb-1.5">
-                  Detailed Description * (Min 100 words)
-                </Label>
-                <Controller
-                  name="detailed_description"
-                  control={control}
-                  rules={{
-                    required: "Detailed description is required!",
-                    validate: (value) => {
-                      const wordCount = value
-                        ?.split(/\s+/)
-                        .filter((word: string) => word).length;
-                      return (
-                        wordCount >= 100 ||
-                        "Description must be at least 100 words!"
-                      );
-                    },
-                  }}
-                  render={({ field }) => (
-                    <RichTextEditor
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
-                {errors.detailed_description && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.detailed_description.message as string}
-                  </p>
-                )}
-              </div>
-
-              <div className="mt-2">
-                <Label className="text-white/50 text-xs font-semibold uppercase tracking-wider mb-1.5">Video URL</Label>
+              {/* Tags */}
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-muted-foreground">Tags * <span className="text-muted-foreground/50">(comma separated)</span></Label>
                 <Input
-                  placeholder="https://www.youtube.com/embed/xyz123"
-                  className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus-visible:border-violet-500"
-                  {...register("video_url", {
-                    pattern: {
-                      value:
-                        /^https:\/\/(www\.)?youtube\.com\/embed\/[a-zA-Z0-9_-]+$/,
-                      message:
-                        "Invalid YouTube embed URL! Use format: https://www.youtube.com/embed/xyz123",
-                    },
-                  })}
+                  placeholder="apple, flagship, new"
+                  className="h-9 border-white/[0.08] bg-white/[0.03] focus-visible:border-rose-500/60 focus-visible:bg-white/[0.05]"
+                  {...register("tags", { required: "Separate tags with a comma" })}
                 />
-                {errors.video_url && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.video_url.message as string}
-                  </p>
-                )}
+                {errors.tags && <p className="text-red-400 text-xs">{errors.tags.message as string}</p>}
               </div>
 
-              <div className="mt-2">
-                <Label className="text-white/50 text-xs font-semibold uppercase tracking-wider mb-1.5">Regular Price</Label>
+              {/* Warranty */}
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-muted-foreground">Warranty *</Label>
                 <Input
-                  type="number"
-                  placeholder="20"
-                  className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus-visible:border-violet-500"
-                  {...register("regular_price", {
-                    valueAsNumber: true,
-                    min: { value: 1, message: "Price must be at least 1" },
-                    validate: (value) =>
-                      !isNaN(value) || "Only numbers are allowed",
-                  })}
+                  placeholder="1 Year / No Warranty"
+                  className="h-9 border-white/[0.08] bg-white/[0.03] focus-visible:border-rose-500/60 focus-visible:bg-white/[0.05]"
+                  {...register("warranty", { required: "Warranty is required" })}
                 />
-                {errors.regular_price && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.regular_price.message as string}
-                  </p>
-                )}
               </div>
 
-              <div className="mt-2">
-                <Label className="text-white/50 text-xs font-semibold uppercase tracking-wider mb-1.5">Sale Price *</Label>
+              {/* Slug */}
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-muted-foreground">Slug *</Label>
+                <div className="relative">
+                  <Input
+                    placeholder="product-slug"
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setSlugValue(e.target.value);
+                      setValue("slug", e.target.value);
+                      formOnChange(e);
+                    }}
+                    value={watch("slug") ?? ""}
+                    className="h-9 pr-10 border-white/[0.08] bg-white/[0.03] focus-visible:border-rose-500/60 focus-visible:bg-white/[0.05]"
+                    {...restSlugProps}
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 flex h-6 w-6 items-center justify-center rounded-md bg-rose-600/80 hover:bg-rose-600 transition-colors text-white"
+                    onClick={async () => {
+                      const title = getValues("title");
+                      if (!title) { toast.error("Enter a title first"); return; }
+                      const rawSlug = title.toLowerCase().trim().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-");
+                      try {
+                        const res = await axiosInstance.post("/product/api/slug-validator", { slug: rawSlug });
+                        const { available, suggestedSlug } = res.data;
+                        if (available) { setValue("slug", rawSlug); toast.success("Slug available!"); }
+                        else if (suggestedSlug) { setValue("slug", suggestedSlug); toast.info("Suggested slug applied."); }
+                        else { toast.error("Slug taken, try editing it."); }
+                      } catch { toast.error("Failed to validate slug."); }
+                    }}
+                  >
+                    <Wand2 size={12} />
+                  </button>
+                </div>
+                {errors.slug && <p className="text-red-400 text-xs">{errors.slug.message as string}</p>}
+              </div>
+
+              {/* Brand */}
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-muted-foreground">Brand</Label>
                 <Input
-                  type="number"
-                  placeholder="15"
-                  className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus-visible:border-violet-500"
-                  {...register("sale_price", {
-                    required: "Sale Price is required",
-                    valueAsNumber: true,
-                    min: { value: 1, message: "Sale Price must be at least 1" },
-                    validate: (value) => {
-                      if (isNaN(value)) return "Only numbers are allowed";
-                      if (regularPrice && value >= regularPrice) {
-                        return "Sale Price must be less than Regular Price";
-                      }
-                      return true;
-                    },
-                  })}
+                  placeholder="Apple"
+                  className="h-9 border-white/[0.08] bg-white/[0.03] focus-visible:border-rose-500/60 focus-visible:bg-white/[0.05]"
+                  {...register("brand")}
                 />
-                {errors.sale_price && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.sale_price.message as string}
-                  </p>
-                )}
               </div>
+            </div>
 
-              <div className="mt-2">
-                <Label className="text-white/50 text-xs font-semibold uppercase tracking-wider mb-1.5">Stock *</Label>
-                <Input
-                  type="number"
-                  placeholder="100"
-                  className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus-visible:border-violet-500"
-                  {...register("stock", {
-                    required: "Stock is required!",
-                    valueAsNumber: true,
-                    min: { value: 1, message: "Stock must be at least 1" },
-                    max: {
-                      value: 1000,
-                      message: "Stock cannot exceed 1,000",
-                    },
-                    validate: (value) => {
-                      if (isNaN(value)) return "Only numbers are allowed!";
-                      if (!Number.isInteger(value))
-                        return "Stock must be a whole number!";
-                      return true;
-                    },
-                  })}
-                />
-                {errors.stock && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.stock.message as string}
-                  </p>
+            {/* Detailed Description — full width */}
+            <div className="mt-4 space-y-1.5">
+              <Label className="text-xs font-medium text-muted-foreground">Detailed Description * <span className="text-muted-foreground/50">(min 100 words)</span></Label>
+              <Controller
+                name="detailed_description"
+                control={control}
+                rules={{
+                  required: "Detailed description is required",
+                  validate: (v) => {
+                    const wc = v?.split(/\s+/).filter((w: string) => w).length;
+                    return wc >= 100 || "Minimum 100 words required";
+                  },
+                }}
+                render={({ field }) => (
+                  <RichTextEditor value={field.value} onChange={field.onChange} />
                 )}
-              </div>
+              />
+              {errors.detailed_description && (
+                <p className="text-red-400 text-xs">{errors.detailed_description.message as string}</p>
+              )}
+            </div>
+          </div>
 
-              <div className="mt-2">
+          {/* Section 2: Variants & Properties ──────────────────── */}
+          <div className="rounded-xl border border-white/[0.06] bg-card/50 p-5">
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/60 mb-4">Variants &amp; Properties</p>
+            <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+              <div className="space-y-4">
+                <ColorSelector control={control} errors={errors} />
+                <CustomSpecifications control={control} errors={errors} />
+              </div>
+              <div className="space-y-4">
                 <SizeSelector control={control} errors={errors} />
-              </div>
-
-              <div className="mt-3">
-                <Label className="text-white/50 text-xs font-semibold uppercase tracking-wider mb-1.5">
-                  Select Discount Codes (optional)
-                </Label>
-
-                {discountLoading ? (
-                  <p className="text-white/40 text-sm">Loading discount codes...</p>
-                ) : (
-                  <div className="flex flex-wrap gap-2">
-                    {discountCodes?.map((code: any) => (
-                      <button
-                        key={code.id}
-                        type="button"
-                        className={`px-3 py-1 rounded-md text-sm font-semibold border ${watch("discountCodes")?.includes(code.id)
-                            ? "bg-violet-600 text-white border-violet-500"
-                            : "bg-white/5 text-white/60 border-white/10 hover:bg-white/8 hover:text-white"
-                          }`}
-                        onClick={() => {
-                          const currentSelection = watch("discountCodes") || [];
-                          const updatedSelection = currentSelection?.includes(
-                            code.id
-                          )
-                            ? currentSelection.filter(
-                              (id: string) => id !== code.id
-                            )
-                            : [...currentSelection, code.id];
-                          setValue("discountCodes", updatedSelection);
-                        }}
-                      >
-                        {code?.public_name} ({code.discountValue}
-                        {code.discountType === "percentage" ? "%" : "$"})
-                      </button>
-                    ))}
-                  </div>
-                )}
-                {discountCodes?.length === 0 && !discountLoading && (
-                  <p className="text-white/40 text-sm">
-                    No Discount codes available to add!
-                  </p>
-                )}
+                <CustomProperties control={control} errors={errors} />
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div className="mt-6 flex justify-end gap-3">
-        <Button
-          type="submit"
-          disabled={loading}
-          className="flex items-center gap-2 bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-500 hover:to-pink-500 text-white font-semibold shadow-[0_0_20px_rgba(124,58,237,0.3)] disabled:opacity-60"
-        >
-          {loading ? "Creating..." : "Create Product"}
-        </Button>
+          {/* Section 3: Pricing & Inventory ─────────────────────── */}
+          <div className="rounded-xl border border-white/[0.06] bg-card/50 p-5">
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/60 mb-4">Pricing &amp; Inventory</p>
+            <div className="grid grid-cols-3 gap-x-6 gap-y-4">
+              {/* Regular Price */}
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-muted-foreground">Regular Price</Label>
+                <Input
+                  type="number"
+                  placeholder="0"
+                  className="h-9 border-white/[0.08] bg-white/[0.03] focus-visible:border-rose-500/60 focus-visible:bg-white/[0.05]"
+                  {...register("regular_price", {
+                    valueAsNumber: true,
+                    min: { value: 1, message: "Must be at least 1" },
+                    validate: (v) => !isNaN(v) || "Numbers only",
+                  })}
+                />
+                {errors.regular_price && <p className="text-red-400 text-xs">{errors.regular_price.message as string}</p>}
+              </div>
+
+              {/* Sale Price */}
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-muted-foreground">Sale Price *</Label>
+                <Input
+                  type="number"
+                  placeholder="0"
+                  className="h-9 border-white/[0.08] bg-white/[0.03] focus-visible:border-rose-500/60 focus-visible:bg-white/[0.05]"
+                  {...register("sale_price", {
+                    required: "Sale price is required",
+                    valueAsNumber: true,
+                    min: { value: 1, message: "Must be at least 1" },
+                    validate: (v) => {
+                      if (isNaN(v)) return "Numbers only";
+                      if (regularPrice && v >= regularPrice) return "Must be less than regular price";
+                      return true;
+                    },
+                  })}
+                />
+                {errors.sale_price && <p className="text-red-400 text-xs">{errors.sale_price.message as string}</p>}
+              </div>
+
+              {/* Stock */}
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-muted-foreground">Stock *</Label>
+                <Input
+                  type="number"
+                  placeholder="100"
+                  className="h-9 border-white/[0.08] bg-white/[0.03] focus-visible:border-rose-500/60 focus-visible:bg-white/[0.05]"
+                  {...register("stock", {
+                    required: "Stock is required",
+                    valueAsNumber: true,
+                    min: { value: 1, message: "At least 1" },
+                    max: { value: 1000, message: "Max 1,000" },
+                    validate: (v) => {
+                      if (isNaN(v)) return "Numbers only";
+                      if (!Number.isInteger(v)) return "Whole number only";
+                      return true;
+                    },
+                  })}
+                />
+                {errors.stock && <p className="text-red-400 text-xs">{errors.stock.message as string}</p>}
+              </div>
+
+              {/* Video URL */}
+              <div className="col-span-2 space-y-1.5">
+                <Label className="text-xs font-medium text-muted-foreground">Video URL <span className="text-muted-foreground/50">(YouTube embed)</span></Label>
+                <Input
+                  placeholder="https://www.youtube.com/embed/xyz123"
+                  className="h-9 border-white/[0.08] bg-white/[0.03] focus-visible:border-rose-500/60 focus-visible:bg-white/[0.05]"
+                  {...register("video_url", {
+                    pattern: {
+                      value: /^https:\/\/(www\.)?youtube\.com\/embed\/[a-zA-Z0-9_-]+$/,
+                      message: "Use format: https://www.youtube.com/embed/xyz123",
+                    },
+                  })}
+                />
+                {errors.video_url && <p className="text-red-400 text-xs">{errors.video_url.message as string}</p>}
+              </div>
+
+              {/* Cash on Delivery */}
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-muted-foreground">Cash on Delivery *</Label>
+                <select
+                  {...register("cash_on_delivery", { required: "Required" })}
+                  defaultValue="yes"
+                  className="w-full h-9 px-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-foreground text-sm outline-none focus:border-rose-500/60 transition-colors"
+                >
+                  <option value="yes" className="bg-card">Yes</option>
+                  <option value="no" className="bg-card">No</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Discount Codes */}
+            <div className="mt-4 space-y-2">
+              <Label className="text-xs font-medium text-muted-foreground">Discount Codes <span className="text-muted-foreground/50">(optional)</span></Label>
+              {discountLoading ? (
+                <p className="text-muted-foreground/60 text-xs">Loading codes…</p>
+              ) : discountCodes?.length === 0 ? (
+                <p className="text-muted-foreground/50 text-xs">No discount codes available.</p>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {discountCodes?.map((code: any) => (
+                    <button
+                      key={code.id}
+                      type="button"
+                      className={`px-3 py-1 rounded-md text-xs font-semibold border transition-colors ${
+                        watch("discountCodes")?.includes(code.id)
+                          ? "bg-rose-600/90 text-white border-rose-500/60"
+                          : "bg-white/[0.03] text-muted-foreground border-white/[0.08] hover:border-border hover:text-foreground"
+                      }`}
+                      onClick={() => {
+                        const cur = watch("discountCodes") || [];
+                        setValue(
+                          "discountCodes",
+                          cur.includes(code.id) ? cur.filter((id: string) => id !== code.id) : [...cur, code.id]
+                        );
+                      }}
+                    >
+                      {code?.public_name} ({code.discountValue}{code.discountType === "percentage" ? "%" : "$"})
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+        </div>
       </div>
     </form>
   );

@@ -22,8 +22,8 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-        <TooltipProvider>
+<ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+          <TooltipProvider>
           <ProvidersWithWebSocket>
             {children}
           </ProvidersWithWebSocket>
