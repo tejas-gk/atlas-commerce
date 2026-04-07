@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import React, { useMemo, useState } from "react";
 import {
   useReactTable,
@@ -87,7 +87,7 @@ export default function AllProductsPage() {
               href={`${process.env.NEXT_PUBLIC_USER_UI_LINK}/product/${row.original.slug}`}
               className="text-foreground/90 hover:text-rose-400 transition-colors text-sm font-medium truncate block max-w-[200px]"
             >
-              {row.original.title?.length > 32 ? `${row.original.title.substring(0, 32)}…` : row.original.title}
+              {row.original.title?.length > 32 ? `${row.original.title.substring(0, 32)}â€¦` : row.original.title}
             </Link>
             <p className="text-[11px] text-muted-foreground/50 mt-0.5">{row.original.category}</p>
           </div>
@@ -233,7 +233,7 @@ export default function AllProductsPage() {
             <Input
               value={globalFilter}
               onChange={(e) => setGlobalFilter(e.target.value)}
-              placeholder="Search products…"
+              placeholder="Search productsâ€¦"
               className="pl-8 h-8 text-sm border-white/[0.08] bg-white/[0.03]"
             />
           </div>
@@ -300,197 +300,6 @@ export default function AllProductsPage() {
               ))}
             </div>
           </div>
-        )}
-      </Card>
-
-      {showAnalytics && analyticsData && (
-        <AnalyticsModal data={analyticsData} onClose={() => setShowAnalytics(false)} />
-      )}
-      {showDeleteModal && selectedProduct && (
-        <DeleteConfirmationModal
-          isDeleted={selectedProduct.isDeleted}
-          onClose={() => setShowDeleteModal(false)}
-          onConfirm={() =>
-            selectedProduct.isDeleted
-              ? restoreMutation.mutate(selectedProduct.id)
-              : deleteMutation.mutate(selectedProduct.id)
-          }
-        />
-      )}
-    </div>
-  );
-}
-
-export default function AllProductsPage() {
-  const [globalFilter, setGlobalFilter] = useState("");
-  const [analyticsData, setAnalyticsData] = useState<any>(null);
-  const [showAnalytics, setShowAnalytics] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<any>();
-  const queryClient = useQueryClient();
-
-  const { data: products = [], isLoading } = useQuery({
-    queryKey: ["shop-products"],
-    queryFn: fetchProducts,
-    staleTime: 1000 * 60 * 5,
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: deleteProduct,
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["shop-products"] }); setShowDeleteModal(false); },
-  });
-  const restoreMutation = useMutation({
-    mutationFn: restoreProduct,
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["shop-products"] }); setShowDeleteModal(false); },
-  });
-
-  const columns = useMemo(() => [
-    {
-      accessorKey: "image",
-      header: "Image",
-      cell: ({ row }: any) => (
-        <img src={row.original.images?.[0]?.url} alt="product"
-          className="w-11 h-11 rounded-xl object-cover border border-white/[0.06]" />
-      ),
-    },
-    {
-      accessorKey: "name",
-      header: "Product",
-      cell: ({ row }: any) => {
-        const title = row.original.title?.length > 28
-          ? `${row.original.title.substring(0, 28)}…`
-          : row.original.title;
-        return (
-          <Link href={`${process.env.NEXT_PUBLIC_USER_UI_LINK}/product/${row.original.slug}`}
-            className="text-rose-400 hover:text-rose-300 transition-colors text-sm font-medium">
-            {title}
-          </Link>
-        );
-      },
-    },
-    {
-      accessorKey: "price",
-      header: "Price",
-      cell: ({ row }: any) => <span className="text-rose-400 font-semibold">${row.original.sale_price}</span>,
-    },
-    {
-      accessorKey: "stock",
-      header: "Stock",
-      cell: ({ row }: any) => (
-        <span className={row.original.stock < 10 ? "text-red-400" : "text-muted-foreground"}>
-          {row.original.stock} left
-        </span>
-      ),
-    },
-    {
-      accessorKey: "category",
-      header: "Category",
-      cell: ({ row }: any) => <span className="text-muted-foreground text-sm">{row.original.category}</span>,
-    },
-    {
-      accessorKey: "rating",
-      header: "Rating",
-      cell: ({ row }: any) => (
-        <div className="flex items-center gap-1 text-amber-400">
-          <Star fill="currentColor" size={13} />
-          <span className="text-foreground text-sm">{row.original.ratings || 5}</span>
-        </div>
-      ),
-    },
-    {
-      header: "Actions",
-      cell: ({ row }: any) => (
-        <div className="flex gap-1">
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-rose-400" asChild>
-            <Link href={`${process.env.NEXT_PUBLIC_USER_UI_LINK}/product/${row.original.slug}`}>
-              <Eye size={16} />
-            </Link>
-          </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-rose-400"
-            onClick={() => { setAnalyticsData(row.original); setShowAnalytics(true); }}>
-            <BarChart size={16} />
-          </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-red-400"
-            onClick={() => { setSelectedProduct(row.original); setShowDeleteModal(true); }}>
-            <Trash size={16} />
-          </Button>
-        </div>
-      ),
-    },
-  ], []);
-
-  const table = useReactTable({
-    data: products,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    globalFilterFn: "includesString",
-    state: { globalFilter },
-    onGlobalFilterChange: setGlobalFilter,
-  });
-
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">All Products</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Manage your product catalog</p>
-        </div>
-        <Button asChild size="sm" className="gap-1.5 bg-rose-600 hover:bg-rose-700 text-white border-0">
-          <Link href="/dashboard/create-product">
-            <Plus size={15} /> Add Product
-          </Link>
-        </Button>
-      </div>
-
-      <Card className="border border-white/[0.06] bg-card/50 overflow-hidden">
-        <div className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.05]">
-          <div className="relative flex-1 max-w-xs">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
-            <Input
-              value={globalFilter}
-              onChange={(e) => setGlobalFilter(e.target.value)}
-              placeholder="Search products…"
-              className="pl-9 h-9 border-white/[0.08] bg-white/[0.03]"
-            />
-          </div>
-          <span className="text-muted-foreground/50 text-xs ml-auto tabular-nums">{products.length} products</span>
-        </div>
-
-        {isLoading ? (
-          <div className="flex items-center justify-center py-20">
-            <div className="w-8 h-8 rounded-full border-2 border-rose-500/30 border-t-rose-500 animate-spin" />
-          </div>
-        ) : (
-          <table className="w-full text-sm">
-            <thead>
-              {table.getHeaderGroups().map((hg) => (
-                <tr key={hg.id} className="border-b border-white/[0.05]">
-                  {hg.headers.map((h) => (
-                    <th key={h.id} className="text-left px-5 py-3 text-[10px] uppercase tracking-wider text-muted-foreground/60 font-medium h-8">
-                      {flexRender(h.column.columnDef.header, h.getContext())}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody>
-              {table.getRowModel().rows.length === 0 ? (
-                <tr><td colSpan={columns.length} className="text-center py-16">
-                    <Boxes className="h-8 w-8 text-muted-foreground/30 mx-auto mb-2" />
-                    <p className="text-muted-foreground text-sm">No products yet</p>
-                  </td></tr>
-              ) : (
-                table.getRowModel().rows.map((row) => (
-                  <tr key={row.id} className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors">
-                    {row.getVisibleCells().map((cell) => (
-                      <td key={cell.id} className="px-5 py-3">{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
-                    ))}
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
         )}
       </Card>
 
