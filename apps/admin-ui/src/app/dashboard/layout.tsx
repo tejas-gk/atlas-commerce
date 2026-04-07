@@ -1,18 +1,20 @@
-"use client";
-import React from "react";
-import { AppSidebar } from "@workspace/ui/components/app-sidebar";
-import { SidebarInset, SidebarProvider } from "@workspace/ui/components/sidebar";
+import SidebarWrapper from "../../shared/components/sidebar";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-        <main className="flex-1 overflow-auto p-6">
-          {children}
-        </main>
-      </SidebarInset>
-    </SidebarProvider>
+    <div className="flex h-full bg-black min-h-screen">
+      {/* sidebar */}
+      <aside className="w-[280px] min-w-[250px] max-w-[300px] border-r border-r-slate-800 text-white p-4">
+        <div className="sticky top-0">
+          <SidebarWrapper />
+        </div>
+      </aside>
+
+      {/* main content area */}
+      <main className="flex-1">
+        <div className="overflow-auto">{children}</div>
+      </main>
+    </div>
   );
 };
 

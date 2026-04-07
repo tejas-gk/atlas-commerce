@@ -1,7 +1,5 @@
 "use client";
-import { TooltipProvider } from "@workspace/ui/components/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ThemeProvider as NextThemesProvider } from "next-themes";
 import React, { useState } from "react";
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
@@ -18,19 +16,7 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
   );
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-
-        {/* Added next-themes provider to enforce Mochi dark mode */}
-        <NextThemesProvider 
-        attribute="class" 
-        defaultTheme="dark" 
-        enableSystem={false}
-        >
-         {children}
-        </NextThemesProvider>
-      </TooltipProvider>
-    </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 };
 

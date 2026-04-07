@@ -68,7 +68,7 @@ export const sendOtp = async (
     email: string,
     template: string
 ) => {
-    const otp = crypto.randomInt(100000, 999999).toString()
+    const otp = crypto.randomInt(1000, 9999).toString()
     await sendEmail(email, "Verify your email", template, { name, otp });
     await redis.set(`otp:${email}`, otp, "EX", 300)
     await redis.set(`otp_cooldown:${email}`, "true", "EX", 60)
@@ -80,6 +80,7 @@ export const verifyOtp = async (
     next: NextFunction
 ) => {
     const storedOtp = await redis.get(`otp:${email}`);
+    console.log("Stored OTP:", storedOtp); // Debugging line
     if (!storedOtp) {
         throw new ValidationError("Invalid or expired OTP!");
     }

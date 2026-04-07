@@ -61,7 +61,8 @@ const limiter = rateLimit({
     message: { error: "Too many requests, please try again later!" },
     standardHeaders: true,
     legacyHeaders: false,
-    keyGenerator: (req: any) => req.ip ?? req.socket.remoteAddress ?? "unknown",
+    validate: { ip: false },
+    keyGenerator: (req: any) => req.ip
 })
 
 app.use(limiter)
@@ -72,8 +73,6 @@ app.get("/gateway-health", (req, res) => {
 
 app.use("/auth", proxy("http://localhost:6001"))
 app.use("/product", proxy("http://localhost:6002"))
-app.use("/seller", proxy("http://localhost:6003"))
-app.use("/order", proxy("http://localhost:6004"))
 app.use("/recommendation", proxy("http://localhost:6007"))
 app.use("/seller", proxy("http://localhost:6003"))
 app.use("/order", proxy("http://localhost:6004"))

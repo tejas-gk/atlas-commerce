@@ -429,8 +429,8 @@ export const createStripeConnectLink = async (
 
         const accountLink = await stripe.accountLinks.create({
             account: account.id,
-            refresh_url: `${process.env.SELLER_UI_URL || "http://localhost:3001"}/stripe/refresh`,
-            return_url: `${process.env.SELLER_UI_URL || "http://localhost:3001"}/stripe/success`,
+            refresh_url: `http://localhost:3000/success`,
+            return_url: `http://localhost:3000/success`,
             type: "account_onboarding",
         });
 
