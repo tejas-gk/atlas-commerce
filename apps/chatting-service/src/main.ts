@@ -1,6 +1,7 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import { createWebSocketServer } from "./websocket";
+import { startConsumer } from "./chat-message.consumer";
 import router from "./routes/chat.routes";
 
 const app = express();
@@ -22,5 +23,10 @@ const server = app.listen(port, () => {
 
 // Websocket server
 createWebSocketServer(server);
+
+// start kafka consumer
+startConsumer().catch((error: any) => {
+  console.log(error);
+});
 
 server.on("error", console.error);

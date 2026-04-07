@@ -9,15 +9,10 @@ const swaggerDocument = require("./swagger-output.json");
 
 const app = express();
 
-const allowedOrigins =
-  process.env.NODE_ENV === "production"
-    ? ["https://shondhane.com", "https://sellers.shondhane.com", "https://admin.shondhane.com"]
-    : ["http://localhost:3000", "http://localhost:3001", "http://localhost:3002"];
-
 app.use(
   cors({
-    origin: allowedOrigins,
-    allowedHeaders: ["Authorization", "Content-Type", "x-shop-id"],
+    origin: ["http://localhost:3000"],
+    allowedHeaders: ["Authorization", "Content-Type"],
     credentials: true,
   })
 );

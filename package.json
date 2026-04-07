@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "turbo build",
-    "dev": "turbo dev --concurrency=20",
+    "dev": "turbo dev",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "generate": "prisma generate",
@@ -37,7 +37,6 @@
     "@types/ws": "^8.18.1",
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
-    "cross-env": "^10.1.0",
     "dotenv-cli": "^11.0.0",
     "jsonwebtoken": "^9.0.3",
     "prettier": "^3.8.1",

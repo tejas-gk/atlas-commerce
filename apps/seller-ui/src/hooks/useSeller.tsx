@@ -5,21 +5,8 @@ import { useAuthStore } from "../store/authStore";
 import React from "react";
 import { isProtected } from "../utils/protected";
 
-// ── Dev mock (dummy login bypass) ──────────────────────────────────────────
-export const DEV_MOCK_SELLER = {
-  id: "dev-seller-001",
-  name: "Demo Seller",
-  email: "demo@atlas.dev",
-  activeShopId: "dev-shop-001",
-  shop: { id: "dev-shop-001", name: "Demo Store" },
-  shops: [{ id: "dev-shop-001", name: "Demo Store" }],
-};
-
 // fetch seller data from API
 const fetchSeller = async () => {
-  if (typeof window !== "undefined" && sessionStorage.getItem("__atlas_dev__")) {
-    return DEV_MOCK_SELLER;
-  }
   const response = await axiosInstance.get(
     "/auth/api/logged-in-seller",
     isProtected

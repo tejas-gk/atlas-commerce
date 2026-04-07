@@ -7,7 +7,7 @@ import React, {
   useState,
 } from "react";
 
-const WebSocketContext = createContext<any>({ ws: null, unreadCounts: {} });
+const WebSocketContext = createContext<any>(null);
 
 export const WebSocketProvider = ({
   children,
@@ -45,8 +45,10 @@ export const WebSocketProvider = ({
     };
   }, [seller?.id]);
 
+  if (!wsReady) return null;
+
   return (
-    <WebSocketContext.Provider value={{ ws: wsReady ? wsRef.current : null, unreadCounts }}>
+    <WebSocketContext.Provider value={{ ws: wsRef.current, unreadCounts }}>
       {children}
     </WebSocketContext.Provider>
   );
