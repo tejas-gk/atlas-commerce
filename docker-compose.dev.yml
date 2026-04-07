@@ -1,4 +1,44 @@
 services:
+  # PostgreSQL for Ghast Chat Service
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ghast_chat
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+
+  # Redis for Ghast Chat Service message queue
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.2'
+
   # Zookeeper for Kafka
   zookeeper:
     image: confluentinc/cp-zookeeper:7.4.0
@@ -56,3 +96,47 @@ services:
         echo "Topics created successfully!"
       '
     restart: "no" 
+
+  # Ghast Chat Service
+  ghast-chat-service:
+    build:
+      context: .
+      dockerfile: apps/ghast-chat-service/Dockerfile
+    ports:
+      - "8090:8090"
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/ghast_chat?sslmode=disable
+      REDIS_URL: redis://redis:6379
+      PORT: 8090
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+
+  # Ghast Chat Web Frontend
+  ghast-chat-web:
+    build:
+      context: .
+      dockerfile: apps/ghast-chat-web/Dockerfile
+    ports:
+      - "3100:3100"
+    environment:
+      NEXT_PUBLIC_CHAT_API_URL: http://localhost:8090
+    depends_on:
+      - ghast-chat-service
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+
+volumes:
+  postgres_data:

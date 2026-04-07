@@ -89,7 +89,7 @@ export default function DashboardPage() {
     <div className="flex min-h-[100dvh] flex-col">
       <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background px-6">
         <Link href="/" className="flex items-center gap-2 font-semibold">
-          <span className="font-bold text-xl">WebCraft</span>
+          <span className="font-bold text-xl">Penderghast Website Builder</span>
         </Link>
         <nav className="hidden flex-1 items-center gap-6 md:flex">
           <Link href="/dashboard" className="text-sm font-medium">

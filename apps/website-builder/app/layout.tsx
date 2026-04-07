@@ -7,9 +7,8 @@ import { AuthGuard } from "@/components/auth/auth-guard"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "WebCraft - Website Builder",
+  title: "Penderghast - Website Builder",
   description: "Build stunning websites without code",
-  generator: "v0.dev",
 }
 
 export default function RootLayout({
