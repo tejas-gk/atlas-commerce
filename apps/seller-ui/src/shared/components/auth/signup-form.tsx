@@ -1,11 +1,13 @@
-﻿"use client"
+"use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Eye, EyeOff } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
+import axiosInstance from "@/utils/axiosInstance"
 
 function getStrength(pw: string) {
   if (!pw) return null
@@ -28,9 +30,53 @@ function GoogleIcon() {
 }
 
 export function SignupForm({ className, ...props }: React.ComponentProps<"div">) {
-  const [showPw, setShowPw] = useState(false)
-  const [pw, setPw]         = useState("")
-  const strength            = getStrength(pw)
+  const router = useRouter()
+
+  // Step 1 fields
+  const [name, setName]   = useState("")
+  const [email, setEmail] = useState("")
+
+  // Step 2 fields
+  const [otp, setOtp]               = useState("")
+  const [password, setPassword]     = useState("")
+  const [phone, setPhone]           = useState("")
+  const [country, setCountry]       = useState("")
+  const [showPw, setShowPw]         = useState(false)
+  const strength                    = getStrength(password)
+
+  const [step, setStep]             = useState<1 | 2>(1)
+  const [loading, setLoading]       = useState(false)
+  const [serverError, setServerError] = useState<string | null>(null)
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setServerError(null)
+    setLoading(true)
+    try {
+      await axiosInstance.post("/auth/api/seller-registration", { name, email })
+      setStep(2)
+    } catch (err: any) {
+      setServerError(err?.response?.data?.message ?? "Registration failed. Please try again.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleVerify = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setServerError(null)
+    setLoading(true)
+    try {
+      await axiosInstance.post("/auth/api/verify-seller", {
+        name, email, otp, password, phone_number: phone, country,
+      })
+      router.push("/login")
+    } catch (err: any) {
+      setServerError(err?.response?.data?.message ?? "Verification failed. Please try again.")
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <div
@@ -99,96 +145,174 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
         {/* Inner top glow */}
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px rounded-t-2xl bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
 
-        <div className="mb-6 space-y-1">
-          <h1 className="text-xl font-semibold tracking-tight text-white">Create your account</h1>
-          <p className="text-sm text-slate-500">Start selling on Atlas Commerce today.</p>
-        </div>
-
-        {/* Google */}
-        <Button
-          variant="outline"
-          type="button"
-          className="h-11 w-full gap-3 border-white/[0.08] bg-white/[0.04] text-sm text-slate-200 transition-all duration-200 hover:bg-white/[0.07] hover:text-white"
-        >
-          <GoogleIcon />
-          Continue with Google
-        </Button>
-
-        {/* Divider */}
-        <div className="my-5 flex items-center gap-3">
-          <div className="h-px flex-1 bg-white/[0.06]" />
-          <span className="text-[11px] font-medium uppercase tracking-widest text-slate-600">or</span>
-          <div className="h-px flex-1 bg-white/[0.06]" />
-        </div>
-
-        {/* Fields */}
-        <div className="space-y-4">
-          <div className="anim-fade-up space-y-1.5" style={{ animationDelay: "0.3s" }}>
-            <Label className="text-sm font-medium text-slate-400" htmlFor="name">Full name</Label>
-            <Input
-              id="name"
-              type="text"
-              placeholder="Jane Smith"
-              autoComplete="name"
-              className="h-11 border-white/[0.08] bg-white/[0.04] text-white transition-all duration-200 placeholder:text-slate-600 focus-visible:border-rose-500/40 focus-visible:bg-white/[0.06] focus-visible:ring-rose-500/10"
-            />
-          </div>
-
-          <div className="anim-fade-up space-y-1.5" style={{ animationDelay: "0.35s" }}>
-            <Label className="text-sm font-medium text-slate-400" htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="you@example.com"
-              autoComplete="email"
-              className="h-11 border-white/[0.08] bg-white/[0.04] text-white transition-all duration-200 placeholder:text-slate-600 focus-visible:border-rose-500/40 focus-visible:bg-white/[0.06] focus-visible:ring-rose-500/10"
-            />
-          </div>
-
-          <div className="anim-fade-up space-y-1.5" style={{ animationDelay: "0.4s" }}>
-            <Label className="text-sm font-medium text-slate-400" htmlFor="password">Password</Label>
-            <div className="relative">
-              <Input
-                id="password"
-                type={showPw ? "text" : "password"}
-                placeholder="••••••••"
-                autoComplete="new-password"
-                className="h-11 border-white/[0.08] bg-white/[0.04] pr-10 text-white transition-all duration-200 placeholder:text-slate-600 focus-visible:border-rose-500/40 focus-visible:bg-white/[0.06] focus-visible:ring-rose-500/10"
-                value={pw}
-                onChange={(e) => setPw(e.target.value)}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPw((p) => !p)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-600 transition-colors duration-150 hover:text-slate-300"
-                tabIndex={-1}
-              >
-                {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </button>
+        {step === 1 ? (
+          <>
+            <div className="mb-6 space-y-1">
+              <h1 className="text-xl font-semibold tracking-tight text-white">Create your account</h1>
+              <p className="text-sm text-slate-500">Start selling on Atlas Commerce today.</p>
             </div>
 
-            {strength && (
-              <div className="space-y-1 pt-0.5">
-                <div className="h-1 w-full overflow-hidden rounded-full bg-white/[0.06]">
-                  <div
-                    className={cn("h-full rounded-full transition-all duration-300", strength.color)}
-                    style={{ width: strength.pct }}
-                  />
-                </div>
-                <p className="text-[11px] text-slate-500">{strength.label}</p>
-              </div>
-            )}
-          </div>
-
-          <div className="anim-fade-up" style={{ animationDelay: "0.45s" }}>
+            {/* Google */}
             <Button
-              type="submit"
-              className="relative mt-1 h-11 w-full overflow-hidden border border-rose-500/20 bg-[#1a0f10] text-sm font-semibold text-rose-200 shadow-[inset_0_1px_0_rgba(244,63,94,0.1)] transition-all duration-200 hover:border-rose-500/30 hover:bg-[#1f1214] hover:text-white hover:shadow-[inset_0_1px_0_rgba(244,63,94,0.15),0_0_20px_rgba(244,63,94,0.08)]"
+              variant="outline"
+              type="button"
+              className="h-11 w-full gap-3 border-white/[0.08] bg-white/[0.04] text-sm text-slate-200 transition-all duration-200 hover:bg-white/[0.07] hover:text-white"
             >
-              Create account
+              <GoogleIcon />
+              Continue with Google
             </Button>
-          </div>
-        </div>
+
+            {/* Divider */}
+            <div className="my-5 flex items-center gap-3">
+              <div className="h-px flex-1 bg-white/[0.06]" />
+              <span className="text-[11px] font-medium uppercase tracking-widest text-slate-600">or</span>
+              <div className="h-px flex-1 bg-white/[0.06]" />
+            </div>
+
+            <form onSubmit={handleRegister} className="space-y-4">
+              <div className="anim-fade-up space-y-1.5" style={{ animationDelay: "0.3s" }}>
+                <Label className="text-sm font-medium text-slate-400" htmlFor="name">Full name</Label>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="Jane Smith"
+                  autoComplete="name"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="h-11 border-white/[0.08] bg-white/[0.04] text-white transition-all duration-200 placeholder:text-slate-600 focus-visible:border-rose-500/40 focus-visible:bg-white/[0.06] focus-visible:ring-rose-500/10"
+                />
+              </div>
+
+              <div className="anim-fade-up space-y-1.5" style={{ animationDelay: "0.35s" }}>
+                <Label className="text-sm font-medium text-slate-400" htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  autoComplete="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="h-11 border-white/[0.08] bg-white/[0.04] text-white transition-all duration-200 placeholder:text-slate-600 focus-visible:border-rose-500/40 focus-visible:bg-white/[0.06] focus-visible:ring-rose-500/10"
+                />
+              </div>
+
+              {serverError && <p className="text-xs text-red-400 text-center">{serverError}</p>}
+
+              <div className="anim-fade-up" style={{ animationDelay: "0.45s" }}>
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="relative mt-1 h-11 w-full overflow-hidden border border-rose-500/20 bg-[#1a0f10] text-sm font-semibold text-rose-200 shadow-[inset_0_1px_0_rgba(244,63,94,0.1)] transition-all duration-200 hover:border-rose-500/30 hover:bg-[#1f1214] hover:text-white hover:shadow-[inset_0_1px_0_rgba(244,63,94,0.15),0_0_20px_rgba(244,63,94,0.08)] disabled:opacity-60"
+                >
+                  {loading ? "Sending OTP…" : "Continue"}
+                </Button>
+              </div>
+            </form>
+          </>
+        ) : (
+          <>
+            <div className="mb-6 space-y-1">
+              <h1 className="text-xl font-semibold tracking-tight text-white">Verify your account</h1>
+              <p className="text-sm text-slate-500">Enter the OTP sent to <span className="text-slate-300">{email}</span> and complete your profile.</p>
+            </div>
+
+            <form onSubmit={handleVerify} className="space-y-4">
+              <div className="space-y-1.5">
+                <Label className="text-sm font-medium text-slate-400" htmlFor="otp">OTP code</Label>
+                <Input
+                  id="otp"
+                  type="text"
+                  placeholder="123456"
+                  required
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  className="h-11 border-white/[0.08] bg-white/[0.04] text-white transition-all duration-200 placeholder:text-slate-600 focus-visible:border-rose-500/40 focus-visible:bg-white/[0.06] focus-visible:ring-rose-500/10"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-sm font-medium text-slate-400" htmlFor="password">Password</Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPw ? "text" : "password"}
+                    placeholder="••••••••"
+                    autoComplete="new-password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="h-11 border-white/[0.08] bg-white/[0.04] pr-10 text-white transition-all duration-200 placeholder:text-slate-600 focus-visible:border-rose-500/40 focus-visible:bg-white/[0.06] focus-visible:ring-rose-500/10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPw((p) => !p)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-600 transition-colors duration-150 hover:text-slate-300"
+                    tabIndex={-1}
+                  >
+                    {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+                {strength && (
+                  <div className="space-y-1 pt-0.5">
+                    <div className="h-1 w-full overflow-hidden rounded-full bg-white/[0.06]">
+                      <div
+                        className={cn("h-full rounded-full transition-all duration-300", strength.color)}
+                        style={{ width: strength.pct }}
+                      />
+                    </div>
+                    <p className="text-[11px] text-slate-500">{strength.label}</p>
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-sm font-medium text-slate-400" htmlFor="phone">Phone number</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  placeholder="+1 555 000 0000"
+                  required
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="h-11 border-white/[0.08] bg-white/[0.04] text-white transition-all duration-200 placeholder:text-slate-600 focus-visible:border-rose-500/40 focus-visible:bg-white/[0.06] focus-visible:ring-rose-500/10"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-sm font-medium text-slate-400" htmlFor="country">Country</Label>
+                <Input
+                  id="country"
+                  type="text"
+                  placeholder="United States"
+                  required
+                  value={country}
+                  onChange={(e) => setCountry(e.target.value)}
+                  className="h-11 border-white/[0.08] bg-white/[0.04] text-white transition-all duration-200 placeholder:text-slate-600 focus-visible:border-rose-500/40 focus-visible:bg-white/[0.06] focus-visible:ring-rose-500/10"
+                />
+              </div>
+
+              {serverError && <p className="text-xs text-red-400 text-center">{serverError}</p>}
+
+              <Button
+                type="submit"
+                disabled={loading}
+                className="relative mt-1 h-11 w-full overflow-hidden border border-rose-500/20 bg-[#1a0f10] text-sm font-semibold text-rose-200 shadow-[inset_0_1px_0_rgba(244,63,94,0.1)] transition-all duration-200 hover:border-rose-500/30 hover:bg-[#1f1214] hover:text-white hover:shadow-[inset_0_1px_0_rgba(244,63,94,0.15),0_0_20px_rgba(244,63,94,0.08)] disabled:opacity-60"
+              >
+                {loading ? "Verifying…" : "Create account"}
+              </Button>
+
+              <button
+                type="button"
+                onClick={() => { setStep(1); setServerError(null); }}
+                className="w-full text-center text-xs text-slate-500 hover:text-slate-300 transition-colors"
+              >
+                ← Back
+              </button>
+            </form>
+          </>
+        )}
 
         <p className="anim-fade-in mt-5 text-center text-sm text-slate-500" style={{ animationDelay: "0.5s" }}>
           Already have an account?{" "}

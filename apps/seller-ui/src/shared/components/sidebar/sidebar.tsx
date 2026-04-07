@@ -95,7 +95,7 @@ const SellerSidebar = () => {
 
   const handleLogout = async () => {
     try {
-      await axiosInstance.get("/api/logout-seller");
+      await axiosInstance.get("/auth/api/logout-seller");
       queryClient.invalidateQueries({ queryKey: ["seller"] });
       router.push("/login");
     } catch (err) {
@@ -126,16 +126,28 @@ const SellerSidebar = () => {
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="w-[--radix-dropdown-menu-trigger-width]">
-                {seller?.shops?.map((shop: any) => (
-                  <DropdownMenuItem
-                    key={shop.id}
-                    disabled={isSwitchingShop}
-                    onSelect={() => switchShop(shop.id)}
-                    className={(seller?.activeShopId ?? seller?.shop?.id) === shop.id ? "font-semibold text-rose-400" : ""}
-                  >
-                    {shop.name}
-                  </DropdownMenuItem>
-                ))}
+                {seller?.shops?.length > 1
+                  ? seller.shops.map((shop: any) => (
+                      <DropdownMenuItem
+                        key={shop.id}
+                        disabled={isSwitchingShop || shop.id === (seller.activeShopId ?? seller.shop?.id)}
+                        onSelect={() => switchShop(shop.id)}
+                        className="gap-2"
+                      >
+                        <div className="flex h-5 w-5 items-center justify-center rounded bg-rose-600/80 text-white text-[10px] font-semibold shrink-0">
+                          {shop.name?.[0]?.toUpperCase()}
+                        </div>
+                        <span className="truncate">{shop.name}</span>
+                        {shop.id === (seller.activeShopId ?? seller.shop?.id) && (
+                          <span className="ml-auto text-[10px] text-muted-foreground">Active</span>
+                        )}
+                      </DropdownMenuItem>
+                    ))
+                  : <DropdownMenuItem disabled>Only one store</DropdownMenuItem>
+                }
+                <DropdownMenuItem asChild>
+                  <a href="/dashboard/settings">Store Settings</a>
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>

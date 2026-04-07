@@ -1,12 +1,19 @@
-﻿"use client"
+"use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { useForm } from "react-hook-form"
 import { Eye, EyeOff, BarChart2, Zap, Globe } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
 import { Checkbox } from "@workspace/ui/components/checkbox"
+import axiosInstance from "@/utils/axiosInstance"
+import { useAuthStore } from "@/store/authStore"
+import { useQueryClient } from "@tanstack/react-query"
+
+type LoginData = { email: string; password: string }
 
 const features = [
   { icon: BarChart2, title: "Real-time analytics", description: "Track every metric that matters to your business." },
@@ -35,6 +42,24 @@ function LogoMark({ className }: { className?: string }) {
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
   const [showPassword, setShowPassword] = useState(false)
+  const [serverError, setServerError] = useState<string | null>(null)
+  const router = useRouter()
+  const { setLoggedIn } = useAuthStore()
+  const queryClient = useQueryClient()
+
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginData>()
+
+  const onSubmit = async (data: LoginData) => {
+    setServerError(null)
+    try {
+      await axiosInstance.post("/auth/api/login-seller", data)
+      setLoggedIn(true)
+      queryClient.invalidateQueries({ queryKey: ["seller"] })
+      router.push("/dashboard")
+    } catch (err: any) {
+      setServerError(err?.response?.data?.message ?? "Login failed. Please try again.")
+    }
+  }
 
   return (
     <div className={cn("grid min-h-svh lg:grid-cols-2", className)} {...props}>
@@ -175,7 +200,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
           </div>
 
           {/* Fields */}
-          <div className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="anim-fade-up space-y-1.5" style={{ animationDelay: "0.35s" }}>
               <Label className="text-sm font-medium text-slate-400" htmlFor="email">Email</Label>
               <Input
@@ -184,7 +209,9 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                 placeholder="you@example.com"
                 autoComplete="email"
                 className="h-11 border-white/[0.08] bg-white/[0.04] text-white transition-all duration-200 placeholder:text-slate-600 focus-visible:border-rose-500/40 focus-visible:bg-white/[0.06] focus-visible:ring-rose-500/10"
+                {...register("email", { required: "Email is required" })}
               />
+              {errors.email && <p className="text-xs text-red-400 mt-0.5">{errors.email.message}</p>}
             </div>
 
             <div className="anim-fade-up space-y-1.5" style={{ animationDelay: "0.4s" }}>
@@ -201,6 +228,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                   placeholder="••••••••"
                   autoComplete="current-password"
                   className="h-11 border-white/[0.08] bg-white/[0.04] pr-10 text-white transition-all duration-200 placeholder:text-slate-600 focus-visible:border-rose-500/40 focus-visible:bg-white/[0.06] focus-visible:ring-rose-500/10"
+                  {...register("password", { required: "Password is required" })}
                 />
                 <button
                   type="button"
@@ -211,6 +239,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
+              {errors.password && <p className="text-xs text-red-400 mt-0.5">{errors.password.message}</p>}
             </div>
 
             <div className="anim-fade-up flex items-center gap-2" style={{ animationDelay: "0.45s" }}>
@@ -220,15 +249,20 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
               </Label>
             </div>
 
+            {serverError && (
+              <p className="text-xs text-red-400 text-center">{serverError}</p>
+            )}
+
             <div className="anim-fade-up" style={{ animationDelay: "0.5s" }}>
               <Button
                 type="submit"
-                className="relative h-11 w-full overflow-hidden border border-rose-500/20 bg-[#1a0f10] text-sm font-semibold text-rose-200 shadow-[inset_0_1px_0_rgba(244,63,94,0.1)] transition-all duration-200 hover:border-rose-500/30 hover:bg-[#1f1214] hover:text-white hover:shadow-[inset_0_1px_0_rgba(244,63,94,0.15),0_0_20px_rgba(244,63,94,0.08)]"
+                disabled={isSubmitting}
+                className="relative h-11 w-full overflow-hidden border border-rose-500/20 bg-[#1a0f10] text-sm font-semibold text-rose-200 shadow-[inset_0_1px_0_rgba(244,63,94,0.1)] transition-all duration-200 hover:border-rose-500/30 hover:bg-[#1f1214] hover:text-white hover:shadow-[inset_0_1px_0_rgba(244,63,94,0.15),0_0_20px_rgba(244,63,94,0.08)] disabled:opacity-60"
               >
-                Sign in
+                {isSubmitting ? "Signing in…" : "Sign in"}
               </Button>
             </div>
-          </div>
+          </form>
 
           <p className="anim-fade-in text-center text-sm text-slate-500" style={{ animationDelay: "0.55s" }}>
             Don&apos;t have an account?{" "}

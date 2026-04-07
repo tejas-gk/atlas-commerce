@@ -45,12 +45,13 @@ const ProvidersWithWebSocket = ({
 
   return (
     <>
-        {children}
-      {/* {seller && (
+      {seller ? (
         <WebSocketProvider seller={seller}>
+          {children}
         </WebSocketProvider>
-      )} */}
-      {!seller && children}
+      ) : (
+        children
+      )}
     </>
   );
 };
