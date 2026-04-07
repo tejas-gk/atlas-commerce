@@ -2,8 +2,9 @@
 import { WebSocketProvider } from "@/context/web-socket-context";
 import useSeller from "@/hooks/useSeller";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ThemeProvider } from "next-themes";
 import React, { useState } from "react";
-
+import { TooltipProvider } from "@workspace/ui/components/tooltip";
 import { Toaster } from "sonner";
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
@@ -21,10 +22,14 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ProvidersWithWebSocket>
-        {children}
-      </ProvidersWithWebSocket>
-      <Toaster />
+<ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+          <TooltipProvider>
+          <ProvidersWithWebSocket>
+            {children}
+          </ProvidersWithWebSocket>
+          <Toaster richColors />
+        </TooltipProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 };
@@ -36,17 +41,16 @@ const ProvidersWithWebSocket = ({
 }) => {
   const { seller, isLoading } = useSeller();
 
-  if (isLoading) return null;
+  // Always render children to avoid hydration mismatches.
+  // Once the seller query resolves, wrap with WebSocketProvider.
+  if (isLoading || !seller) {
+    return <>{children}</>;
+  }
 
   return (
-    <>
-        {children}
-      {/* {seller && (
-        <WebSocketProvider seller={seller}>
-        </WebSocketProvider>
-      )} */}
-      {!seller && children}
-    </>
+    <WebSocketProvider seller={seller}>
+      {children}
+    </WebSocketProvider>
   );
 };
 

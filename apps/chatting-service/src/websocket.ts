@@ -1,9 +1,9 @@
 import redis from "@repo/redis";
+import db from "@repo/db";
+import { incrementUnseenCount } from "@repo/redis/message.redis";
 import { Server as HttpServer } from "http";
-import { kafka } from "@atlas/kafka";
 import { WebSocketServer, WebSocket } from "ws";
 
-const producer = kafka.producer();
 const connectedUsers: Map<string, WebSocket> = new Map();
 const unseenCounts: Map<string, number> = new Map();
 
@@ -18,9 +18,6 @@ type IncomingMessage = {
 
 export async function createWebSocketServer(server: HttpServer) {
   const wss = new WebSocketServer({ server });
-
-  await producer.connect();
-  console.log("Kafka producer connected!");
 
   wss.on("connection", (ws: WebSocket) => {
     console.log("New Websocket connection!");
@@ -122,18 +119,25 @@ export async function createWebSocketServer(server: HttpServer) {
           console.log(`Echoed message to sender ${senderKey}`);
         }
 
-        // push to kafka consumer
-        await producer.send({
-          topic: "chat.new_message",
-          messages: [
-            {
-              key: conversationId,
-              value: JSON.stringify(messagePayload),
+        // write message directly to DB and update Redis unseen count
+        try {
+          await db.message.create({
+            data: {
+              conversationId,
+              senderId: fromUserId,
+              senderType,
+              content: messageBody,
+              createdAt: new Date(now),
             },
-          ],
-        });
+          });
 
-        console.log(`message queued to kafka: ${conversationId}`);
+          const receiverType = senderType === "user" ? "seller" : "user";
+          await incrementUnseenCount(receiverType, conversationId);
+
+          console.log(`Message persisted to DB: ${conversationId}`);
+        } catch (dbError) {
+          console.error("Failed to persist message to DB:", dbError);
+        }
       } catch (error) {
         console.error("Error processing WebSocket message:", error);
       }

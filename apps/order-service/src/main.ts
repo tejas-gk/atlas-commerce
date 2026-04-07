@@ -7,9 +7,14 @@ import router from "./routes/order.route";
 import { createOrder } from "./controllers/order.controller";
 
 const app = express();
+const allowedOrigins =
+  process.env.NODE_ENV === "production"
+    ? ["https://shondhane.com", "https://sellers.shondhane.com", "https://admin.shondhane.com"]
+    : ["http://localhost:3000", "http://localhost:3001", "http://localhost:3002"];
+
 app.use(
   cors({
-    origin: ["http://localhost:3000"],
+    origin: allowedOrigins,
     allowedHeaders: ["Authorization", "Content-Type"],
     credentials: true,
   })

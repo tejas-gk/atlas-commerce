@@ -1,7 +1,5 @@
 "use client"
-
 import * as React from "react"
-
 import { NavMain } from "@workspace/ui/components/nav-main"
 import { NavProjects } from "@workspace/ui/components/nav-projects"
 import { NavUser } from "@workspace/ui/components/nav-user"
@@ -13,16 +11,14 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@workspace/ui/components/sidebar"
-import { GalleryVerticalEndIcon, AudioLinesIcon, TerminalIcon, TerminalSquareIcon, BotIcon, BookOpenIcon, Settings2Icon, FrameIcon, PieChartIcon, MapIcon, PencilRuler, LogOut, Settings, ListOrdered, Home } from "lucide-react"
+import { PencilRuler, LogOut, Settings, ListOrdered, Home } from "lucide-react"
 
-// This is sample data.
 const data = {
   user: {
     name: "Admin",
-    email:  "admin@example.com",
+    email: "admin@example.com",
     avatar: "/avatars/admin.jpg",
   },
-
   teams: [
     {
       name: "PXLSGRDS",
@@ -30,7 +26,6 @@ const data = {
       plan: "Admin Panel",
     },
   ],
-
   navMain: [
     {
       title: "Dashboard",
@@ -40,75 +35,45 @@ const data = {
     },
     {
       title: "Main Menu",
+      url: "#", // <-- ADDED
       icon: <ListOrdered />,
       items: [
-        {
-          title: "Orders",
-          url: "/dashboard/orders",
-        },
-        {
-          title: "Payments",
-          url: "/dashboard/payments",
-        },
-        {
-          title: "Products",
-          url: "/dashboard/products",
-        },
-        {
-          title: "Events",
-          url: "/dashboard/events",
-        },
-        {
-          title: "Users",
-          url: "/dashboard/users",
-        },
-        {
-          title: "Sellers",
-          url: "/dashboard/sellers",
-        },
+        { title: "Orders", url: "/dashboard/orders" },
+        { title: "Payments", url: "/dashboard/payments" },
+        { title: "Products", url: "/dashboard/products" },
+        { title: "Events", url: "/dashboard/events" },
+        { title: "Users", url: "/dashboard/users" },
+        { title: "Sellers", url: "/dashboard/sellers" },
       ],
     },
     {
       title: "Controllers",
+      url: "#", // <-- ADDED
       icon: <Settings />,
       items: [
-        {
-          title: "Loggers",
-          url: "/dashboard/loggers",
-        },
-        {
-          title: "Management",
-          url: "/dashboard/management",
-        },
-        {
-          title: "Notifications",
-          url: "/dashboard/notifications",
-        },
+        { title: "Loggers", url: "/dashboard/loggers" },
+        { title: "Management", url: "/dashboard/management" },
+        { title: "Notifications", url: "/dashboard/notifications" },
       ],
     },
     {
       title: "Customization",
+      url: "#", // <-- ADDED
       icon: <PencilRuler />,
       items: [
-        {
-          title: "All Customization",
-          url: "/dashboard/customization",
-        },
+        { title: "All Customization", url: "/dashboard/customization" },
       ],
     },
     {
       title: "Extras",
+      url: "#", // <-- ADDED
       icon: <LogOut />,
       items: [
-        {
-          title: "Logout",
-          url: "/",
-        },
+        { title: "Logout", url: "/" },
       ],
     },
   ],
-
-  projects: [], // optional — you can remove NavProjects if unused
+  projects: [],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {

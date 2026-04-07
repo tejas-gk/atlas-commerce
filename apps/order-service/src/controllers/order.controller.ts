@@ -70,7 +70,7 @@ export const createPaymentSession = async (
           shopId: item.shopId,
           selectedOptions: item.selectedOptions || {},
         }))
-        .sort((a, b) => a.id.localCompare(b.id))
+        .sort((a, b) => a.id.localeCompare(b.id))
     );
 
     const keys = await redis.keys("payment-session:*");

@@ -34,16 +34,21 @@ const SidebarItem = ({ icon, title, isActive, href }: Props) => {
   };
 
   return (
-    <Link href={href} onClick={handleClick} className="my-2 block">
+    <Link href={href} onClick={handleClick} className="block">
       <div
-        className={`flex gap-2 w-full min-h-12 h-full items-center px-[13px] rounded-lg cursor-pointer transition hover:bg-[#2b2f31] ${
+        className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-150 ${
           isActive
-            ? "scale-[.98] bg-[#0f3158] fill-blue-200 hover:!bg-[#0f3158d6]"
-            : ""
+            ? "bg-blue-500/10 text-blue-400"
+            : "text-gray-400 hover:bg-gray-800/60 hover:text-gray-200"
         }`}
       >
-        {icon}
-        <h5 className="text-slate-200 text-lg">{title}</h5>
+        <span className="flex-shrink-0">{icon}</span>
+        <span className={`text-sm font-medium ${
+          isActive ? "text-blue-400" : "text-gray-300"
+        }`}>{title}</span>
+        {isActive && (
+          <span className="ml-auto w-1.5 h-1.5 rounded-full bg-blue-400" />
+        )}
       </div>
     </Link>
   );

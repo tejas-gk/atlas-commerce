@@ -11,12 +11,15 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import BreadCrumbs from "@/shared/components/breadcrumbs";
 import ImagePlaceHolder from "@/shared/components/image-placeholder";
-import { Input } from "../../../../../../../packages/ui/src/components/input";
 import ColorSelector from "@/shared/components/color-selector";
 import CustomSpecifications from "../custom-specifications";
 import CustomProperties from "@/shared/components/custom-properties";
 import SizeSelector from "@/shared/components/size-selector";
 import RichTextEditor from "@/shared/components/rich-text-editor";
+import { Input } from "@workspace/ui/components/input";
+import { Label } from "@workspace/ui/components/label";
+import { Textarea } from "@workspace/ui/components/textarea";
+import { Button } from "@workspace/ui/components/button";
 import useSeller from "@/hooks/useSeller";
 
 interface UploadedImage {
@@ -131,11 +134,11 @@ const Page = () => {
 
   return (
     <form
-      className="w-full mx-auto p-8 shadow-md rounded-lg text-white"
+      className="w-full mx-auto"
       onSubmit={handleSubmit(onSubmit)}
     >
       {/* Heading & Breadcrumbs */}
-      <h2 className="text-2xl py-2 font-semibold font-Poppins text-white">
+      <h2 className="text-2xl font-semibold tracking-tight">
         Create Event
       </h2>
       <BreadCrumbs title="Create Event" />
@@ -175,11 +178,14 @@ const Page = () => {
           <div className="w-full flex gap-6">
             {/* Product Title Input */}
             <div className="w-2/4">
-              <Input
-                label="Product Title *"
-                placeholder="Enter product title"
-                {...register("title", { required: "Title is required" })}
-              />
+              <div>
+                <Label className="text-muted-foreground text-xs font-semibold uppercase tracking-wider mb-1.5">Event Title *</Label>
+                <Input
+                  placeholder="Enter event title"
+                  className="border-white/[0.08] bg-white/[0.03] focus-visible:border-rose-500"
+                  {...register("title", { required: "Title is required" })}
+                />
+              </div>
               {errors.title && (
                 <p className="text-red-500 text-xs mt-1">
                   {errors.title.message as string}
@@ -187,12 +193,11 @@ const Page = () => {
               )}
 
               <div className="mt-2">
-                <Input
-                  type="textarea"
+                <Label className="text-muted-foreground text-xs font-semibold uppercase tracking-wider mb-1.5">Short Description * (Max 150 words)</Label>
+                <Textarea
                   rows={7}
-                  cols={10}
-                  label="Short Description * (Max 150 words)"
-                  placeholder="Enter product description for quick view"
+                  placeholder="Enter event description for quick view"
+                  className="border-white/[0.08] bg-white/[0.03] focus-visible:border-rose-500 resize-none"
                   {...register("short_description", {
                     required: "Description is required",
                     validate: (value) => {
@@ -212,9 +217,10 @@ const Page = () => {
               </div>
 
               <div className="mt-2">
+                <Label className="text-muted-foreground text-xs font-semibold uppercase tracking-wider mb-1.5">Tags *</Label>
                 <Input
-                  label="Tags *"
                   placeholder="apple,flagship"
+                  className="focus-visible:border-rose-500"
                   {...register("tags", {
                     required: "Seperate related products tags with a coma,",
                   })}
@@ -227,12 +233,12 @@ const Page = () => {
               </div>
 
               <div className="mt-2">
-                <label className="block font-semibold text-gray-300 mb-1">
+                <Label className="text-muted-foreground text-xs font-semibold uppercase tracking-wider mb-1.5">
                   Starting Date *
-                </label>
-                <input
+                </Label>
+                <Input
                   type="date"
-                  className={`w-full border outline-none border-gray-700 bg-transparent p-2 rounded-md text-white`}
+                  className="focus-visible:border-rose-500"
                   {...register("starting_date", {
                     required: "Starting Date is required!",
                   })}
@@ -241,9 +247,10 @@ const Page = () => {
               </div>
 
               <div className="mt-2">
+                <Label className="text-muted-foreground text-xs font-semibold uppercase tracking-wider mb-1.5">Warranty *</Label>
                 <Input
-                  label="Warranty *"
                   placeholder="1 Year / No Warranty"
+                  className="focus-visible:border-rose-500"
                   {...register("warranty", {
                     required: "Warranty is required!",
                   })}
@@ -257,20 +264,20 @@ const Page = () => {
 
               <div className="mt-2">
                 <div className="relative">
+                  <Label className="text-muted-foreground text-xs font-semibold uppercase tracking-wider mb-1.5">Slug *</Label>
                   <Input
-                    label="Slug *"
-                    placeholder="product_slug"
+                    placeholder="event-slug"
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       setSlugValue(e.target.value);
                       setValue("slug", e.target.value);
                       formOnChange(e);
                     }}
-                    value={watch("slug")}
-                    className="pr-10"
+                    value={watch("slug") ?? ""}
+                    className="pr-10 focus-visible:border-rose-500"
                     {...restSlugProps}
                   />
 
-                  <div className="absolute w-7 h-7 flex items-center justify-center bg-blue-600 !rounded shadow top-[70%] right-3 transform -translate-y-1/2 text-white cursor-pointer hover:bg-blue-700">
+                  <div className="absolute w-7 h-7 flex items-center justify-center bg-rose-600 !rounded shadow top-[70%] right-3 transform -translate-y-1/2 text-white cursor-pointer hover:bg-rose-700">
                     <Wand2
                       size={16}
                       onClick={async () => {
@@ -327,9 +334,10 @@ const Page = () => {
               </div>
 
               <div className="mt-2">
+                <Label className="text-muted-foreground text-xs font-semibold uppercase tracking-wider mb-1.5">Brand</Label>
                 <Input
-                  label="Brand"
                   placeholder="Apple"
+                  className="focus-visible:border-rose-500"
                   {...register("brand")}
                 />
                 {errors.tags && (
@@ -352,20 +360,20 @@ const Page = () => {
               </div>
 
               <div className="mt-2">
-                <label className="block font-semibold text-gray-300 mb-1">
+                <Label className="text-muted-foreground text-xs font-semibold uppercase tracking-wider mb-1.5">
                   Cash On Delivery *
-                </label>
+                </Label>
                 <select
                   {...register("cash_on_delivery", {
                     required: "Cash on Delivery is required",
                   })}
                   defaultValue="yes"
-                  className="w-full border outline-none border-gray-700 bg-transparent p-2 rounded-md text-white"
+                  className="w-full h-10 px-3 rounded-xl bg-background border border-white/[0.08] text-foreground text-sm outline-none focus:border-rose-500 transition-all"
                 >
-                  <option value="yes" className="bg-black">
+                  <option value="yes" className="bg-card">
                     Yes
                   </option>
-                  <option value="no" className="bg-black">
+                  <option value="no" className="bg-card">
                     No
                   </option>
                 </select>
@@ -377,11 +385,11 @@ const Page = () => {
               </div>
             </div>
             <div className="w-2/4">
-              <label className="block font-semibold text-gray-300 mb-1">
+              <Label className="text-muted-foreground text-xs font-semibold uppercase tracking-wider mb-1.5">
                 Category *
-              </label>
+              </Label>
               {isLoading ? (
-                <p className="text-gray-400">Loading categories...</p>
+                <p className="text-muted-foreground text-sm">Loading categories...</p>
               ) : isError ? (
                 <p className="text-red-500">Failed to load categories</p>
               ) : (
@@ -392,16 +400,16 @@ const Page = () => {
                   render={({ field }) => (
                     <select
                       {...field}
-                      className="w-full border outline-none border-gray-700 bg-transparent p-2 rounded-md text-white"
+                      className="w-full h-10 px-3 rounded-xl bg-background border border-white/[0.08] text-foreground text-sm outline-none focus:border-rose-500 transition-all"
                     >
-                      <option value="" className="bg-black">
+                      <option value="" className="bg-card">
                         Select Category
                       </option>
                       {categories?.map((category: string) => (
                         <option
                           value={category}
                           key={category}
-                          className="bg-black"
+                          className="bg-card"
                         >
                           {category}
                         </option>
@@ -417,9 +425,9 @@ const Page = () => {
               )}
 
               <div className="mt-2">
-                <label className="block font-semibold text-gray-300 mb-1">
+                <Label className="text-muted-foreground text-xs font-semibold uppercase tracking-wider mb-1.5">
                   Subcategory *
-                </label>
+                </Label>
                 <Controller
                   name="subCategory"
                   control={control}
@@ -427,16 +435,16 @@ const Page = () => {
                   render={({ field }) => (
                     <select
                       {...field}
-                      className="w-full border outline-none border-gray-700 bg-transparent p-2 rounded-md text-white"
+                      className="w-full h-10 px-3 rounded-xl bg-background border border-white/[0.08] text-foreground text-sm outline-none focus:border-rose-500 transition-all"
                     >
-                      <option value="" className="bg-black">
+                      <option value="" className="bg-card">
                         Select Subcategory
                       </option>
                       {subcategories?.map((subcategory: string) => (
                         <option
                           key={subcategory}
                           value={subcategory}
-                          className="bg-black"
+                          className="bg-card"
                         >
                           {subcategory}
                         </option>
@@ -452,9 +460,9 @@ const Page = () => {
               </div>
 
               <div className="mt-2">
-                <label className="block font-semibold text-gray-300 mb-1">
+                <Label className="text-muted-foreground text-xs font-semibold uppercase tracking-wider mb-1.5">
                   Detailed Description * (Min 100 words)
-                </label>
+                </Label>
                 <Controller
                   name="detailed_description"
                   control={control}
@@ -476,12 +484,12 @@ const Page = () => {
               </div>
 
               <div className="mt-2">
-                <label className="block font-semibold text-gray-300 mb-1">
+                <Label className="text-muted-foreground text-xs font-semibold uppercase tracking-wider mb-1.5">
                   Ending Date *
-                </label>
-                <input
+                </Label>
+                <Input
                   type="date"
-                  className={`w-full border outline-none border-gray-700 bg-transparent p-2 rounded-md text-white`}
+                  className="focus-visible:border-rose-500"
                   {...register("ending_date", {
                     required: "Ending Date is required!",
                   })}
@@ -490,9 +498,10 @@ const Page = () => {
               </div>
 
               <div className="mt-2">
+                <Label className="text-muted-foreground text-xs font-semibold uppercase tracking-wider mb-1.5">Video URL</Label>
                 <Input
-                  label="Video URL"
                   placeholder="https://www.youtube.com/embed/xyz123"
+                  className="focus-visible:border-rose-500"
                   {...register("video_url", {
                     pattern: {
                       value:
@@ -510,9 +519,11 @@ const Page = () => {
               </div>
 
               <div className="mt-2">
+                <Label className="text-muted-foreground text-xs font-semibold uppercase tracking-wider mb-1.5">Regular Price</Label>
                 <Input
-                  label="Regular Price"
-                  placeholder="20$"
+                  type="number"
+                  placeholder="20"
+                  className="focus-visible:border-rose-500"
                   {...register("regular_price", {
                     valueAsNumber: true,
                     min: { value: 1, message: "Price must be at least 1" },
@@ -528,9 +539,11 @@ const Page = () => {
               </div>
 
               <div className="mt-2">
+                <Label className="text-muted-foreground text-xs font-semibold uppercase tracking-wider mb-1.5">Sale Price *</Label>
                 <Input
-                  label="Sale Price *"
-                  placeholder="15$"
+                  type="number"
+                  placeholder="15"
+                  className="focus-visible:border-rose-500"
                   {...register("sale_price", {
                     required: "Sale Price is required",
                     valueAsNumber: true,
@@ -552,9 +565,11 @@ const Page = () => {
               </div>
 
               <div className="mt-2">
+                <Label className="text-muted-foreground text-xs font-semibold uppercase tracking-wider mb-1.5">Stock *</Label>
                 <Input
-                  label="Stock *"
+                  type="number"
                   placeholder="100"
+                  className="focus-visible:border-rose-500"
                   {...register("stock", {
                     required: "Stock is required!",
                     valueAsNumber: true,
@@ -583,12 +598,12 @@ const Page = () => {
               </div>
 
               <div className="mt-3">
-                <label className="block font-semibold text-gray-300 mb-1">
+                <Label className="text-muted-foreground text-xs font-semibold uppercase tracking-wider mb-1.5">
                   Select Discount Codes (optional)
-                </label>
+                </Label>
 
                 {discountLoading ? (
-                  <p className="text-gray-400">Loading discount codes...</p>
+                  <p className="text-muted-foreground text-sm">Loading discount codes...</p>
                 ) : (
                   <div className="flex flex-wrap gap-2">
                     {discountCodes?.map((code: any) => (
@@ -596,8 +611,8 @@ const Page = () => {
                         key={code.id}
                         type="button"
                         className={`px-3 py-1 rounded-md text-sm font-semibold border ${watch("discountCodes")?.includes(code.id)
-                            ? "bg-blue-600 text-white border-blue-600"
-                            : "bg-gray-800 text-gray-300 border-gray-600 hover:bg-gray-700"
+                            ? "bg-rose-600 text-white border-rose-500"
+                            : "bg-muted text-muted-foreground border-white/[0.08] hover:bg-muted/80 hover:text-foreground"
                           }`}
                         onClick={() => {
                           const currentSelection = watch("discountCodes") || [];
@@ -619,9 +634,7 @@ const Page = () => {
                 )}
 
                 {discountCodes?.length === 0 && (
-                  <p className="text-gray-400">
-                    No discount codes available yet!
-                  </p>
+                  <p className="text-muted-foreground text-sm">No discount codes available yet!</p>
                 )}
               </div>
             </div>
@@ -630,13 +643,13 @@ const Page = () => {
       </div>
 
       <div className="mt-6 flex justify-end gap-3">
-        <button
+        <Button
           type="submit"
-          className="px-4 py-2 bg-blue-600 text-white rounded-md"
           disabled={loading}
+          className="gap-2 bg-rose-600 hover:bg-rose-700 text-white font-semibold border-0 disabled:opacity-60"
         >
-          {loading ? "Creating..." : "Create"}
-        </button>
+          {loading ? "Creating..." : "Create Event"}
+        </Button>
       </div>
     </form>
   );

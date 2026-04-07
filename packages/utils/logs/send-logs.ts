@@ -1,27 +1,8 @@
-import { kafka } from "../kafka";
-
-const producer = kafka.producer();
-
-export async function sendLog({
-  type = "info",
-  message,
-  source = "unknown-service",
-}: {
+// Kafka logging disabled — no-op until Kafka is re-enabled
+export async function sendLog(_: {
   type?: "info" | "error" | "warning" | "success" | "debug";
   message: string;
   source?: string;
 }) {
-  const logPayload = {
-    type,
-    message,
-    timestamp: new Date().toISOString(),
-    source,
-  };
-
-  await producer.connect();
-  await producer.send({
-    topic: "logs",
-    messages: [{ value: JSON.stringify(logPayload) }],
-  });
-  await producer.disconnect();
+  // noop
 }

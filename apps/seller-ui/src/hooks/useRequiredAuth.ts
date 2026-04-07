@@ -1,6 +1,6 @@
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import useSeller from "./useSeller";
+import { useEffect } from "react";
 
 const useRequireAuth = () => {
   const router = useRouter();

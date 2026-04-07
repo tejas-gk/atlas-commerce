@@ -1,238 +1,267 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import {
-  useReactTable,
-  getCoreRowModel,
-  flexRender,
-} from "@tanstack/react-table";
+  DollarSign,
+  ShoppingCart,
+  Package,
+  Users,
+  TrendingUp,
+  Download,
+} from "lucide-react";
 import {
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  Tooltip,
-  Legend,
-} from "recharts";
-import { SalesChart } from "@/shared/components/charts/sales.chart";
-import GeographicalMap from "@/shared/components/charts/geographicalMap";
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@workspace/ui/components/card";
+import { Button } from "@workspace/ui/components/button";
+import { cn } from "@workspace/ui/lib/utils";
+import { RevenueChart } from "../../../shared/components/charts/revenue-chart";
+import { VisitorInsightsChart } from "../../../shared/components/charts/visitor-insights-chart";
+import { CustomerSatisfactionChart } from "../../../shared/components/charts/customer-satisfaction-chart";
+import { TargetRealityChart } from "../../../shared/components/charts/target-reality-chart";
+import { VolumeServiceChart } from "../../../shared/components/charts/volume-service-chart";
 
+// ── Mock data ───────────────────────────────────────────────────
 
-// Device data
-const deviceData = [
-  { name: "Phone", value: 55 },
-  { name: "Tablet", value: 20 },
-  { name: "Computer", value: 25 },
-];
-const COLORS = ["#4ade80", "#facc15", "#60a5fa"];
-
-// Orders data
-const orders = [
-  { id: "ORD-001", customer: "John Doe", amount: "$250", status: "Paid" },
-  { id: "ORD-002", customer: "Jane Smith", amount: "$180", status: "Pending" },
-  { id: "ORD-003", customer: "Alice Johnson", amount: "$340", status: "Paid" },
-  { id: "ORD-004", customer: "Bob Lee", amount: "$90", status: "Failed" },
-  { id: "ORD-005", customer: "Bob Lee", amount: "$90", status: "Failed" },
-  { id: "ORD-006", customer: "Bob Lee", amount: "$90", status: "Failed" },
-];
-
-// Orders table columns
-const columns = [
+const kpiData = [
   {
-    accessorKey: "id",
-    header: "Order ID",
+    label: "Total Sales",
+    value: "$1k",
+    change: "+8% from yesterday",
+    icon: DollarSign,
+    bg: "bg-rose-500/15",
+    iconColor: "text-rose-400",
   },
   {
-    accessorKey: "customer",
-    header: "Customer",
+    label: "Total Order",
+    value: "300",
+    change: "+5% from yesterday",
+    icon: ShoppingCart,
+    bg: "bg-amber-500/15",
+    iconColor: "text-amber-400",
   },
   {
-    accessorKey: "amount",
-    header: "Amount",
+    label: "Product Sold",
+    value: "5",
+    change: "+1.2% from yesterday",
+    icon: Package,
+    bg: "bg-emerald-500/15",
+    iconColor: "text-emerald-400",
   },
   {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ getValue }: any) => {
-      const value = getValue();
-      const color =
-        value === "Paid"
-          ? "text-green-400"
-          : value === "Pending"
-            ? "text-yellow-400"
-            : "text-red-400";
-      return <span className={`font-medium ${color}`}>{value}</span>;
-    },
+    label: "New Customers",
+    value: "8",
+    change: "0.5% from yesterday",
+    icon: Users,
+    bg: "bg-blue-500/15",
+    iconColor: "text-blue-400",
   },
 ];
 
-const OrdersTable = () => {
-  const table = useReactTable({
-    data: orders,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
+const topProducts = [
+  { name: "Home Decor Range", popularity: 45, color: "bg-blue-500" },
+  { name: "Disney Princess Pink Bag 18'", popularity: 29, color: "bg-emerald-500" },
+  { name: "Bathroom Essentials", popularity: 18, color: "bg-rose-500" },
+  { name: "Apple Smartwatches", popularity: 25, color: "bg-amber-500" },
+];
 
+// ── Page ────────────────────────────────────────────────────────
+
+export default function DashboardPage() {
   return (
-    <div className="mt-6">
-      <h2 className="text-white text-xl font-semibold mb-4">
-        Recent Orders
-        <span className="block text-sm text-slate-400 font-normal">
-          A quick snapshot of your latest transactions.
-        </span>
-      </h2>
-      <div className="!rounded shadow-xl overflow-hidden border border-slate-700">
-        <table className="min-w-full text-sm text-white">
-          <thead className="bg-slate-900 text-slate-300">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th key={header.id} className="p-3 text-left">
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody className="bg-transparent">
-            {table.getRowModel().rows.map((row) => (
-              <tr
-                key={row.id}
-                className="border-t border-slate-600 hover:bg-slate-800 transition"
+    <div className="space-y-6 pb-8">
+
+      {/* ── Row 1: KPI cards + Visitor Insights ─────────────────── */}
+      <div className="grid lg:grid-cols-5 gap-6">
+        {/* Left — Today's Sales + 4 KPI cards */}
+        <div className="lg:col-span-3 space-y-4">
+          <Card className="border border-white/[0.08] bg-card/50">
+            <CardHeader className="flex flex-row items-start justify-between pb-4">
+              <div>
+                <CardTitle className="text-base font-semibold">
+                  Today&apos;s Sales
+                </CardTitle>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Sales Summary
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 text-xs gap-1.5 border-white/[0.1] text-muted-foreground hover:text-foreground"
               >
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="p-3">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-};
-
-// Dashboard Layout
-const DashboardPage = () => {
-  return (
-    <div className="p-8">
-      {/* Top Charts */}
-      <div className="w-full flex gap-8">
-        {/* Revenue Chart */}
-        <div className="w-[65%]">
-          <div className="rounded-2xl shadow-xl">
-            <h2 className="text-white text-xl font-semibold">
-              Revenue
-              <span className="block text-sm text-slate-400 font-normal">
-                Last 6 months performance
-              </span>
-            </h2>
-            <SalesChart />
-          </div>
-        </div>
-
-        {/* Device Usage */}
-        <div className="w-[35%] rounded-2xl shadow-xl">
-          <h2 className="text-white text-xl font-semibold mb-2">
-            Device Usage
-            <span className="block text-sm text-slate-400 font-normal">
-              How visitors visit your shop
-            </span>
-          </h2>
-          <div className="mt-14">
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <defs>
-                  <filter
-                    id="shadow"
-                    x="-10%"
-                    y="-10%"
-                    width="120%"
-                    height="120%"
+                <Download className="h-3.5 w-3.5" />
+                Export
+              </Button>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+                {kpiData.map((kpi) => (
+                  <div
+                    key={kpi.label}
+                    className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-4 space-y-3 hover:bg-white/[0.05] transition-colors duration-200"
                   >
-                    <feDropShadow
-                      dx="0"
-                      dy="0"
-                      stdDeviation="4"
-                      floodColor="#000"
-                      floodOpacity="0.2"
-                    />
-                  </filter>
-                </defs>
-
-                <Pie
-                  data={deviceData}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={90}
-                  paddingAngle={3}
-                  stroke="#0f172a"
-                  strokeWidth={2}
-                  isAnimationActive
-                  filter="url(#shadow)"
-                >
-                  {deviceData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "#1e293b",
-                    border: "none",
-                    borderRadius: "8px",
-                  }}
-                  labelStyle={{ color: "#fff" }}
-                  itemStyle={{ color: "#fff" }}
-                />
-
-                {/* External Legend */}
-                <Legend
-                  layout="horizontal"
-                  verticalAlign="bottom"
-                  align="center"
-                  iconType="circle"
-                  formatter={(value) => (
-                    <span className="text-white text-sm ml-1">{value}</span>
-                  )}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
+                    <div className={cn("flex h-10 w-10 items-center justify-center rounded-full", kpi.bg)}>
+                      <kpi.icon className={cn("h-5 w-5", kpi.iconColor)} />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-semibold tracking-tight">{kpi.value}</p>
+                      <p className="text-xs font-medium text-muted-foreground mt-0.5">{kpi.label}</p>
+                    </div>
+                    <p className="text-[10px] text-emerald-400/80">
+                      <TrendingUp className="h-3 w-3 inline mr-1 -mt-0.5" />
+                      {kpi.change}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </div>
+
+        {/* Right — Visitor Insights */}
+        <Card className="lg:col-span-2 border border-white/[0.08] bg-card/50">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold">
+              Visitor Insights
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <VisitorInsightsChart />
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Geo Map + Orders */}
-      <div className="w-full flex gap-8">
-        {/* Map */}
-        <div className="w-[60%]">
-          <h2 className="text-white text-xl font-semibold mt-6">
-            Visitors Distribution
-            <span className="block text-sm text-slate-400 font-normal">
-              Visual breakdown of global visitors activity.
-            </span>
-          </h2>
-          <GeographicalMap />
-        </div>
+      {/* ── Row 2: Revenue + Customer Satisfaction + Target vs Reality */}
+      <div className="grid lg:grid-cols-3 gap-6">
+        <Card className="border border-white/[0.08] bg-card/50">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold">
+              Total Revenue
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <RevenueChart />
+          </CardContent>
+        </Card>
 
-        {/* Orders Table */}
-        <div className="w-[40%]">
-          <OrdersTable />
-        </div>
+        <Card className="border border-white/[0.08] bg-card/50">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold">
+              Customer Satisfaction
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <CustomerSatisfactionChart />
+          </CardContent>
+        </Card>
+
+        <Card className="border border-white/[0.08] bg-card/50">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold">
+              Target vs Reality
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <TargetRealityChart />
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* ── Row 3: Top Products + Sales Map + Volume ────────────── */}
+      <div className="grid lg:grid-cols-3 gap-6">
+        {/* Top Products */}
+        <Card className="border border-white/[0.08] bg-card/50">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-semibold">
+              Top Products
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0">
+            {/* Table header */}
+            <div className="grid grid-cols-[28px_1fr_120px_52px] gap-2 pb-2 border-b border-white/[0.06]">
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground/50 font-medium">#</span>
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground/50 font-medium">Name</span>
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground/50 font-medium">Popularity</span>
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground/50 font-medium text-right">Sales</span>
+            </div>
+            <div className="divide-y divide-white/[0.06]">
+              {topProducts.map((product, i) => (
+                <div key={product.name} className="grid grid-cols-[28px_1fr_120px_52px] gap-2 py-3 items-center">
+                  <span className="text-xs text-muted-foreground/60 font-medium tabular-nums">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span className="text-[13px] font-medium text-foreground/90 truncate">
+                    {product.name}
+                  </span>
+                  <div className="h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
+                    <div
+                      className={cn("h-full rounded-full", product.color)}
+                      style={{ width: `${product.popularity}%` }}
+                    />
+                  </div>
+                  <div className="flex justify-end">
+                    <span className="inline-flex items-center rounded-full border border-white/[0.08] bg-white/[0.04] px-2 py-0.5 text-[10px] font-medium tabular-nums text-muted-foreground">
+                      {product.popularity}%
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Sales Mapping by Country */}
+        <Card className="border border-white/[0.08] bg-card/50">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold">
+              Sales Mapping by Country
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="flex items-center justify-center h-[260px]">
+              {/* Simple visualisation — dots for top regions */}
+              <div className="space-y-4 w-full">
+                {[
+                  { country: "United States", value: 38, color: "bg-rose-500" },
+                  { country: "India", value: 24, color: "bg-blue-500" },
+                  { country: "United Kingdom", value: 18, color: "bg-emerald-500" },
+                  { country: "Germany", value: 12, color: "bg-amber-500" },
+                  { country: "Canada", value: 8, color: "bg-rose-500" },
+                ].map((region) => (
+                  <div key={region.country} className="flex items-center gap-3">
+                    <span className={cn("h-2.5 w-2.5 rounded-full shrink-0", region.color)} />
+                    <span className="text-[13px] text-foreground/80 flex-1">{region.country}</span>
+                    <div className="w-24 h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
+                      <div
+                        className={cn("h-full rounded-full opacity-80", region.color)}
+                        style={{ width: `${region.value}%` }}
+                      />
+                    </div>
+                    <span className="text-xs font-medium tabular-nums text-muted-foreground w-8 text-right">
+                      {region.value}%
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Volume vs Service Level */}
+        <Card className="border border-white/[0.08] bg-card/50">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold">
+              Volume vs Service Level
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <VolumeServiceChart />
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
-};
-
-export default DashboardPage;
+}

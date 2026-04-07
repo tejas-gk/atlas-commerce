@@ -10,7 +10,10 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "allowJs": true,
+    "noEmit": true,
+    "jsx": "preserve"
   },
   "include": [
     "src",
