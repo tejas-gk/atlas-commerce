@@ -1,13 +1,11 @@
 {
   "extends": "../../packages/typescript-config/base.json",
   "compilerOptions": {
-    "baseUrl": ".",
-    "ignoreDeprecations": "6.0",
-    "paths": {
-      "@/*": [
-        "src/*"
-      ]
-    },
+    "outDir": "dist",
+    "rootDir": "src",
+    "allowJs": true,
+    "noEmit": true,
+    "jsx": "preserve",
     "plugins": [
       {
         "name": "next"

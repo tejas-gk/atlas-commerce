@@ -75,6 +75,8 @@ app.use("/product", proxy("http://localhost:6002"))
 app.use("/seller", proxy("http://localhost:6003"))
 app.use("/order", proxy("http://localhost:6004"))
 app.use("/recommendation", proxy("http://localhost:6007"))
+app.use("/seller", proxy("http://localhost:6003"))
+app.use("/order", proxy("http://localhost:6004"))
 app.use("/admin", proxy("http://localhost:6005"))
 app.use("/assets", express.static(path.join(__dirname, "assets")))
 

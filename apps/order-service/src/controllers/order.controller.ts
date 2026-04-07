@@ -121,7 +121,7 @@ export const createPaymentSession = async (
     const sellerData = shops.map((shop) => ({
       shopId: shop.id,
       sellerId: shop.sellerId,
-      stripeAccountId: shop?.seller?.stripeId,
+      stripeAccountOd: shop?.seller?.stripeId,
     }));
 
     // calculate total
