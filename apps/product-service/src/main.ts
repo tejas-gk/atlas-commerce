@@ -2,7 +2,7 @@ import "./bootstrap";
 import express from "express";
 import productRoutes from "./routes/product.routes";
 import cookieParser from "cookie-parser";
-import { errorMiddleware } from "../../../packages/error-handler/error-middleware";
+import { errorMiddleware } from "@repo/error-handler/error-middleware";
 
 const app: express.Application = express();
 app.use(express.json({ limit: "50mb" })); // Reduced from 100mb for security

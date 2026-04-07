@@ -1,16 +1,16 @@
 import { useRouter } from "next/navigation";
 import useSeller from "./useSeller";
+import { useEffect } from "react";
 
 const useRequireAuth = () => {
   const router = useRouter();
   const { seller, isLoading, switchShop, isSwitchingShop } = useSeller();
 
-  // Auth redirect disabled for UI development — re-enable when backend is running
-  // useEffect(() => {
-  //   if (!isLoading && !seller) {
-  //     router.replace("/login");
-  //   }
-  // }, [seller, isLoading, router]);
+  useEffect(() => {
+    if (!isLoading && !seller) {
+      router.replace("/login");
+    }
+  }, [seller, isLoading, router]);
 
   return { seller, isLoading, switchShop, isSwitchingShop };
 };
