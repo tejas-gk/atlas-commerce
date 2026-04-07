@@ -43,9 +43,12 @@ axiosInstance.interceptors.response.use(
 
     const is401 = error?.response?.status === 401;
     const isRetry = originalRequest?._retry;
-    const isAuthRequired = originalRequest?.requireAuth === true;
+    const isRefreshRequest = originalRequest?.url?.includes(
+      "/auth/api/refresh-token"
+    );
+    const isAuthRequired = originalRequest?.requireAuth !== false;
 
-    if (is401 && !isRetry && isAuthRequired) {
+    if (is401 && !isRetry && isAuthRequired && !isRefreshRequest) {
       if (isRefreshing) {
         return new Promise((resolve) => {
           subscribeTokenRefresh(() => resolve(axiosInstance(originalRequest)));
@@ -57,7 +60,7 @@ axiosInstance.interceptors.response.use(
 
       try {
         await axios.post(
-          `${process.env.NEXT_PUBLIC_SERVER_URI || "https://shondhane.com"}/auth/api/refresh-token`,
+          `${"http://localhost:8080"}/auth/api/refresh-token`,
           {},
           { withCredentials: true }
         );

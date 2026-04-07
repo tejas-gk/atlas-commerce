@@ -1,6 +1,6 @@
 import { shopCategories } from "@/utils/categories";
 import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
+import axiosInstance from "@/utils/axiosInstance";
 import React from "react";
 import { useForm } from "react-hook-form";
 
@@ -8,7 +8,7 @@ const CreateShop = ({
   sellerId,
   setActiveStep,
 }: {
-  sellerId: string;
+  sellerId?: string;
   setActiveStep: (step: number) => void;
 }) => {
   const {
@@ -19,8 +19,8 @@ const CreateShop = ({
 
   const shopCreateMutation = useMutation({
     mutationFn: async (data: FormData) => {
-      const response = await axios.post(
-        `http://localhost:8080/api/create-shop`,
+      const response = await axiosInstance.post(
+        `/auth/api/create-shop`,
         data
       );
 
@@ -32,7 +32,7 @@ const CreateShop = ({
   });
 
   const onSubmit = async (data: any) => {
-    const shopData = { ...data, sellerId };
+    const shopData = sellerId ? { ...data, sellerId } : data;
     shopCreateMutation.mutate(shopData);
   };
 

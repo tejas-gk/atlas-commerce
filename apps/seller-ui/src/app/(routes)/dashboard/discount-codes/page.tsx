@@ -17,19 +17,25 @@ import {
   DialogTitle,
 } from "@workspace/ui/components/dialog";
 import DeleteDiscountCodeModal from "@/shared/components/modals/delete.discount-codes";
+import useSeller from "@/hooks/useSeller";
 
 export default function DiscountCodesPage() {
+  const { seller } = useSeller();
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedDiscount, setSelectedDiscount] = useState<any>();
   const queryClient = useQueryClient();
+  const shopId = seller?.activeShopId || seller?.shop?.id;
 
   const { data: discountCodes = [], isLoading } = useQuery({
-    queryKey: ["shop-discounts"],
+    queryKey: ["shop-discounts", shopId],
     queryFn: async () => {
-      const res = await axiosInstance.get("/product/api/get-discount-codes");
+      const res = await axiosInstance.get("/product/api/get-discount-codes", {
+        params: { shopId },
+      });
       return res?.data?.discount_codes || [];
     },
+    enabled: !!shopId,
   });
 
   const { register, handleSubmit, control, reset } = useForm({
@@ -38,14 +44,19 @@ export default function DiscountCodesPage() {
 
   const createMutation = useMutation({
     mutationFn: async (data: any) => {
-      await axiosInstance.post("/product/api/create-discount-code", data);
+      await axiosInstance.post("/product/api/create-discount-code", {
+        ...data,
+        shopId,
+      });
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["shop-discounts"] }); reset(); setShowModal(false); },
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: any) => {
-      await axiosInstance.delete(`/product/api/delete-discount-code/${id}`);
+      await axiosInstance.delete(`/product/api/delete-discount-code/${id}`, {
+        params: { shopId },
+      });
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["shop-discounts"] }); setShowDeleteModal(false); },
   });

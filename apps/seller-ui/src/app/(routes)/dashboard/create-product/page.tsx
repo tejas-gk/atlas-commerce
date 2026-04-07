@@ -20,8 +20,10 @@ import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
 import { Textarea } from "@workspace/ui/components/textarea";
 import { Button } from "@workspace/ui/components/button";
+import useSeller from "@/hooks/useSeller";
 
 const Page = () => {
+  const { seller } = useSeller();
   const {
     register,
     control,
@@ -102,7 +104,7 @@ const Page = () => {
   });
 
   const { data: discountCodes = [], isLoading: discountLoading } = useQuery({
-    queryKey: ["shop-discounts"],
+    queryKey: ["shop-discounts", seller?.activeShopId],
     queryFn: async () => {
       const res = await axiosInstance.get(
         "/product/api/get-discount-codes",
@@ -110,6 +112,7 @@ const Page = () => {
       );
       return res?.data?.discount_codes || [];
     },
+    enabled: !!seller?.activeShopId,
   });
 
   const categories = data?.categories || [];

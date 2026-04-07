@@ -16,7 +16,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
   const data = await fetchSellerDetails(id);
-
+  console.log("Generating metadata for shop:", data);
   return {
     title: `${data?.shop?.name} | Eshop Marketplace`,
     description:

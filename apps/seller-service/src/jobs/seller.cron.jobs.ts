@@ -6,29 +6,19 @@ cron.schedule("0 0 * * *", async () => {
   try {
     const now = new Date();
 
-    // Find all sellers marked deleted and past the deletedAt date
-    const expiredSellers = await db.sellers.findMany({
+    const expiredShops = await db.shops.findMany({
       where: {
         isDeleted: true,
         deletedAt: { lte: now },
       },
-      include: { shop: true },
     });
 
-    for (const seller of expiredSellers) {
-      // Delete shop if exists
-      if (seller.shop) {
-        await db.shops.delete({
-          where: { id: seller.shop.id },
-        });
-      }
-
-      // Delete seller
-      await db.sellers.delete({
-        where: { id: seller.id },
+    for (const shop of expiredShops) {
+      await db.shops.delete({
+        where: { id: shop.id },
       });
     }
   } catch (error) {
-    console.error("Error deleting expired sellers and shops:", error);
+    console.error("Error deleting expired shops:", error);
   }
 });

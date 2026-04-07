@@ -3,7 +3,7 @@ import useSeller from "./useSeller";
 
 const useRequireAuth = () => {
   const router = useRouter();
-  const { seller, isLoading } = useSeller();
+  const { seller, isLoading, switchShop, isSwitchingShop } = useSeller();
 
   // Auth redirect disabled for UI development — re-enable when backend is running
   // useEffect(() => {
@@ -12,7 +12,7 @@ const useRequireAuth = () => {
   //   }
   // }, [seller, isLoading, router]);
 
-  return { seller, isLoading };
+  return { seller, isLoading, switchShop, isSwitchingShop };
 };
 
 export default useRequireAuth;

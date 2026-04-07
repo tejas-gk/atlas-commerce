@@ -4,11 +4,11 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { useForm, Controller, FieldValues } from "react-hook-form";
 import { Save, Trash, ArrowLeft, Loader } from "lucide-react";
-import Input from "packages/components/input";
+import { Input } from "@workspace/ui/components/input";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import axiosInstance from "@/utils/axiosInstance";
-import useSeller from "apps/seller-ui/src/hooks/useSeller";
+import useSeller from "@/hooks/useSeller";
 
 interface SocialLink {
   type: string;
@@ -22,6 +22,7 @@ interface SellerProfileForm {
   address: string;
   website: string;
   socialLinks: SocialLink[];
+  shopId?: string;
 }
 
 const socialMediaOptions = [
@@ -36,7 +37,7 @@ const updateSellerProfile = async (data: SellerProfileForm) => {
   return response.data;
 };
 
-const EditProfile: React.FC = () => {
+const EditProfile = () => {
   const { seller } = useSeller();
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -60,6 +61,21 @@ const EditProfile: React.FC = () => {
     },
   });
 
+  React.useEffect(() => {
+    setValue("name", seller?.shop?.name || "");
+    setValue("bio", seller?.shop?.bio || "");
+    setValue(
+      "opening_hours",
+      seller?.shop?.opening_hours || "Mon - Sat: 9 AM - 6 PM"
+    );
+    setValue("address", seller?.shop?.address || "");
+    setValue("website", seller?.shop?.website || "");
+    setValue(
+      "socialLinks",
+      seller?.shop?.socialLinks || [{ type: "facebook", url: "" }]
+    );
+  }, [seller?.activeShopId, seller?.shop, setValue]);
+
   const socialLinks = watch("socialLinks");
 
   // Mutation for updating the seller profile
@@ -79,7 +95,10 @@ const EditProfile: React.FC = () => {
 
   // Form Submit Handler
   const onSubmit = (data: FieldValues) => {
-    updateProfile(data as SellerProfileForm);
+    updateProfile({
+      ...(data as SellerProfileForm),
+      shopId: seller?.activeShopId,
+    } as SellerProfileForm);
   };
 
   // Add New Social Link

@@ -91,7 +91,7 @@ const SellerSidebar = () => {
   const pathname = usePathname();
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { seller } = useRequireAuth();
+  const { seller, switchShop, isSwitchingShop } = useRequireAuth();
 
   const handleLogout = async () => {
     try {
@@ -126,8 +126,16 @@ const SellerSidebar = () => {
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="w-[--radix-dropdown-menu-trigger-width]">
-                <DropdownMenuItem>Switch Store</DropdownMenuItem>
-                <DropdownMenuItem>Store Settings</DropdownMenuItem>
+                {seller?.shops?.map((shop: any) => (
+                  <DropdownMenuItem
+                    key={shop.id}
+                    disabled={isSwitchingShop}
+                    onSelect={() => switchShop(shop.id)}
+                    className={(seller?.activeShopId ?? seller?.shop?.id) === shop.id ? "font-semibold text-rose-400" : ""}
+                  >
+                    {shop.name}
+                  </DropdownMenuItem>
+                ))}
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>

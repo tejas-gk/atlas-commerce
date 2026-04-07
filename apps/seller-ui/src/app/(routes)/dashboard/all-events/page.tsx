@@ -19,6 +19,7 @@ import AnalyticsModal from "@/shared/components/modals/analytics.modal";
 import { Input } from "@workspace/ui/components/input";
 import { Button } from "@workspace/ui/components/button";
 import { Card } from "@workspace/ui/components/card";
+import useSeller from "@/hooks/useSeller";
 
 const KPI_CARDS = [
   { label: "Active Events", value: "8", sub: "running right now", trend: "up" as const, Icon: Zap, iconCls: "bg-rose-500/15 text-rose-400" },
@@ -56,6 +57,7 @@ const restoreProduct = async (id: string) => {
 };
 
 export default function AllEventsPage() {
+  const { seller } = useSeller();
   const [globalFilter, setGlobalFilter] = useState("");
   const [activeTab, setActiveTab] = useState("All");
   const [analyticsData, setAnalyticsData] = useState<any>(null);
@@ -65,9 +67,10 @@ export default function AllEventsPage() {
   const queryClient = useQueryClient();
 
   const { data: products = [], isLoading } = useQuery({
-    queryKey: ["shop-events"],
+    queryKey: ["shop-events", seller?.activeShopId],
     queryFn: fetchEvents,
     staleTime: 1000 * 60 * 5,
+    enabled: !!seller?.activeShopId,
   });
 
   const deleteMutation = useMutation({

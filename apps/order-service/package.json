@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "main": "dist/main.js",
-
+  "scripts": {
+    "dev": "dotenv -e ../../.env -- tsx watch src/main.ts",
+    "build": "tsc",
+    "start": "node dist/main.js"
+  },
   "dependencies": {
     "express": "^4.18.0",
     "cors": "^2.8.5",
@@ -15,6 +19,8 @@
     "tslib": "^2.6.0",
     "@repo/error-handler": "workspace:*",
     "@repo/db": "workspace:*",
+    "@repo/middleware": "workspace:*",
+    "@repo/redis": "workspace:*",
     "typescript": "^5.0.0",
     "path": "^0.12.7",
     "@prisma/client": "^6.7.0",

@@ -1,4 +1,3 @@
-import isAuthenticated from "@packages/middleware/isAuthenticated";
 import express, { Router } from "express";
 import {
   createPaymentIntent,
@@ -11,7 +10,8 @@ import {
   verifyCouponCode,
   verifyingPaymentSession,
 } from "../controllers/order.controller";
-import { isAdmin, isSeller } from "@packages/middleware/authorizeRoles";
+import { isAdmin, isSeller } from "@repo/middleware/authorizeRoles";
+import isAuthenticated from "@repo/middleware";
 
 const router: Router = express.Router();
 

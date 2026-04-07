@@ -1,5 +1,126 @@
 ﻿import { SignupForm } from "@/shared/components/auth/signup-form"
 
+<<<<<<< HEAD
 export default function SignupPage() {
   return <SignupForm />
 }
+=======
+import CreateShop from "@/shared/modules/auth/create-shop";
+import axiosInstance from "@/utils/axiosInstance";
+import { useQuery } from "@tanstack/react-query";
+import { Home } from "lucide-react";
+import Link from "next/link";
+import React, { useMemo, useState } from "react";
+import axios from "axios";
+
+const fetchCurrentAccount = async () => {
+  const response = await axiosInstance.get("/auth/api/logged-in-seller");
+  return response.data.seller;
+};
+
+const Signup = () => {
+  const [activeStep, setActiveStep] = useState(1);
+  const { data: seller, isLoading, isError } = useQuery({
+    queryKey: ["seller-onboarding-account"],
+    queryFn: fetchCurrentAccount,
+    retry: false,
+  });
+
+  const hasShop = useMemo(() => Boolean(seller?.shops?.length), [seller]);
+
+  const connectStripe = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/auth/api/create-stripe-link",
+        { sellerId: seller?.id },
+        { withCredentials: true }
+      );
+
+      if (response.data.url) {
+        window.location.href = response.data.url;
+      }
+    } catch (error) {
+      console.error("Stripe Connection Error:", error);
+    }
+  };
+
+  React.useEffect(() => {
+    if (seller?.id) {
+      setActiveStep(2);
+    }
+  }, [seller?.id]);
+
+  if (isLoading) {
+    return <div className="min-h-screen bg-[#f1f1f1]" />;
+  }
+
+  return (
+    <div className="w-full bg-[#f1f1f1] flex flex-col items-center pt-10 min-h-screen">
+      <div className="relative flex items-center justify-between md:w-[50%] mb-8">
+        <div className="absolute top-[25%] left-0 w-[80%] md:w-[90%] h-1 bg-gray-300 z-10" />
+        {[1, 2, 3].map((step) => (
+          <div key={step}>
+            <div
+              className={`w-10 h-10 relative z-20 flex items-center justify-center rounded-full text-white font-bold ${
+                step <= activeStep ? "bg-blue-600" : "bg-gray-300"
+              }`}
+            >
+              {step}
+            </div>
+            <span className="ml-[-15px]">
+              {step === 1
+                ? "Login"
+                : step === 2
+                  ? "Create Shop"
+                  : "Connect Bank"}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      <div className="md:w-[480px] p-8 bg-white shadow rounded-lg">
+        {!seller?.id || isError ? (
+          <div className="text-center">
+            <h3 className="text-2xl font-semibold mb-4">
+              Start from your buyer account
+            </h3>
+            <p className="text-gray-500 mb-6">
+              Sign in with the account you already use as a buyer. Once you are
+              logged in, you can create your first shop and we will upgrade that
+              same account to seller automatically.
+            </p>
+            <Link
+              href="/login"
+              className="inline-flex items-center justify-center w-full text-lg bg-black text-white py-2 rounded-lg"
+            >
+              Login with Existing Account
+            </Link>
+          </div>
+        ) : null}
+
+        {seller?.id ? (
+          <CreateShop sellerId={seller.id} setActiveStep={setActiveStep} />
+        ) : null}
+
+        {seller?.id && hasShop ? (
+          <div className="text-center mt-8 pt-8 border-t border-gray-200">
+            <h3 className="text-2xl font-semibold">Withdraw Method</h3>
+            <p className="text-gray-500 mt-3 mb-6">
+              You can keep adding shops under the same seller account and switch
+              between them from the dashboard sidebar.
+            </p>
+            <button
+              className="w-full m-auto flex items-center justify-center gap-3 text-lg bg-[#334155] text-white py-2 rounded-lg"
+              onClick={connectStripe}
+            >
+              Connect Stripe <Home />
+            </button>
+          </div>
+        ) : null}
+      </div>
+    </div>
+  );
+};
+
+export default Signup;
+>>>>>>> 6f47cfd (seller is now multi tenant)

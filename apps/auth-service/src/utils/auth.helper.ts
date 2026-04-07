@@ -121,7 +121,7 @@ export const handleForgotPassword = async (
         const user =
             userType === "user"
                 ? await db.users.findUnique({ where: { email } })
-                : await db.sellers.findUnique({ where: { email } });
+                : await db.users.findFirst({ where: { email, role: "seller" } });
 
         if (!user) throw new ValidationError(`${userType} not found!`);
 

@@ -8,7 +8,17 @@
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "generate": "prisma generate",
-    "studio": "prisma studio"
+    "studio": "prisma studio",
+    "kafka:up": "docker compose -f docker-compose.production.yml up kafka zookeeper -d",
+    "kafka:down": "docker compose -f docker-compose.production.yml stop kafka zookeeper -d",
+    "kafka:dev:up": "docker compose -f docker-compose.dev.yml up -d",
+    "kafka:dev:down": "docker compose -f docker-compose.dev.yml down",
+    "docker:prod": "bash scripts/local-production.sh",
+    "docker:build": "bash scripts/local-production.sh --build-only",
+    "docker:run": "bash scripts/local-production.sh --run-only",
+    "docker:stop": "bash scripts/local-production.sh --stop",
+    "docker:clean": "bash scripts/local-production.sh --clean",
+    "docker:logs": "bash scripts/local-production.sh --logs"
   },
   "prisma": {
     "schema": "packages/db/prisma/schema.prisma"
@@ -41,6 +51,7 @@
   "dependencies": {
     "@stripe/react-stripe-js": "^6.1.0",
     "@stripe/stripe-js": "^9.0.1",
+    "@tanstack/react-query": "^5.0.0",
     "@tanstack/react-table": "^8.21.3",
     "@tensorflow/tfjs": "^4.22.0",
     "@tensorflow/tfjs-backend-cpu": "^4.22.0",
@@ -77,6 +88,7 @@
     "styled-components": "^6.3.12",
     "swagger-ui-express": "^5.0.1",
     "ua-parser-js": "^2.0.9",
+    "uuid": "^13.0.0",
     "ws": "^8.19.0",
     "zustand": "^5.0.11"
   }

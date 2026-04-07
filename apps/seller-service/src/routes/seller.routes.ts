@@ -2,14 +2,17 @@ import isAuthenticated from "@repo/middleware";
 import { isSeller } from "@repo/middleware/authorizeRoles";
 import express from "express";
 import {
+  addShopMember,
   deleteShop,
   editSellerProfile,
   followShop,
   getSellerEvents,
   getSellerInfo,
+  getShopMembers,
   getSellerProducts,
   isFollowing,
   markNotificationAsRead,
+  removeShopMember,
   restoreShop,
   sellerNotifications,
   unfollowShop,
@@ -24,6 +27,9 @@ router.patch("/restore", isAuthenticated, restoreShop);
 router.post("/upload-image", isAuthenticated, uploadImage);
 router.put("/update-image", isAuthenticated, updateProfilePictures);
 router.put("/edit-profile", isAuthenticated, editSellerProfile);
+router.get("/shop-members", isAuthenticated, isSeller, getShopMembers);
+router.post("/shop-members", isAuthenticated, isSeller, addShopMember);
+router.delete("/shop-members", isAuthenticated, isSeller, removeShopMember);
 router.get("/get-seller/:id", getSellerInfo);
 router.get("/get-seller-products/:id", getSellerProducts);
 router.get("/get-seller-events/:id", getSellerEvents);

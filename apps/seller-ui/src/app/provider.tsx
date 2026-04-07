@@ -45,9 +45,11 @@ const ProvidersWithWebSocket = ({
 
   return (
     <>
-      {seller && (
-        <WebSocketProvider seller={seller}>{children}</WebSocketProvider>
-      )}
+        {children}
+      {/* {seller && (
+        <WebSocketProvider seller={seller}>
+        </WebSocketProvider>
+      )} */}
       {!seller && children}
     </>
   );
