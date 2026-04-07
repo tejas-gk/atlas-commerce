@@ -68,7 +68,7 @@ const Login = () => {
             <div className="w-full flex justify-center">
                 <div className="md:w-[480px] p-8 bg-white shadow rounded-lg">
                     <h3 className="text-3xl font-semibold text-center mb-2">
-                        Login to Eshop
+                        Login to your account
                     </h3>
                     <p className="text-center text-gray-500 mb-4">
                         Don't have an account?{" "}
