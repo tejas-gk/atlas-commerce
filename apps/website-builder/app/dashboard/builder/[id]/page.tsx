@@ -621,7 +621,7 @@ export default function BuilderPageComponent({
           {/* Left: Brand + Active page indicator */}
           <div className="flex items-center gap-3">
             <h1 className="text-sm font-bold tracking-tight">
-              {website?.name || "WebCraft"}
+              {website?.name || "Untitled Website"}
             </h1>
             <div className="h-4 w-px bg-border" />
 

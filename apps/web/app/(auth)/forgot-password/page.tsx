@@ -154,7 +154,7 @@ const ForgotPassword = () => {
           {step === "email" && (
             <>
               <h3 className="text-3xl font-semibold text-center mb-2">
-                Login to Eshop
+                Login to your account
               </h3>
               <p className="text-center text-gray-500 mb-4">
                 Go back to?{" "}
