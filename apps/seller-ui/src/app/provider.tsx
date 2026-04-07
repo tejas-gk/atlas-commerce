@@ -41,18 +41,16 @@ const ProvidersWithWebSocket = ({
 }) => {
   const { seller, isLoading } = useSeller();
 
-  if (isLoading) return null;
+  // Always render children to avoid hydration mismatches.
+  // Once the seller query resolves, wrap with WebSocketProvider.
+  if (isLoading || !seller) {
+    return <>{children}</>;
+  }
 
   return (
-    <>
-      {seller ? (
-        <WebSocketProvider seller={seller}>
-          {children}
-        </WebSocketProvider>
-      ) : (
-        children
-      )}
-    </>
+    <WebSocketProvider seller={seller}>
+      {children}
+    </WebSocketProvider>
   );
 };
 

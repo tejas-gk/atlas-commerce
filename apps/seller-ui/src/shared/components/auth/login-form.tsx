@@ -12,6 +12,7 @@ import { Checkbox } from "@workspace/ui/components/checkbox"
 import axiosInstance from "@/utils/axiosInstance"
 import { useAuthStore } from "@/store/authStore"
 import { useQueryClient } from "@tanstack/react-query"
+import { DEV_MOCK_SELLER } from "@/hooks/useSeller"
 
 type LoginData = { email: string; password: string }
 
@@ -51,6 +52,16 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
 
   const onSubmit = async (data: LoginData) => {
     setServerError(null)
+
+    // ── Dev bypass: use demo@atlas.dev / demo1234 to skip real API ──
+    if (data.email === "demo@atlas.dev" && data.password === "demo1234") {
+      sessionStorage.setItem("__atlas_dev__", "true")
+      setLoggedIn(true)
+      queryClient.setQueryData(["seller"], DEV_MOCK_SELLER)
+      router.push("/dashboard")
+      return
+    }
+
     try {
       await axiosInstance.post("/auth/api/login-seller", data)
       setLoggedIn(true)
