@@ -139,29 +139,24 @@ const Page = () => {
 
   return (
     <form className="w-full pb-8" onSubmit={handleSubmit(onSubmit)}>
-
-      {/* ── Page header ─────────────────────────────────────────── */}
-      <div className="flex items-start justify-between mb-6">
+      <div className="seller-page-header mb-6">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Create Product</h1>
+          <h1 className="text-3xl font-extrabold tracking-[-0.05em] text-[#17320f]">Create Product</h1>
           <BreadCrumbs title="Create Product" />
         </div>
         <Button
           type="submit"
           disabled={loading}
-          className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold border-0 disabled:opacity-60"
+          className="h-11 rounded-2xl border-0 bg-[#86b81d] px-5 font-semibold text-white hover:bg-[#77a51b] disabled:opacity-60"
         >
-          {loading ? "Creating…" : "Create Product"}
+          {loading ? "Creating..." : "Create Product"}
         </Button>
       </div>
 
-      {/* ── Layout ──────────────────────────────────────────────── */}
       <div className="flex gap-6 items-start">
-
-        {/* ── Left column: Images ─────────────────────────────────── */}
         <div className="w-[35%] shrink-0">
-          <div className="rounded-xl border border-white/[0.06] bg-card/50 p-5">
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/60 mb-4">Product Images</p>
+          <div className="seller-panel rounded-[30px] p-5">
+            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground/60">Product Images</p>
             {images?.length > 0 && (
               <ImagePlaceHolder
                 size="765 x 850"
@@ -188,25 +183,20 @@ const Page = () => {
           </div>
         </div>
 
-        {/* ── Right column: Form ──────────────────────────────────── */}
         <div className="flex-1 min-w-0 space-y-5">
-
-          {/* Section 1: Product Details ─────────────────────────── */}
-          <div className="rounded-xl border border-white/[0.06] bg-card/50 p-5">
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/60 mb-4">Product Details</p>
+          <div className="seller-panel rounded-[30px] p-5">
+            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground/60">Product Details</p>
             <div className="grid grid-cols-2 gap-x-6 gap-y-4">
-              {/* Title */}
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium text-muted-foreground">Product Title *</Label>
                 <Input
                   placeholder="Enter product title"
-                  className="h-9 border-white/[0.08] bg-white/[0.03] focus-visible:border-emerald-500/60 focus-visible:bg-white/[0.05]"
+                  className="h-10 rounded-2xl border-[#dde1bc] bg-white focus-visible:border-lime-400"
                   {...register("title", { required: "Title is required" })}
                 />
                 {errors.title && <p className="text-red-400 text-xs">{errors.title.message as string}</p>}
               </div>
 
-              {/* Category */}
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium text-muted-foreground">Category *</Label>
                 {isLoading ? (
@@ -219,7 +209,7 @@ const Page = () => {
                     render={({ field }) => (
                       <select
                         {...field}
-                        className="w-full h-9 px-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-foreground text-sm outline-none focus:border-emerald-500/60 transition-colors"
+                        className="w-full h-10 rounded-2xl border border-[#dde1bc] bg-white px-3 text-foreground text-sm outline-none transition-colors focus:border-lime-400"
                       >
                         <option value="" className="bg-card">Select Category</option>
                         {categories?.map((c: string) => (
@@ -232,13 +222,12 @@ const Page = () => {
                 {errors.category && <p className="text-red-400 text-xs">{errors.category.message as string}</p>}
               </div>
 
-              {/* Short Description */}
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium text-muted-foreground">Short Description * <span className="text-muted-foreground/50">(max 150 words)</span></Label>
                 <Textarea
                   rows={5}
                   placeholder="Enter product description for quick view"
-                  className="border-white/[0.08] bg-white/[0.03] resize-none focus-visible:border-emerald-500/60 focus-visible:bg-white/[0.05]"
+                  className="resize-none rounded-[20px] border-[#dde1bc] bg-white focus-visible:border-lime-400"
                   {...register("short_description", {
                     required: "Description is required",
                     validate: (v) => {
@@ -250,7 +239,6 @@ const Page = () => {
                 {errors.short_description && <p className="text-red-400 text-xs">{errors.short_description.message as string}</p>}
               </div>
 
-              {/* Subcategory */}
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium text-muted-foreground">Subcategory *</Label>
                 <Controller
@@ -260,7 +248,7 @@ const Page = () => {
                   render={({ field }) => (
                     <select
                       {...field}
-                      className="w-full h-9 px-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-foreground text-sm outline-none focus:border-emerald-500/60 transition-colors"
+                      className="w-full h-10 rounded-2xl border border-[#dde1bc] bg-white px-3 text-foreground text-sm outline-none transition-colors focus:border-lime-400"
                     >
                       <option value="" className="bg-card">Select Subcategory</option>
                       {subcategories?.map((s: string) => (
@@ -272,28 +260,25 @@ const Page = () => {
                 {errors.subCategory && <p className="text-red-400 text-xs">{errors.subCategory.message as string}</p>}
               </div>
 
-              {/* Tags */}
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium text-muted-foreground">Tags * <span className="text-muted-foreground/50">(comma separated)</span></Label>
                 <Input
                   placeholder="apple, flagship, new"
-                  className="h-9 border-white/[0.08] bg-white/[0.03] focus-visible:border-emerald-500/60 focus-visible:bg-white/[0.05]"
+                  className="h-10 rounded-2xl border-[#dde1bc] bg-white focus-visible:border-lime-400"
                   {...register("tags", { required: "Separate tags with a comma" })}
                 />
                 {errors.tags && <p className="text-red-400 text-xs">{errors.tags.message as string}</p>}
               </div>
 
-              {/* Warranty */}
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium text-muted-foreground">Warranty *</Label>
                 <Input
                   placeholder="1 Year / No Warranty"
-                  className="h-9 border-white/[0.08] bg-white/[0.03] focus-visible:border-emerald-500/60 focus-visible:bg-white/[0.05]"
+                  className="h-10 rounded-2xl border-[#dde1bc] bg-white focus-visible:border-lime-400"
                   {...register("warranty", { required: "Warranty is required" })}
                 />
               </div>
 
-              {/* Slug */}
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium text-muted-foreground">Slug *</Label>
                 <div className="relative">
@@ -305,12 +290,12 @@ const Page = () => {
                       formOnChange(e);
                     }}
                     value={watch("slug") ?? ""}
-                    className="h-9 pr-10 border-white/[0.08] bg-white/[0.03] focus-visible:border-emerald-500/60 focus-visible:bg-white/[0.05]"
+                    className="h-10 rounded-2xl border-[#dde1bc] bg-white pr-10 focus-visible:border-lime-400"
                     {...restSlugProps}
                   />
                   <button
                     type="button"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 flex h-6 w-6 items-center justify-center rounded-md bg-emerald-600/80 hover:bg-emerald-600 transition-colors text-white"
+                    className="absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-xl bg-[#86b81d] text-white transition-colors hover:bg-[#77a51b]"
                     onClick={async () => {
                       const title = getValues("title");
                       if (!title) { toast.error("Enter a title first"); return; }
@@ -330,18 +315,16 @@ const Page = () => {
                 {errors.slug && <p className="text-red-400 text-xs">{errors.slug.message as string}</p>}
               </div>
 
-              {/* Brand */}
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium text-muted-foreground">Brand</Label>
                 <Input
                   placeholder="Apple"
-                  className="h-9 border-white/[0.08] bg-white/[0.03] focus-visible:border-emerald-500/60 focus-visible:bg-white/[0.05]"
+                  className="h-10 rounded-2xl border-[#dde1bc] bg-white focus-visible:border-lime-400"
                   {...register("brand")}
                 />
               </div>
             </div>
 
-            {/* Detailed Description — full width */}
             <div className="mt-4 space-y-1.5">
               <Label className="text-xs font-medium text-muted-foreground">Detailed Description * <span className="text-muted-foreground/50">(min 100 words)</span></Label>
               <Controller
@@ -364,9 +347,8 @@ const Page = () => {
             </div>
           </div>
 
-          {/* Section 2: Variants & Properties ──────────────────── */}
-          <div className="rounded-xl border border-white/[0.06] bg-card/50 p-5">
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/60 mb-4">Variants &amp; Properties</p>
+          <div className="seller-panel rounded-[30px] p-5">
+            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground/60">Variants &amp; Properties</p>
             <div className="grid grid-cols-2 gap-x-6 gap-y-4">
               <div className="space-y-4">
                 <ColorSelector control={control} errors={errors} />
@@ -379,17 +361,15 @@ const Page = () => {
             </div>
           </div>
 
-          {/* Section 3: Pricing & Inventory ─────────────────────── */}
-          <div className="rounded-xl border border-white/[0.06] bg-card/50 p-5">
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/60 mb-4">Pricing &amp; Inventory</p>
+          <div className="seller-panel rounded-[30px] p-5">
+            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground/60">Pricing &amp; Inventory</p>
             <div className="grid grid-cols-3 gap-x-6 gap-y-4">
-              {/* Regular Price */}
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium text-muted-foreground">Regular Price</Label>
                 <Input
                   type="number"
                   placeholder="0"
-                  className="h-9 border-white/[0.08] bg-white/[0.03] focus-visible:border-emerald-500/60 focus-visible:bg-white/[0.05]"
+                  className="h-10 rounded-2xl border-[#dde1bc] bg-white focus-visible:border-lime-400"
                   {...register("regular_price", {
                     valueAsNumber: true,
                     min: { value: 1, message: "Must be at least 1" },
@@ -399,13 +379,12 @@ const Page = () => {
                 {errors.regular_price && <p className="text-red-400 text-xs">{errors.regular_price.message as string}</p>}
               </div>
 
-              {/* Sale Price */}
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium text-muted-foreground">Sale Price *</Label>
                 <Input
                   type="number"
                   placeholder="0"
-                  className="h-9 border-white/[0.08] bg-white/[0.03] focus-visible:border-emerald-500/60 focus-visible:bg-white/[0.05]"
+                  className="h-10 rounded-2xl border-[#dde1bc] bg-white focus-visible:border-lime-400"
                   {...register("sale_price", {
                     required: "Sale price is required",
                     valueAsNumber: true,
@@ -420,13 +399,12 @@ const Page = () => {
                 {errors.sale_price && <p className="text-red-400 text-xs">{errors.sale_price.message as string}</p>}
               </div>
 
-              {/* Stock */}
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium text-muted-foreground">Stock *</Label>
                 <Input
                   type="number"
                   placeholder="100"
-                  className="h-9 border-white/[0.08] bg-white/[0.03] focus-visible:border-emerald-500/60 focus-visible:bg-white/[0.05]"
+                  className="h-10 rounded-2xl border-[#dde1bc] bg-white focus-visible:border-lime-400"
                   {...register("stock", {
                     required: "Stock is required",
                     valueAsNumber: true,
@@ -442,12 +420,11 @@ const Page = () => {
                 {errors.stock && <p className="text-red-400 text-xs">{errors.stock.message as string}</p>}
               </div>
 
-              {/* Video URL */}
               <div className="col-span-2 space-y-1.5">
                 <Label className="text-xs font-medium text-muted-foreground">Video URL <span className="text-muted-foreground/50">(YouTube embed)</span></Label>
                 <Input
                   placeholder="https://www.youtube.com/embed/xyz123"
-                  className="h-9 border-white/[0.08] bg-white/[0.03] focus-visible:border-emerald-500/60 focus-visible:bg-white/[0.05]"
+                  className="h-10 rounded-2xl border-[#dde1bc] bg-white focus-visible:border-lime-400"
                   {...register("video_url", {
                     pattern: {
                       value: /^https:\/\/(www\.)?youtube\.com\/embed\/[a-zA-Z0-9_-]+$/,
@@ -458,13 +435,12 @@ const Page = () => {
                 {errors.video_url && <p className="text-red-400 text-xs">{errors.video_url.message as string}</p>}
               </div>
 
-              {/* Cash on Delivery */}
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium text-muted-foreground">Cash on Delivery *</Label>
                 <select
                   {...register("cash_on_delivery", { required: "Required" })}
                   defaultValue="yes"
-                  className="w-full h-9 px-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-foreground text-sm outline-none focus:border-emerald-500/60 transition-colors"
+                  className="w-full h-10 rounded-2xl border border-[#dde1bc] bg-white px-3 text-foreground text-sm outline-none transition-colors focus:border-lime-400"
                 >
                   <option value="yes" className="bg-card">Yes</option>
                   <option value="no" className="bg-card">No</option>
@@ -485,9 +461,9 @@ const Page = () => {
                     <button
                       key={code.id}
                       type="button"
-                      className={`px-3 py-1 rounded-md text-xs font-semibold border transition-colors ${watch("discountCodes")?.includes(code.id)
-                          ? "bg-emerald-600/90 text-white border-emerald-500/60"
-                          : "bg-white/[0.03] text-muted-foreground border-white/[0.08] hover:border-border hover:text-foreground"
+                      className={`rounded-xl border px-3 py-1 text-xs font-semibold transition-colors ${watch("discountCodes")?.includes(code.id)
+                          ? "border-lime-400 bg-lime-500 text-white"
+                          : "border-[#dde1bc] bg-white text-muted-foreground hover:border-[#cdd48e] hover:text-foreground"
                         }`}
                       onClick={() => {
                         const cur = watch("discountCodes") || [];

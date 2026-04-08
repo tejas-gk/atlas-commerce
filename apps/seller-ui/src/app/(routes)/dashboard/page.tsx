@@ -77,21 +77,21 @@ const OrdersTable = () => {
     });
 
     return (
-        <div className="h-full rounded-2xl border border-border/70 bg-card/70 p-4 shadow-sm backdrop-blur-sm">
-            <h2 className="mb-4 text-lg font-semibold text-foreground">
+        <div className="seller-panel h-full rounded-[30px] p-5">
+            <h2 className="mb-4 text-lg font-bold tracking-[-0.03em] text-foreground">
                 Recent Orders
                 <span className="block text-sm font-normal text-muted-foreground">
                     A quick snapshot of your latest transactions.
                 </span>
             </h2>
 
-            <div className="overflow-hidden rounded-xl border border-border/60 bg-background/50">
-                <table className="min-w-full text-sm text-foreground">
-                    <thead className="bg-muted/45 text-muted-foreground">
+            <div className="overflow-hidden rounded-[24px] border border-[#e0e4be] bg-white/80">
+                <table className="seller-table min-w-full text-sm text-foreground">
+                    <thead className="bg-[#fbf8eb] text-muted-foreground">
                         {table.getHeaderGroups().map((headerGroup) => (
                             <tr key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => (
-                                    <th key={header.id} className="p-3 text-left font-medium">
+                                    <th key={header.id} className="p-3 text-left text-[11px] font-semibold uppercase tracking-[0.16em]">
                                         {flexRender(
                                             header.column.columnDef.header,
                                             header.getContext()
@@ -105,7 +105,7 @@ const OrdersTable = () => {
                         {table.getRowModel().rows.map((row) => (
                             <tr
                                 key={row.id}
-                                className="border-t border-border/50 transition hover:bg-muted/35"
+                                className="border-t transition"
                             >
                                 {row.getVisibleCells().map((cell) => (
                                     <td key={cell.id} className="p-3">
@@ -124,22 +124,50 @@ const OrdersTable = () => {
 const DashboardPage = () => {
     return (
         <div className="space-y-6">
+            <section className="seller-panel overflow-hidden rounded-[34px] p-6 md:p-7">
+                <div className="seller-page-header">
+                    <div className="max-w-2xl space-y-3">
+                        <span className="seller-pill inline-flex rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em]">
+                            Seller overview
+                        </span>
+                        <h1 className="text-4xl font-extrabold tracking-[-0.06em] text-[#17320f]">
+                            Fast decisions for a faster store.
+                        </h1>
+                        <p className="max-w-xl text-sm leading-6 text-[#586445]">
+                            Stay on top of revenue, live traffic, and order flow with a brighter control room built for quick-commerce operations.
+                        </p>
+                    </div>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                        <div className="seller-soft-panel rounded-[24px] px-4 py-3">
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#7b7f59]">Today focus</p>
+                            <p className="mt-2 text-lg font-bold text-[#17320f]">Prioritize top-moving SKUs</p>
+                            <p className="mt-1 text-sm text-[#606c49]">7 items are driving most of today’s revenue.</p>
+                        </div>
+                        <div className="rounded-[24px] bg-[#1f3b16] px-4 py-3 text-white shadow-[0_18px_34px_rgba(31,59,22,0.16)]">
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/60">Quick win</p>
+                            <p className="mt-2 text-lg font-bold">Launch a fresh discount code</p>
+                            <p className="mt-1 text-sm text-white/70">The current conversion trend supports another promo push.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 {metrics.map((item) => (
                     <article
                         key={item.label}
-                        className="rounded-2xl border border-border/70 bg-card/70 p-4 shadow-sm backdrop-blur-sm"
+                        className="seller-kpi-card rounded-[28px] p-5"
                     >
-                        <p className="text-sm text-muted-foreground">{item.label}</p>
-                        <p className="mt-2 text-2xl font-semibold text-foreground">{item.value}</p>
-                        <p className="mt-1 text-xs text-emerald-400">{item.delta}</p>
+                        <p className="text-sm font-medium text-[#687257]">{item.label}</p>
+                        <p className="mt-2 text-3xl font-extrabold tracking-[-0.05em] text-[#17320f]">{item.value}</p>
+                        <p className="mt-1 text-xs font-semibold text-[#76a611]">{item.delta}</p>
                     </article>
                 ))}
             </div>
 
             <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
-                <div className="xl:col-span-8 rounded-2xl border border-border/70 bg-card/70 p-4 shadow-sm backdrop-blur-sm">
-                    <h2 className="text-lg font-semibold text-foreground">
+                <div className="seller-panel xl:col-span-8 rounded-[30px] p-5">
+                    <h2 className="text-lg font-bold tracking-[-0.03em] text-foreground">
                         Revenue
                         <span className="block text-sm font-normal text-muted-foreground">
                             Last 6 months performance
@@ -148,8 +176,8 @@ const DashboardPage = () => {
                     <SalesChart />
                 </div>
 
-                <div className="xl:col-span-4 rounded-2xl border border-border/70 bg-card/70 p-4 shadow-sm backdrop-blur-sm">
-                    <h2 className="mb-2 text-lg font-semibold text-foreground">
+                <div className="seller-panel xl:col-span-4 rounded-[30px] p-5">
+                    <h2 className="mb-2 text-lg font-bold tracking-[-0.03em] text-foreground">
                         Device Usage
                         <span className="block text-sm font-normal text-muted-foreground">
                             How visitors visit your shop
@@ -185,7 +213,7 @@ const DashboardPage = () => {
                                     innerRadius={60}
                                     outerRadius={90}
                                     paddingAngle={3}
-                                    stroke="#0f1621"
+                                    stroke="#fff7d6"
                                     strokeWidth={2}
                                     isAnimationActive
                                     filter="url(#shadow)"
@@ -200,12 +228,12 @@ const DashboardPage = () => {
 
                                 <Tooltip
                                     contentStyle={{
-                                        backgroundColor: "#101926",
-                                        border: "1px solid rgba(148, 163, 184, 0.15)",
-                                        borderRadius: "8px",
+                                        backgroundColor: "#fffdf4",
+                                        border: "1px solid #e0e4be",
+                                        borderRadius: "16px",
                                     }}
-                                    labelStyle={{ color: "#fff" }}
-                                    itemStyle={{ color: "#fff" }}
+                                    labelStyle={{ color: "#17320f" }}
+                                    itemStyle={{ color: "#17320f" }}
                                 />
 
                                 <Legend
@@ -224,8 +252,8 @@ const DashboardPage = () => {
             </div>
 
             <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
-                <div className="xl:col-span-7 rounded-2xl border border-border/70 bg-card/70 p-4 shadow-sm backdrop-blur-sm">
-                    <h2 className="mb-3 text-lg font-semibold text-foreground">
+                <div className="seller-panel xl:col-span-7 rounded-[30px] p-5">
+                    <h2 className="mb-3 text-lg font-bold tracking-[-0.03em] text-foreground">
                         Visitors Distribution
                         <span className="block text-sm font-normal text-muted-foreground">
                             Visual breakdown of global visitors activity.

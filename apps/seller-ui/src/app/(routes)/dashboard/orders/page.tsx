@@ -150,7 +150,7 @@ const OrdersTable = () => {
     <div className="space-y-6 pb-8">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">
+        <h1 className="text-3xl font-extrabold tracking-[-0.05em] text-[#17320f]">
           All Orders
         </h1>
         <p className="text-sm text-muted-foreground mt-0.5">
@@ -161,46 +161,44 @@ const OrdersTable = () => {
       {/* KPI */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         {KPI_CARDS.map(({ label, value, sub, trend, Icon, iconCls }) => (
-          <Card key={label} className="p-5 border bg-card/50">
+          <Card key={label} className="seller-kpi-card rounded-[28px] border-0 p-5">
             <div className="flex justify-between mb-3">
               <div
-                className={`h-9 w-9 flex items-center justify-center rounded-full ${iconCls}`}
+                className={`seller-metric-icon flex h-10 w-10 items-center justify-center rounded-[18px] ${iconCls}`}
               >
                 <Icon size={16} />
               </div>
               {trend === "up" ? (
-                <ArrowUpRight className="text-emerald-400" size={14} />
+                <ArrowUpRight className="text-lime-600" size={14} />
               ) : (
-                <ArrowDownRight className="text-red-400" size={14} />
+                <ArrowDownRight className="text-red-500" size={14} />
               )}
             </div>
-            <p className="text-xl font-semibold">{value}</p>
-            <p className="text-xs text-muted-foreground">{sub}</p>
-            <p className="text-xs text-muted-foreground/40 mt-1">
+            <p className="text-[24px] font-extrabold tracking-[-0.05em] text-[#17320f]">{value}</p>
+            <p className="text-xs text-muted-foreground/70">{sub}</p>
+            <p className="text-xs text-muted-foreground/50 mt-1">
               {label}
             </p>
           </Card>
         ))}
       </div>
 
-      {/* Table */}
-      <Card className="border bg-card/50 overflow-hidden">
-        {/* Toolbar */}
-        <div className="flex items-center gap-3 px-5 py-3 border-b">
+      <Card className="seller-panel overflow-hidden rounded-[30px] border-0">
+        <div className="seller-toolbar flex items-center gap-3 px-5 py-4">
           <div className="relative max-w-xs w-full">
             <Search
               size={14}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60"
             />
             <Input
               value={globalFilter}
               onChange={(e) => setGlobalFilter(e.target.value)}
               placeholder="Search orders..."
-              className="pl-8 h-8 text-sm"
+              className="h-9 rounded-2xl border-[#e0e4be] bg-white pl-8 text-sm"
             />
           </div>
 
-          <p className="ml-auto text-xs text-muted-foreground">
+          <p className="ml-auto text-xs text-muted-foreground/60">
             {orders.length} items
           </p>
         </div>
@@ -210,14 +208,14 @@ const OrdersTable = () => {
             <div className="w-8 h-8 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />
           </div>
         ) : (
-          <table className="w-full text-sm">
+          <table className="seller-table w-full text-sm">
             <thead>
               {table.getHeaderGroups().map((hg) => (
-                <tr key={hg.id} className="border-b">
+                <tr key={hg.id} className="border-b border-[#ecefd8] bg-[#fbf8eb]">
                   {hg.headers.map((h) => (
                     <th
                       key={h.id}
-                      className="px-5 py-3 text-left text-xs text-muted-foreground"
+                      className="px-5 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/50"
                     >
                       {flexRender(
                         h.column.columnDef.header,
@@ -241,7 +239,7 @@ const OrdersTable = () => {
                 table.getRowModel().rows.map((row) => (
                   <tr
                     key={row.id}
-                    className="border-b hover:bg-white/[0.02]"
+                    className="border-b border-[#eff1df]"
                   >
                     {row.getVisibleCells().map((cell) => (
                       <td key={cell.id} className="px-5 py-3">

@@ -7,10 +7,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <SidebarProvider>
       <SellerSidebar />
-      <SidebarInset>
+      <SidebarInset className="seller-app-shell">
         <SellerSiteHeader />
-        <main className="flex flex-1 flex-col p-4 md:p-6">
-          <div className="mx-auto w-full max-w-[1600px]">
+        <main className="flex flex-1 flex-col px-4 pb-8 pt-5 md:px-6 md:pb-10">
+          <div className="mx-auto w-full max-w-[1480px]">
             {children}
           </div>
         </main>

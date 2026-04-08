@@ -124,21 +124,20 @@ const SettingsPage = () => {
     <div className="space-y-6 pb-8">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
+        <h1 className="text-3xl font-extrabold tracking-[-0.05em] text-[#17320f]">Settings</h1>
         <p className="text-sm text-muted-foreground mt-0.5">Manage your shop preferences and configurations</p>
       </div>
 
-      {/* Tabs Navigation */}
-      <div className="flex items-center gap-0.5 p-0.5 rounded-lg bg-white/[0.04] border border-white/[0.05] w-fit">
+      <div className="flex w-fit items-center gap-0.5 rounded-2xl border border-[#e0e4be] bg-white/70 p-1">
         {SETTINGS_TABS.map((tab) => {
           const Icon = tab.icon;
           return (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`flex items-center gap-2 px-4 h-9 rounded-md text-sm font-medium transition-all duration-150 ${activeTab === tab.key
-                  ? "bg-card text-foreground border border-white/[0.08] shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
+              className={`flex h-9 items-center gap-2 rounded-xl px-4 text-sm font-medium transition-all duration-150 ${activeTab === tab.key
+                  ? "seller-tab-active"
+                  : "seller-tab hover:text-foreground"
                 }`}
             >
               <Icon size={14} />
@@ -156,10 +155,10 @@ const SettingsPage = () => {
             const isExpanded = expandedSection === section.key;
 
             return (
-              <Card key={section.key} className="border border-white/[0.06] bg-card/50 overflow-hidden">
+              <Card key={section.key} className="seller-panel overflow-hidden rounded-[28px] border-0">
                 <button
                   onClick={() => toggleSection(section.key)}
-                  className="w-full px-5 py-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors"
+                  className="flex w-full items-center justify-between px-5 py-4 transition-colors hover:bg-[#fbfced]"
                 >
                   <div className="flex items-center gap-4">
                     <div className={`flex h-10 w-10 items-center justify-center rounded-full shrink-0 ${section.iconBg}`}>
@@ -178,7 +177,7 @@ const SettingsPage = () => {
                 </button>
 
                 {isExpanded && (
-                  <div className="px-5 pb-5 border-t border-white/[0.05]">
+                  <div className="border-t border-[#ecefd8] px-5 pb-5">
                     <form onSubmit={handleSubmit(onSubmit)} className="mt-5 space-y-4">
                       {section.key === "lowStock" && (
                         <div>
@@ -189,7 +188,7 @@ const SettingsPage = () => {
                             type="number"
                             min="1"
                             {...register("lowStockThreshold", { required: "Required" })}
-                            className="border-white/[0.08] bg-white/[0.03]"
+                            className="rounded-2xl border-[#dde1bc] bg-white"
                             onClick={(e: any) => e.stopPropagation()}
                           />
                           {errors.lowStockThreshold && (
@@ -207,13 +206,13 @@ const SettingsPage = () => {
                           </label>
                           <select
                             {...register("notificationPreference", { required: "Required" })}
-                            className="w-full h-9 px-3 text-sm border border-white/[0.08] bg-white/[0.03] rounded-md text-foreground outline-none focus:border-emerald-500/50 transition-colors"
+                            className="h-10 w-full rounded-2xl border border-[#dde1bc] bg-white px-3 text-sm text-foreground outline-none transition-colors focus:border-lime-400"
                             onClick={(e) => e.stopPropagation()}
                           >
-                            <option value="email" className="bg-card">Email</option>
-                            <option value="web" className="bg-card">Web Push Notification</option>
-                            <option value="app" className="bg-card">App Push Notification</option>
-                            <option value="all" className="bg-card">All of the above</option>
+                            <option value="email" className="bg-white">Email</option>
+                            <option value="web" className="bg-white">Web Push Notification</option>
+                            <option value="app" className="bg-white">App Push Notification</option>
+                            <option value="all" className="bg-white">All of the above</option>
                           </select>
                         </div>
                       )}
@@ -221,7 +220,7 @@ const SettingsPage = () => {
                       <Button
                         type="submit"
                         size="sm"
-                        className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white border-0"
+                        className="gap-2 rounded-2xl border-0 bg-[#86b81d] text-white hover:bg-[#77a51b]"
                       >
                         <Save size={14} />
                         Save Changes
@@ -234,7 +233,7 @@ const SettingsPage = () => {
           })}
 
           {/* Danger Zone */}
-          <Card className="border border-red-500/20 bg-red-500/[0.02] overflow-hidden mt-8">
+          <Card className="mt-8 overflow-hidden rounded-[28px] border border-red-200 bg-red-50/70">
             <button
               onClick={() => setShowDeleteModal(true)}
               className="w-full px-5 py-4 flex items-center justify-between hover:bg-red-500/[0.04] transition-colors"
@@ -267,7 +266,7 @@ const SettingsPage = () => {
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={() => setShowDeleteModal(false)}
           />
-          <Card className="relative w-full max-w-md p-6 border border-white/[0.08] bg-card shadow-2xl">
+          <Card className="relative w-full max-w-md rounded-[28px] border border-[#dde1bc] bg-[#fffdf4] p-6 shadow-2xl">
             <div className="flex items-center gap-3 mb-4">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-500/15">
                 <AlertTriangle size={20} className="text-red-400" />
@@ -298,7 +297,7 @@ const SettingsPage = () => {
               </p>
 
               {!seller?.isDeleted && (
-                <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3">
+                <div className="rounded-2xl border border-amber-200 bg-amber-50 p-3">
                   <p className="text-xs text-amber-400/80">
                     <span className="font-medium">⚠️ Important:</span> Once permanently deleted,
                     you cannot create a new account with the same email.
@@ -306,7 +305,7 @@ const SettingsPage = () => {
                 </div>
               )}
 
-              <div className="bg-white/[0.03] border border-white/[0.08] rounded-lg p-3">
+              <div className="rounded-2xl border border-[#dde1bc] bg-white p-3">
                 <p className="text-xs text-muted-foreground">
                   {seller?.isDeleted ? (
                     "Restoring your shop will reactivate all your products and settings immediately."
@@ -325,7 +324,7 @@ const SettingsPage = () => {
                 variant="outline"
                 size="sm"
                 onClick={() => setShowDeleteModal(false)}
-                className="border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06]"
+                className="rounded-2xl border-[#dde1bc] bg-white hover:bg-[#f6f8ea]"
               >
                 Cancel
               </Button>
@@ -333,8 +332,8 @@ const SettingsPage = () => {
                 size="sm"
                 onClick={deleteShopHandler}
                 className={seller?.isDeleted
-                  ? "bg-emerald-600 hover:bg-emerald-700 text-white border-0"
-                  : "bg-red-600 hover:bg-red-700 text-white border-0"
+                  ? "rounded-2xl border-0 bg-[#86b81d] text-white hover:bg-[#77a51b]"
+                  : "rounded-2xl border-0 bg-red-600 text-white hover:bg-red-700"
                 }
               >
                 {seller?.isDeleted ? "Restore Shop" : "Delete Shop"}

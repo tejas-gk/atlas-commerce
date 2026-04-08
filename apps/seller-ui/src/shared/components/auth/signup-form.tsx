@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Eye, EyeOff } from "lucide-react"
+import { Eye, EyeOff, Sparkles, Store, TicketPercent } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
@@ -16,17 +16,6 @@ function getStrength(pw: string) {
     if (!/[A-Z]/.test(pw) || !/[0-9]/.test(pw))
         return { label: "Good", color: "bg-blue-500", pct: "75%" }
     return { label: "Strong", color: "bg-emerald-500", pct: "100%" }
-}
-
-function GoogleIcon() {
-    return (
-        <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24">
-            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
-            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
-        </svg>
-    )
 }
 
 export function SignupForm({ className, ...props }: React.ComponentProps<"div">) {
@@ -81,97 +70,47 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
     return (
         <div
             className={cn(
-                "relative min-h-svh overflow-hidden bg-[#0a1117] flex flex-col items-center justify-center px-4 py-12",
+                "seller-auth-shell relative flex min-h-svh flex-col items-center justify-center overflow-hidden px-4 py-12",
                 className
             )}
             {...props}
         >
-            {/* Keyframes */}
-            <style>{`
-        @keyframes aurora-drift {
-          0%, 100% { transform: translate(0, 0) scale(1); }
-          33% { transform: translate(30px, -20px) scale(1.05); }
-          66% { transform: translate(-20px, 15px) scale(0.95); }
-        }
-        @keyframes fade-up {
-          from { opacity: 0; transform: translateY(16px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fade-in {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        .anim-fade-up {
-          animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
-        }
-        .anim-fade-in {
-          animation: fade-in 0.6s ease both;
-        }
-      `}</style>
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,219,88,0.75),transparent_24%),radial-gradient(circle_at_78%_18%,rgba(153,222,78,0.36),transparent_22%),linear-gradient(180deg,rgba(255,255,255,0.3),transparent)]" />
 
-            {/* Aurora mesh background */}
-            <div
-                className="pointer-events-none absolute -top-24 left-[20%] h-[500px] w-[500px] rounded-full opacity-[0.07]"
-                style={{ background: "radial-gradient(circle, #16a34a 0%, transparent 70%)", animation: "aurora-drift 25s ease-in-out infinite" }}
-            />
-            <div
-                className="pointer-events-none absolute bottom-[-15%] right-[15%] h-[450px] w-[450px] rounded-full opacity-[0.05]"
-                style={{ background: "radial-gradient(circle, #0891b2 0%, transparent 70%)", animation: "aurora-drift 30s ease-in-out infinite reverse" }}
-            />
-            <div
-                className="pointer-events-none absolute top-[45%] left-[55%] h-[400px] w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.04]"
-                style={{ background: "radial-gradient(circle, #22c55e 0%, transparent 70%)", animation: "aurora-drift 35s ease-in-out infinite" }}
-            />
-
-            {/* Grid texture */}
-            <div
-                className="pointer-events-none absolute inset-0 opacity-[0.02]"
-                style={{ backgroundImage: "linear-gradient(rgba(255,255,255,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.12) 1px,transparent 1px)", backgroundSize: "48px 48px" }}
-            />
-
-            {/* Logo */}
-            <div className="anim-fade-up relative z-10 mb-8 flex flex-col items-center gap-2" style={{ animationDelay: "0.1s" }}>
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/[0.08] shadow-lg ring-1 ring-white/[0.06]">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5 text-slate-300">
-                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-                    </svg>
+            <div className="relative z-10 mb-8 flex flex-col items-center gap-2">
+                <div className="flex h-12 w-12 items-center justify-center rounded-[20px] bg-[#1f3b16] text-white shadow-[0_18px_34px_rgba(31,59,22,0.18)]">
+                    <Store size={20} />
                 </div>
-                <span className="text-sm font-semibold text-slate-200">Atlas Commerce</span>
+                <span className="text-sm font-extrabold tracking-[-0.03em] text-[#17320f]">Atlas Seller</span>
             </div>
 
-            {/* Card */}
-            <div className="anim-fade-up relative z-10 w-full max-w-sm rounded-2xl border border-white/[0.06] bg-white/[0.03] p-8 shadow-2xl shadow-black/50 backdrop-blur-xl" style={{ animationDelay: "0.2s" }}>
-
-                {/* Inner top glow */}
-                <div className="pointer-events-none absolute inset-x-0 top-0 h-px rounded-t-2xl bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
+            <div className="seller-auth-card relative z-10 w-full max-w-md rounded-[34px] p-8">
+                <div className="mb-6 rounded-[24px] border border-[#dde1bc] bg-[#f8fbe8] p-4">
+                    <div className="flex items-start gap-3">
+                        <div className="seller-metric-icon flex h-10 w-10 items-center justify-center rounded-[18px] text-[#86b81d]">
+                            {step === 1 ? <Sparkles size={18} /> : <TicketPercent size={18} />}
+                        </div>
+                        <div>
+                            <p className="text-sm font-bold text-[#17320f]">{step === 1 ? "Create your seller account" : "Verify and go live"}</p>
+                            <p className="mt-1 text-sm leading-6 text-[#5f6e43]">
+                                {step === 1
+                                    ? "Get started with the quick-commerce seller workspace in a few steps."
+                                    : "Finish verification so your dashboard, products, and payouts are ready to use."}
+                            </p>
+                        </div>
+                    </div>
+                </div>
 
                 {step === 1 ? (
                     <>
                         <div className="mb-6 space-y-1">
-                            <h1 className="text-xl font-semibold tracking-tight text-white">Create your account</h1>
-                            <p className="text-sm text-slate-500">Start selling on Atlas Commerce today.</p>
-                        </div>
-
-                        {/* Google */}
-                        <Button
-                            variant="outline"
-                            type="button"
-                            className="h-11 w-full gap-3 border-white/[0.08] bg-white/[0.04] text-sm text-slate-200 transition-all duration-200 hover:bg-white/[0.07] hover:text-white"
-                        >
-                            <GoogleIcon />
-                            Continue with Google
-                        </Button>
-
-                        {/* Divider */}
-                        <div className="my-5 flex items-center gap-3">
-                            <div className="h-px flex-1 bg-white/[0.06]" />
-                            <span className="text-[11px] font-medium uppercase tracking-widest text-slate-600">or</span>
-                            <div className="h-px flex-1 bg-white/[0.06]" />
+                            <h1 className="text-3xl font-extrabold tracking-[-0.05em] text-[#17320f]">Tell us about you</h1>
+                            <p className="text-sm text-[#5f6e43]">We’ll send an OTP and take you into setup.</p>
                         </div>
 
                         <form onSubmit={handleRegister} className="space-y-4">
-                            <div className="anim-fade-up space-y-1.5" style={{ animationDelay: "0.3s" }}>
-                                <Label className="text-sm font-medium text-slate-400" htmlFor="name">Full name</Label>
+                            <div className="space-y-1.5">
+                                <Label className="text-sm font-semibold text-[#556244]" htmlFor="name">Full name</Label>
                                 <Input
                                     id="name"
                                     type="text"
@@ -180,12 +119,12 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
                                     required
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
-                                    className="h-11 border-white/[0.08] bg-white/[0.04] text-white transition-all duration-200 placeholder:text-slate-600 focus-visible:border-emerald-500/40 focus-visible:bg-white/[0.06] focus-visible:ring-emerald-500/10"
+                                    className="h-12 rounded-2xl border-[#dde1bc] bg-white text-[#17320f] placeholder:text-[#8f9670] focus-visible:border-lime-400 focus-visible:ring-lime-200"
                                 />
                             </div>
 
-                            <div className="anim-fade-up space-y-1.5" style={{ animationDelay: "0.35s" }}>
-                                <Label className="text-sm font-medium text-slate-400" htmlFor="email">Email</Label>
+                            <div className="space-y-1.5">
+                                <Label className="text-sm font-semibold text-[#556244]" htmlFor="email">Email</Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -194,33 +133,31 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="h-11 border-white/[0.08] bg-white/[0.04] text-white transition-all duration-200 placeholder:text-slate-600 focus-visible:border-emerald-500/40 focus-visible:bg-white/[0.06] focus-visible:ring-emerald-500/10"
+                                    className="h-12 rounded-2xl border-[#dde1bc] bg-white text-[#17320f] placeholder:text-[#8f9670] focus-visible:border-lime-400 focus-visible:ring-lime-200"
                                 />
                             </div>
 
-                            {serverError && <p className="text-xs text-red-400 text-center">{serverError}</p>}
+                            {serverError && <p className="text-center text-xs text-red-500">{serverError}</p>}
 
-                            <div className="anim-fade-up" style={{ animationDelay: "0.45s" }}>
-                                <Button
-                                    type="submit"
-                                    disabled={loading}
-                                    className="relative mt-1 h-11 w-full overflow-hidden border border-emerald-500/30 bg-[#0f1c17] text-sm font-semibold text-emerald-100 shadow-[inset_0_1px_0_rgba(16,185,129,0.12)] transition-all duration-200 hover:border-emerald-400/40 hover:bg-[#12231d] hover:text-white hover:shadow-[inset_0_1px_0_rgba(16,185,129,0.18),0_0_24px_rgba(16,185,129,0.12)] disabled:opacity-60"
-                                >
-                                    {loading ? "Sending OTP…" : "Continue"}
-                                </Button>
-                            </div>
+                            <Button
+                                type="submit"
+                                disabled={loading}
+                                className="mt-1 h-12 w-full rounded-2xl border-0 bg-[#86b81d] text-sm font-bold text-white shadow-[0_18px_34px_rgba(134,184,29,0.28)] hover:bg-[#77a51b] disabled:opacity-60"
+                            >
+                                {loading ? "Sending OTP..." : "Continue"}
+                            </Button>
                         </form>
                     </>
                 ) : (
                     <>
                         <div className="mb-6 space-y-1">
-                            <h1 className="text-xl font-semibold tracking-tight text-white">Verify your account</h1>
-                            <p className="text-sm text-slate-500">Enter the OTP sent to <span className="text-slate-300">{email}</span> and complete your profile.</p>
+                            <h1 className="text-3xl font-extrabold tracking-[-0.05em] text-[#17320f]">Verify your account</h1>
+                            <p className="text-sm text-[#5f6e43]">Enter the OTP sent to <span className="font-semibold text-[#17320f]">{email}</span> and complete your profile.</p>
                         </div>
 
                         <form onSubmit={handleVerify} className="space-y-4">
                             <div className="space-y-1.5">
-                                <Label className="text-sm font-medium text-slate-400" htmlFor="otp">OTP code</Label>
+                                <Label className="text-sm font-semibold text-[#556244]" htmlFor="otp">OTP code</Label>
                                 <Input
                                     id="otp"
                                     type="text"
@@ -228,12 +165,12 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
                                     required
                                     value={otp}
                                     onChange={(e) => setOtp(e.target.value)}
-                                    className="h-11 border-white/[0.08] bg-white/[0.04] text-white transition-all duration-200 placeholder:text-slate-600 focus-visible:border-emerald-500/40 focus-visible:bg-white/[0.06] focus-visible:ring-emerald-500/10"
+                                    className="h-12 rounded-2xl border-[#dde1bc] bg-white text-[#17320f] placeholder:text-[#8f9670] focus-visible:border-lime-400 focus-visible:ring-lime-200"
                                 />
                             </div>
 
                             <div className="space-y-1.5">
-                                <Label className="text-sm font-medium text-slate-400" htmlFor="password">Password</Label>
+                                <Label className="text-sm font-semibold text-[#556244]" htmlFor="password">Password</Label>
                                 <div className="relative">
                                     <Input
                                         id="password"
@@ -243,12 +180,12 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
                                         required
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        className="h-11 border-white/[0.08] bg-white/[0.04] pr-10 text-white transition-all duration-200 placeholder:text-slate-600 focus-visible:border-emerald-500/40 focus-visible:bg-white/[0.06] focus-visible:ring-emerald-500/10"
+                                        className="h-12 rounded-2xl border-[#dde1bc] bg-white pr-10 text-[#17320f] placeholder:text-[#8f9670] focus-visible:border-lime-400 focus-visible:ring-lime-200"
                                     />
                                     <button
                                         type="button"
                                         onClick={() => setShowPw((p) => !p)}
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-600 transition-colors duration-150 hover:text-slate-300"
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-[#8b916a] transition-colors duration-150 hover:text-[#17320f]"
                                         tabIndex={-1}
                                     >
                                         {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -256,19 +193,19 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
                                 </div>
                                 {strength && (
                                     <div className="space-y-1 pt-0.5">
-                                        <div className="h-1 w-full overflow-hidden rounded-full bg-white/[0.06]">
+                                        <div className="h-1 w-full overflow-hidden rounded-full bg-[#eef0de]">
                                             <div
                                                 className={cn("h-full rounded-full transition-all duration-300", strength.color)}
                                                 style={{ width: strength.pct }}
                                             />
                                         </div>
-                                        <p className="text-[11px] text-slate-500">{strength.label}</p>
+                                        <p className="text-[11px] text-[#6c7554]">{strength.label}</p>
                                     </div>
                                 )}
                             </div>
 
                             <div className="space-y-1.5">
-                                <Label className="text-sm font-medium text-slate-400" htmlFor="phone">Phone number</Label>
+                                <Label className="text-sm font-semibold text-[#556244]" htmlFor="phone">Phone number</Label>
                                 <Input
                                     id="phone"
                                     type="tel"
@@ -276,12 +213,12 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
                                     required
                                     value={phone}
                                     onChange={(e) => setPhone(e.target.value)}
-                                    className="h-11 border-white/[0.08] bg-white/[0.04] text-white transition-all duration-200 placeholder:text-slate-600 focus-visible:border-emerald-500/40 focus-visible:bg-white/[0.06] focus-visible:ring-emerald-500/10"
+                                    className="h-12 rounded-2xl border-[#dde1bc] bg-white text-[#17320f] placeholder:text-[#8f9670] focus-visible:border-lime-400 focus-visible:ring-lime-200"
                                 />
                             </div>
 
                             <div className="space-y-1.5">
-                                <Label className="text-sm font-medium text-slate-400" htmlFor="country">Country</Label>
+                                <Label className="text-sm font-semibold text-[#556244]" htmlFor="country">Country</Label>
                                 <Input
                                     id="country"
                                     type="text"
@@ -289,40 +226,40 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
                                     required
                                     value={country}
                                     onChange={(e) => setCountry(e.target.value)}
-                                    className="h-11 border-white/[0.08] bg-white/[0.04] text-white transition-all duration-200 placeholder:text-slate-600 focus-visible:border-emerald-500/40 focus-visible:bg-white/[0.06] focus-visible:ring-emerald-500/10"
+                                    className="h-12 rounded-2xl border-[#dde1bc] bg-white text-[#17320f] placeholder:text-[#8f9670] focus-visible:border-lime-400 focus-visible:ring-lime-200"
                                 />
                             </div>
 
-                            {serverError && <p className="text-xs text-red-400 text-center">{serverError}</p>}
+                            {serverError && <p className="text-center text-xs text-red-500">{serverError}</p>}
 
                             <Button
                                 type="submit"
                                 disabled={loading}
-                                className="relative mt-1 h-11 w-full overflow-hidden border border-emerald-500/30 bg-[#0f1c17] text-sm font-semibold text-emerald-100 shadow-[inset_0_1px_0_rgba(16,185,129,0.12)] transition-all duration-200 hover:border-emerald-400/40 hover:bg-[#12231d] hover:text-white hover:shadow-[inset_0_1px_0_rgba(16,185,129,0.18),0_0_24px_rgba(16,185,129,0.12)] disabled:opacity-60"
+                                className="mt-1 h-12 w-full rounded-2xl border-0 bg-[#86b81d] text-sm font-bold text-white shadow-[0_18px_34px_rgba(134,184,29,0.28)] hover:bg-[#77a51b] disabled:opacity-60"
                             >
-                                {loading ? "Verifying…" : "Create account"}
+                                {loading ? "Verifying..." : "Create account"}
                             </Button>
 
                             <button
                                 type="button"
                                 onClick={() => { setStep(1); setServerError(null); }}
-                                className="w-full text-center text-xs text-slate-500 hover:text-slate-300 transition-colors"
+                                className="w-full text-center text-xs font-medium text-[#6f7856] hover:text-[#17320f] transition-colors"
                             >
-                                ← Back
+                                Back
                             </button>
                         </form>
                     </>
                 )}
 
-                <p className="anim-fade-in mt-5 text-center text-sm text-slate-500" style={{ animationDelay: "0.5s" }}>
+                <p className="mt-5 text-center text-sm text-[#5f6e43]">
                     Already have an account?{" "}
-                    <a href="/login" className="font-medium text-slate-300 transition-colors hover:text-white">
+                    <a href="/login" className="font-bold text-[#729717] transition-colors hover:text-[#5f7e12]">
                         Sign in
                     </a>
                 </p>
             </div>
 
-            <p className="anim-fade-in relative z-10 mt-6 text-xs text-slate-600" style={{ animationDelay: "0.55s" }}>
+            <p className="relative z-10 mt-6 text-xs text-[#6d7655]">
                 © {new Date().getFullYear()} Atlas Commerce. All rights reserved.
             </p>
         </div>

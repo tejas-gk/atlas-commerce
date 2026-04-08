@@ -334,9 +334,9 @@ const SellerPayments = () => {
   return (
     <div className="space-y-6 pb-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="seller-page-header">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Payments</h1>
+          <h1 className="text-3xl font-extrabold tracking-[-0.05em] text-[#17320f]">Payments</h1>
           <p className="text-sm text-muted-foreground mt-0.5">Track your earnings and transaction history</p>
         </div>
         <BreadCrumbs title="Payments" />
@@ -345,34 +345,32 @@ const SellerPayments = () => {
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {KPI_CARDS.map(({ label, value, sub, trend, Icon, iconCls }) => (
-          <Card key={label} className="border border-white/[0.08] bg-card/50 p-5">
+          <Card key={label} className="seller-kpi-card rounded-[28px] border-0 p-5">
             <div className="flex items-start justify-between mb-3">
-              <div className={`flex h-9 w-9 items-center justify-center rounded-full shrink-0 ${iconCls}`}>
+              <div className={`seller-metric-icon flex h-10 w-10 items-center justify-center rounded-[18px] shrink-0 ${iconCls}`}>
                 <Icon size={16} />
               </div>
               {trend === "up"
-                ? <ArrowUpRight size={14} className="text-emerald-400 mt-0.5" />
-                : <ArrowDownRight size={14} className="text-red-400 mt-0.5" />}
+                ? <ArrowUpRight size={14} className="text-lime-600 mt-0.5" />
+                : <ArrowDownRight size={14} className="text-red-500 mt-0.5" />}
             </div>
-            <p className="text-[22px] font-semibold tabular-nums leading-tight">{value}</p>
-            <p className="text-[11px] text-muted-foreground/60 mt-1">{sub}</p>
-            <p className="text-[11px] text-muted-foreground/40 mt-0.5">{label}</p>
+            <p className="text-[24px] font-extrabold tracking-[-0.05em] text-[#17320f] tabular-nums leading-tight">{value}</p>
+            <p className="text-[11px] text-muted-foreground/70 mt-1">{sub}</p>
+            <p className="text-[11px] text-muted-foreground/50 mt-0.5">{label}</p>
           </Card>
         ))}
       </div>
 
-      {/* Table Card */}
-      <Card className="border border-white/[0.06] bg-card/50 overflow-hidden">
-        {/* Toolbar */}
-        <div className="flex items-center gap-3 px-5 py-3.5 border-b border-white/[0.05]">
-          <div className="flex items-center gap-0.5 p-0.5 rounded-lg bg-white/[0.04] border border-white/[0.05]">
+      <Card className="seller-panel overflow-hidden rounded-[30px] border-0">
+        <div className="seller-toolbar flex items-center gap-3 px-5 py-4">
+          <div className="flex items-center gap-0.5 rounded-2xl border border-[#e0e4be] bg-white/70 p-1">
             {FILTER_TABS.map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-3 h-7 rounded-md text-xs font-medium transition-all duration-150 ${activeTab === tab
-                    ? "bg-card text-foreground border border-white/[0.08] shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
+                className={`h-8 rounded-xl px-3 text-xs font-semibold transition-all duration-150 ${activeTab === tab
+                    ? "seller-tab-active"
+                    : "seller-tab hover:text-foreground"
                   }`}
               >
                 {tab}
@@ -385,19 +383,19 @@ const SellerPayments = () => {
               value={globalFilter}
               onChange={(e) => setGlobalFilter(e.target.value)}
               placeholder="Search by order ID, buyer name, or email..."
-              className="pl-8 h-8 text-sm border-white/[0.08] bg-white/[0.03]"
+              className="pl-8 h-9 rounded-2xl text-sm border-[#e0e4be] bg-white"
             />
           </div>
           <Button
             onClick={handleExport}
             variant="outline"
             size="sm"
-            className="gap-1.5 h-8 px-3 text-xs border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] ml-auto"
+            className="ml-auto h-9 gap-1.5 rounded-2xl border-[#dde1bc] bg-white px-3 text-xs hover:bg-[#f6f8ea]"
           >
             <Download size={13} />
             Export CSV
           </Button>
-          <p className="text-xs text-muted-foreground/40 tabular-nums">{filteredData.length} transactions</p>
+          <p className="text-xs text-muted-foreground/50 tabular-nums">{filteredData.length} transactions</p>
         </div>
 
         {isLoading || summaryLoading ? (
@@ -406,12 +404,12 @@ const SellerPayments = () => {
           </div>
         ) : (
           <>
-            <table className="w-full text-sm">
+            <table className="seller-table w-full text-sm">
               <thead>
                 {table.getHeaderGroups().map((headerGroup) => (
-                  <tr key={headerGroup.id} className="border-b border-white/[0.05]">
+                  <tr key={headerGroup.id} className="border-b border-[#ecefd8] bg-[#fbf8eb]">
                     {headerGroup.headers.map((header) => (
-                      <th key={header.id} className="text-left px-5 py-3 text-[10px] uppercase tracking-wider text-muted-foreground/50 font-medium">
+                      <th key={header.id} className="text-left px-5 py-3 text-[10px] uppercase tracking-[0.18em] text-muted-foreground/50 font-semibold">
                         {flexRender(
                           header.column.columnDef.header,
                           header.getContext()
@@ -436,10 +434,7 @@ const SellerPayments = () => {
                   </tr>
                 ) : (
                   table.getRowModel().rows.map((row) => (
-                    <tr
-                      key={row.id}
-                      className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors duration-100"
-                    >
+                    <tr key={row.id} className="border-b border-[#eff1df] transition-colors duration-100">
                       {row.getVisibleCells().map((cell) => (
                         <td key={cell.id} className="px-5 py-3.5">
                           {flexRender(
@@ -456,8 +451,8 @@ const SellerPayments = () => {
 
             {/* Pagination */}
             {filteredData.length > 0 && (
-              <div className="px-5 py-3 border-t border-white/[0.04] flex items-center justify-between">
-                <p className="text-xs text-muted-foreground/40">
+              <div className="px-5 py-3 border-t border-[#ecefd8] flex items-center justify-between">
+                <p className="text-xs text-muted-foreground/50">
                   Page {currentPage + 1} of {table.getPageCount()} • Showing {table.getRowModel().rows.length} of {filteredData.length} transactions
                 </p>
                 <div className="flex items-center gap-2">
@@ -466,7 +461,7 @@ const SellerPayments = () => {
                     size="icon"
                     onClick={() => table.previousPage()}
                     disabled={!table.getCanPreviousPage()}
-                    className="h-7 w-7 border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06]"
+                    className="h-8 w-8 rounded-2xl border-[#dde1bc] bg-white hover:bg-[#f6f8ea]"
                   >
                     <ChevronLeft size={14} />
                   </Button>
@@ -475,7 +470,7 @@ const SellerPayments = () => {
                     size="icon"
                     onClick={() => table.nextPage()}
                     disabled={!table.getCanNextPage()}
-                    className="h-7 w-7 border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06]"
+                    className="h-8 w-8 rounded-2xl border-[#dde1bc] bg-white hover:bg-[#f6f8ea]"
                   >
                     <ChevronRight size={14} />
                   </Button>
@@ -485,7 +480,7 @@ const SellerPayments = () => {
 
             {/* Status Legend */}
             {filteredData.length > 0 && (
-              <div className="px-5 py-3 border-t border-white/[0.04] flex items-center justify-end">
+              <div className="px-5 py-3 border-t border-[#ecefd8] flex items-center justify-end">
                 <div className="flex items-center gap-3">
                   {[
                     { label: "Paid", cls: "bg-emerald-400" },
@@ -493,7 +488,7 @@ const SellerPayments = () => {
                     { label: "Failed", cls: "bg-red-400" },
                     { label: "Refunded", cls: "bg-slate-400" },
                   ].map((s) => (
-                    <span key={s.label} className="flex items-center gap-1.5 text-[10px] text-muted-foreground/40">
+                    <span key={s.label} className="flex items-center gap-1.5 text-[10px] text-muted-foreground/50">
                       <span className={`h-1.5 w-1.5 rounded-full ${s.cls}`} />
                       {s.label}
                     </span>

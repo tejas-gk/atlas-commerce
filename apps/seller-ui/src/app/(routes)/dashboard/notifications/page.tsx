@@ -22,34 +22,35 @@ const Page = () => {
   };
 
   return (
-    <div className="w-full min-h-screen p-8">
-      <h2 className="text-2xl text-white font-semibold mb-2">Notifications</h2>
-      {/* Breadcrumbs */}
-      <BreadCrumbs title="Notifications" />
+    <div className="w-full space-y-6 pb-8">
+      <div>
+        <h2 className="mb-2 text-3xl font-extrabold tracking-[-0.05em] text-[#17320f]">Notifications</h2>
+        <BreadCrumbs title="Notifications" />
+      </div>
 
       {!isLoading && data?.length === 0 && (
-        <p className="text-center pt-24 text-white text-sm font-Poppins">
+        <p className="pt-24 text-center text-sm text-muted-foreground">
           No Notifications available yet!
         </p>
       )}
 
       {!isLoading && data?.length > 0 && (
-        <div className="md:w-[80%] my-6 rounded-lg divide-y divide-gray-800 bg-black/40 backdrop-blur-lg shadow-sm">
+        <div className="seller-panel my-6 divide-y divide-[#ecefd8] rounded-[30px] md:w-[80%]">
           {data.map((d: any) => (
             <Link
               key={d.id}
               href={d.redirect_link}
               className={`block px-5 py-4 transition ${d.status !== "Unread"
-                  ? "hover:bg-gray-800/40"
-                  : "bg-gray-800/50 hover:bg-gray-800/70"
+                  ? "hover:bg-[#fbfced]"
+                  : "bg-[#f8fbe8] hover:bg-[#f2f7d2]"
                 }`}
               onClick={() => markAsRead(d.id)}
             >
               <div className="flex items-start gap-3">
                 <div className="flex flex-col">
-                  <span className="text-white font-medium">{d.title}</span>
-                  <span className="text-gray-300 text-sm">{d.message}</span>
-                  <span className="text-gray-500 text-xs mt-1">
+                  <span className="font-semibold text-[#17320f]">{d.title}</span>
+                  <span className="text-sm text-[#5f6e43]">{d.message}</span>
+                  <span className="mt-1 text-xs text-muted-foreground">
                     {new Date(d.cratedAt).toLocaleString("en-UK", {
                       dateStyle: "medium",
                       timeStyle: "short",

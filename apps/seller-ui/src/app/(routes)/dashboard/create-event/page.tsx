@@ -130,20 +130,24 @@ const Page = () => {
   };
 
   return (
-    <form
-      className="w-full mx-auto p-8 shadow-md rounded-lg text-white"
-      onSubmit={handleSubmit(onSubmit)}
-    >
-      {/* Heading & Breadcrumbs */}
-      <h2 className="text-2xl py-2 font-semibold font-Poppins text-white">
-        Create Event
-      </h2>
-      <BreadCrumbs title="Create Event" />
+    <form className="w-full pb-8" onSubmit={handleSubmit(onSubmit)}>
+      <div className="seller-page-header mb-6">
+        <div>
+          <h2 className="text-3xl font-extrabold tracking-[-0.05em] text-[#17320f]">Create Event</h2>
+          <BreadCrumbs title="Create Event" />
+        </div>
+        <button
+          type="submit"
+          className="h-11 rounded-2xl bg-[#86b81d] px-5 font-semibold text-white shadow-[0_18px_34px_rgba(134,184,29,0.28)]"
+          disabled={loading}
+        >
+          {loading ? "Creating..." : "Create Event"}
+        </button>
+      </div>
 
-      {/* Content Layout */}
-      <div className="py-4 w-full flex gap-6">
-        {/* Left side - Image upload section */}
+      <div className="w-full flex gap-6">
         <div className="md:w-[35%]">
+          <div className="seller-panel rounded-[30px] p-5">
           {images?.length > 0 && (
             <ImagePlaceHolder
               size="765 x 850"
@@ -168,14 +172,14 @@ const Page = () => {
               />
             ))}
           </div>
+          </div>
         </div>
 
-        {/* Right side - form inputs */}
         <div className="md:w-[65%]">
+          <div className="seller-panel w-full rounded-[30px] p-5">
           <div className="w-full flex gap-6">
-            {/* Product Title Input */}
             <div className="w-2/4">
-              <label className="block font-semibold text-gray-300 mb-1">
+              <label className="mb-1 block font-semibold text-[#556244]">
                 Product Title *
               </label>
               <Input
@@ -189,12 +193,12 @@ const Page = () => {
               )}
 
               <div className="mt-2">
-                <label className="block font-semibold text-gray-300 mb-1">
+                <label className="mb-1 block font-semibold text-[#556244]">
                   Short Description * (Max 150 words)
                 </label>
                 <textarea
                   rows={7}
-                  className="w-full border outline-none border-gray-700 bg-transparent p-2 rounded-md text-white"
+                  className="w-full rounded-[20px] border border-[#dde1bc] bg-white p-3 text-[#17320f] outline-none"
                   placeholder="Enter product description for quick view"
                   {...register("short_description", {
                     required: "Description is required",
@@ -215,7 +219,7 @@ const Page = () => {
               </div>
 
               <div className="mt-2">
-                <label className="block font-semibold text-gray-300 mb-1">
+                <label className="mb-1 block font-semibold text-[#556244]">
                   Tags *
                 </label>
                 <Input
@@ -232,12 +236,12 @@ const Page = () => {
               </div>
 
               <div className="mt-2">
-                <label className="block font-semibold text-gray-300 mb-1">
+                <label className="mb-1 block font-semibold text-[#556244]">
                   Starting Date *
                 </label>
                 <input
                   type="date"
-                  className={`w-full border outline-none border-gray-700 bg-transparent p-2 rounded-md text-white`}
+                  className="w-full rounded-2xl border border-[#dde1bc] bg-white p-2.5 text-[#17320f] outline-none"
                   {...register("starting_date", {
                     required: "Starting Date is required!",
                   })}
@@ -246,7 +250,7 @@ const Page = () => {
               </div>
 
               <div className="mt-2">
-                <label className="block font-semibold text-gray-300 mb-1">
+                <label className="mb-1 block font-semibold text-[#556244]">
                   Warranty *
                 </label>
                 <Input
@@ -264,7 +268,7 @@ const Page = () => {
 
               <div className="mt-2">
                 <div className="relative">
-                  <label className="block font-semibold text-gray-300 mb-1">
+                  <label className="mb-1 block font-semibold text-[#556244]">
                     Slug *
                   </label>
                   <Input
@@ -279,7 +283,7 @@ const Page = () => {
                     {...restSlugProps}
                   />
 
-                  <div className="absolute w-7 h-7 flex items-center justify-center bg-blue-600 !rounded shadow top-[70%] right-3 transform -translate-y-1/2 text-white cursor-pointer hover:bg-blue-700">
+                  <div className="absolute top-[70%] right-3 flex h-7 w-7 -translate-y-1/2 transform items-center justify-center rounded-xl bg-[#86b81d] text-white shadow cursor-pointer hover:bg-[#77a51b]">
                     <Wand2
                       size={16}
                       onClick={async () => {
@@ -336,7 +340,7 @@ const Page = () => {
               </div>
 
               <div className="mt-2">
-                <label className="block font-semibold text-gray-300 mb-1">
+                <label className="mb-1 block font-semibold text-[#556244]">
                   Brand
                 </label>
                 <Input
@@ -363,7 +367,7 @@ const Page = () => {
               </div>
 
               <div className="mt-2">
-                <label className="block font-semibold text-gray-300 mb-1">
+                <label className="mb-1 block font-semibold text-[#556244]">
                   Cash On Delivery *
                 </label>
                 <select
@@ -371,12 +375,12 @@ const Page = () => {
                     required: "Cash on Delivery is required",
                   })}
                   defaultValue="yes"
-                  className="w-full border outline-none border-gray-700 bg-transparent p-2 rounded-md text-white"
+                  className="w-full rounded-2xl border border-[#dde1bc] bg-white p-2.5 text-[#17320f] outline-none"
                 >
-                  <option value="yes" className="bg-black">
+                  <option value="yes" className="bg-white">
                     Yes
                   </option>
-                  <option value="no" className="bg-black">
+                  <option value="no" className="bg-white">
                     No
                   </option>
                 </select>
@@ -388,7 +392,7 @@ const Page = () => {
               </div>
             </div>
             <div className="w-2/4">
-              <label className="block font-semibold text-gray-300 mb-1">
+              <label className="mb-1 block font-semibold text-[#556244]">
                 Category *
               </label>
               {isLoading ? (
@@ -403,16 +407,16 @@ const Page = () => {
                   render={({ field }) => (
                     <select
                       {...field}
-                      className="w-full border outline-none border-gray-700 bg-transparent p-2 rounded-md text-white"
+                      className="w-full rounded-2xl border border-[#dde1bc] bg-white p-2.5 text-[#17320f] outline-none"
                     >
-                      <option value="" className="bg-black">
+                      <option value="" className="bg-white">
                         Select Category
                       </option>
                       {categories?.map((category: string) => (
                         <option
                           value={category}
                           key={category}
-                          className="bg-black"
+                          className="bg-white"
                         >
                           {category}
                         </option>
@@ -428,7 +432,7 @@ const Page = () => {
               )}
 
               <div className="mt-2">
-                <label className="block font-semibold text-gray-300 mb-1">
+                <label className="mb-1 block font-semibold text-[#556244]">
                   Subcategory *
                 </label>
                 <Controller
@@ -438,16 +442,16 @@ const Page = () => {
                   render={({ field }) => (
                     <select
                       {...field}
-                      className="w-full border outline-none border-gray-700 bg-transparent p-2 rounded-md text-white"
+                      className="w-full rounded-2xl border border-[#dde1bc] bg-white p-2.5 text-[#17320f] outline-none"
                     >
-                      <option value="" className="bg-black">
+                      <option value="" className="bg-white">
                         Select Subcategory
                       </option>
                       {subcategories?.map((subcategory: string) => (
                         <option
                           key={subcategory}
                           value={subcategory}
-                          className="bg-black"
+                          className="bg-white"
                         >
                           {subcategory}
                         </option>
@@ -463,7 +467,7 @@ const Page = () => {
               </div>
 
               <div className="mt-2">
-                <label className="block font-semibold text-gray-300 mb-1">
+                <label className="mb-1 block font-semibold text-[#556244]">
                   Detailed Description * (Min 100 words)
                 </label>
                 <Controller
@@ -487,12 +491,12 @@ const Page = () => {
               </div>
 
               <div className="mt-2">
-                <label className="block font-semibold text-gray-300 mb-1">
+                <label className="mb-1 block font-semibold text-[#556244]">
                   Ending Date *
                 </label>
                 <input
                   type="date"
-                  className={`w-full border outline-none border-gray-700 bg-transparent p-2 rounded-md text-white`}
+                  className="w-full rounded-2xl border border-[#dde1bc] bg-white p-2.5 text-[#17320f] outline-none"
                   {...register("ending_date", {
                     required: "Ending Date is required!",
                   })}
@@ -501,7 +505,7 @@ const Page = () => {
               </div>
 
               <div className="mt-2">
-                <label className="block font-semibold text-gray-300 mb-1">
+                <label className="mb-1 block font-semibold text-[#556244]">
                   Video URL
                 </label>
                 <Input
@@ -523,7 +527,7 @@ const Page = () => {
               </div>
 
               <div className="mt-2">
-                <label className="block font-semibold text-gray-300 mb-1">
+                <label className="mb-1 block font-semibold text-[#556244]">
                   Regular Price
                 </label>
                 <Input
@@ -543,7 +547,7 @@ const Page = () => {
               </div>
 
               <div className="mt-2">
-                <label className="block font-semibold text-gray-300 mb-1">
+                <label className="mb-1 block font-semibold text-[#556244]">
                   Sale Price *
                 </label>
                 <Input
@@ -569,7 +573,7 @@ const Page = () => {
               </div>
 
               <div className="mt-2">
-                <label className="block font-semibold text-gray-300 mb-1">
+                <label className="mb-1 block font-semibold text-[#556244]">
                   Stock *
                 </label>
                 <Input
@@ -614,9 +618,9 @@ const Page = () => {
                       <button
                         key={code.id}
                         type="button"
-                        className={`px-3 py-1 rounded-md text-sm font-semibold border ${watch("discountCodes")?.includes(code.id)
-                          ? "bg-blue-600 text-white border-blue-600"
-                          : "bg-gray-800 text-gray-300 border-gray-600 hover:bg-gray-700"
+                        className={`rounded-xl border px-3 py-1 text-sm font-semibold ${watch("discountCodes")?.includes(code.id)
+                          ? "bg-lime-500 text-white border-lime-500"
+                          : "bg-white text-[#5f6e43] border-[#dde1bc] hover:bg-[#f7f8ea]"
                           }`}
                         onClick={() => {
                           const currentSelection = watch("discountCodes") || [];
@@ -645,17 +649,8 @@ const Page = () => {
               </div>
             </div>
           </div>
+          </div>
         </div>
-      </div>
-
-      <div className="mt-6 flex justify-end gap-3">
-        <button
-          type="submit"
-          className="px-4 py-2 bg-blue-600 text-white rounded-md"
-          disabled={loading}
-        >
-          {loading ? "Creating..." : "Create"}
-        </button>
       </div>
     </form>
   );

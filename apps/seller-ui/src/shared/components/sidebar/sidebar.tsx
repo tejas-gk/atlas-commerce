@@ -21,6 +21,7 @@ import {
   SlidersHorizontal,
   PlusCircle,
   ExternalLink,
+  Sparkles,
   type LucideIcon,
 } from "lucide-react";
 import {
@@ -103,43 +104,40 @@ function StoreCard({
       disabled={isSwitching || isActive}
       onClick={onSelect}
       className={cn(
-        "flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left transition-colors duration-150",
+        "flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-left transition-all duration-150",
         isActive
-          ? "bg-emerald-500/12 ring-1 ring-emerald-500/30"
-          : "hover:bg-white/[0.05] cursor-pointer"
+          ? "border border-lime-300/70 bg-lime-100/80 shadow-[0_10px_24px_rgba(132,178,31,0.14)]"
+          : "border border-transparent hover:border-lime-200/70 hover:bg-white/80 cursor-pointer"
       )}
     >
-      {/* Avatar */}
       <div
         className={cn(
-          "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-bold text-white",
-          isActive ? "bg-emerald-600" : "bg-white/10"
+          "flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl text-xs font-bold",
+          isActive ? "bg-lime-500 text-white" : "bg-[#1f3b16] text-white"
         )}
       >
         {initial}
       </div>
 
-      {/* Info */}
       <div className="min-w-0 flex-1">
-        <p className="truncate text-[13px] font-medium text-foreground/90">
+        <p className="truncate text-[13px] font-semibold text-foreground">
           {shop.name}
         </p>
-        <div className="flex items-center gap-1.5 mt-0.5">
+        <div className="mt-1 flex items-center gap-1.5">
           <span
             className={cn(
               "h-1.5 w-1.5 rounded-full",
-              isActive ? "bg-emerald-400" : "bg-muted-foreground/30"
+              isActive ? "bg-lime-500" : "bg-muted-foreground/30"
             )}
           />
-          <span className="text-[10px] text-muted-foreground/60">
+          <span className="text-[10px] text-muted-foreground/70">
             {isActive ? "Active" : "Switch"}
           </span>
         </div>
       </div>
 
-      {/* Active check */}
       {isActive && (
-        <Check size={13} className="shrink-0 text-emerald-400" />
+        <Check size={14} className="shrink-0 text-lime-600" />
       )}
     </button>
   );
@@ -169,77 +167,81 @@ const SellerSidebar = () => {
   const shops: Array<{ id: string; name: string }> = seller?.shops ?? [];
 
   return (
-    <Sidebar className="border-r border-white/[0.04]">
+    <Sidebar className="border-r border-[#d8dbbb]">
+      <SidebarHeader className="flex h-auto flex-col gap-3 border-b border-[#dde0be] px-3 py-4">
+        <div className="seller-panel flex items-center gap-3 rounded-[28px] px-3 py-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-[20px] bg-[#1f3b16] text-white shadow-[0_10px_24px_rgba(31,59,22,0.18)]">
+            <Sparkles size={18} />
+          </div>
+          <div>
+            <p className="text-sm font-extrabold tracking-[-0.02em] text-[#17320f]">Atlas Seller</p>
+            <p className="text-[11px] text-[#566146]">Quick commerce command center</p>
+          </div>
+        </div>
 
-      {/* ── Store header / switcher ─────────────────────────────────────── */}
-      <SidebarHeader className="h-14 border-b border-white/[0.04] flex-row items-center px-2 py-0 gap-0">
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton
                   size="lg"
-                  className="hover:bg-sidebar-accent/50 transition-colors duration-150"
+                  className="seller-soft-panel h-auto rounded-[24px] px-3 py-3 hover:bg-white/90"
                 >
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-600/90 text-white shrink-0">
-                    <span className="text-xs font-semibold">{shopInitial}</span>
+                  <div className="flex h-10 w-10 items-center justify-center rounded-[18px] bg-lime-500 text-white shrink-0 shadow-[0_10px_24px_rgba(132,178,31,0.22)]">
+                    <span className="text-sm font-semibold">{shopInitial}</span>
                   </div>
                   <div className="flex flex-col gap-0.5 leading-none">
-                    <span className="font-semibold text-sm text-sidebar-foreground">
+                    <span className="text-sm font-semibold text-[#17320f]">
                       {shopName}
                     </span>
-                    <span className="text-[11px] text-sidebar-foreground/40">
-                      Seller Dashboard
+                    <span className="text-[11px] text-[#687259]">
+                      Seller dashboard
                     </span>
                   </div>
-                  <ChevronsUpDown className="ml-auto size-3.5 text-sidebar-foreground/40" />
+                  <ChevronsUpDown className="ml-auto size-3.5 text-[#7c8669]" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
 
-              {/* ── Store switcher pop-up ─────────────────────────────── */}
               <DropdownMenuContent
                 align="start"
                 side="bottom"
                 sideOffset={6}
-                className="w-72 rounded-xl border border-white/[0.08] bg-[#101926] p-2 shadow-2xl shadow-black/60 ring-1 ring-white/[0.04]"
+                className="w-72 rounded-[26px] border border-[#d9ddb8] bg-[#fffdf4] p-2.5 shadow-[0_24px_60px_rgba(103,97,40,0.16)]"
               >
-                {/* Header */}
                 <div className="mb-2 flex items-center justify-between px-1">
-                  <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/50">
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7b7f59]">
                     Your Stores
                   </span>
-                  <span className="rounded-full border border-white/10 bg-white/[0.04] px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground/60">
+                  <span className="rounded-full border border-[#dde1b8] bg-white px-1.5 py-0.5 text-[10px] font-medium text-[#697354]">
                     {shops.length} store{shops.length !== 1 ? "s" : ""}
                   </span>
                 </div>
 
-                {/* Active store highlight */}
-                <div className="mb-1.5 rounded-lg border border-white/[0.06] bg-white/[0.03] p-2.5">
+                <div className="mb-1.5 rounded-[22px] border border-[#d9ddb8] bg-[#f7fbdf] p-3">
                   <div className="flex items-center gap-2.5">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-600/90 text-white text-sm font-bold">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[18px] bg-lime-500 text-white text-sm font-bold">
                       {shopInitial}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-semibold text-foreground truncate">
+                      <p className="truncate text-sm font-semibold text-foreground">
                         {shopName}
                       </p>
                       <div className="flex items-center gap-2 mt-0.5">
-                        <span className="flex items-center gap-1 text-[10px] text-emerald-400/80">
-                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 inline-block" />
+                        <span className="flex items-center gap-1 text-[10px] text-lime-700">
+                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-lime-500" />
                           Live
                         </span>
-                        <span className="text-[10px] text-muted-foreground/40">·</span>
-                        <span className="text-[10px] text-muted-foreground/50">Pro Plan</span>
+                        <span className="text-[10px] text-muted-foreground/40">•</span>
+                        <span className="text-[10px] text-muted-foreground/60">Priority slotting</span>
                       </div>
                     </div>
-                    <Check size={13} className="shrink-0 text-emerald-400" />
+                    <Check size={13} className="shrink-0 text-lime-600" />
                   </div>
                 </div>
 
-                {/* Other stores (when more than one exists) */}
                 {shops.length > 1 && (
                   <>
-                    <p className="px-1 py-1 text-[10px] font-medium text-muted-foreground/40">
+                    <p className="px-1 py-1 text-[10px] font-medium text-muted-foreground/50">
                       Switch to
                     </p>
                     <div className="space-y-0.5">
@@ -258,35 +260,34 @@ const SellerSidebar = () => {
                   </>
                 )}
 
-                <DropdownMenuSeparator className="my-2 bg-white/[0.05]" />
+                <DropdownMenuSeparator className="my-2 bg-[#e6e7cf]" />
 
-                {/* Quick actions */}
                 <div className="space-y-0.5">
                   <Link
                     href="/dashboard/settings"
-                    className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-[13px] text-foreground/70 transition-colors hover:bg-white/[0.05] hover:text-foreground"
+                    className="flex items-center gap-2.5 rounded-2xl px-3 py-2 text-[13px] text-foreground/70 transition-colors hover:bg-[#f7f8ea] hover:text-foreground"
                   >
                     <SlidersHorizontal size={13} className="shrink-0 text-foreground/40" />
                     <span>Store Settings</span>
                   </Link>
                   <Link
                     href="#"
-                    className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-[13px] text-foreground/70 transition-colors hover:bg-white/[0.05] hover:text-foreground"
+                    className="flex items-center gap-2.5 rounded-2xl px-3 py-2 text-[13px] text-foreground/70 transition-colors hover:bg-[#f7f8ea] hover:text-foreground"
                   >
                     <ExternalLink size={13} className="shrink-0 text-foreground/40" />
                     <span>View Storefront</span>
-                    <span className="ml-auto rounded border border-white/10 bg-white/[0.04] px-1 text-[10px] text-muted-foreground/50">
+                    <span className="ml-auto rounded-md border border-[#dfe3bc] bg-white px-1 text-[10px] text-muted-foreground/50">
                       ↗
                     </span>
                   </Link>
                   <button
                     type="button"
                     disabled
-                    className="flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-[13px] text-muted-foreground/40 cursor-not-allowed"
+                    className="flex w-full cursor-not-allowed items-center gap-2.5 rounded-2xl px-3 py-2 text-[13px] text-muted-foreground/40"
                   >
                     <PlusCircle size={13} className="shrink-0" />
                     <span>Add New Store</span>
-                    <span className="ml-auto rounded-full border border-white/10 bg-white/[0.04] px-1.5 py-0.5 text-[10px] text-muted-foreground/50">
+                    <span className="ml-auto rounded-full border border-[#dfe3bc] bg-white px-1.5 py-0.5 text-[10px] text-muted-foreground/50">
                       Soon
                     </span>
                   </button>
@@ -297,11 +298,10 @@ const SellerSidebar = () => {
         </SidebarMenu>
       </SidebarHeader>
 
-      {/* ── Navigation ─────────────────────────────────────────────────── */}
-      <SidebarContent className="pt-2">
+      <SidebarContent className="pt-3">
         {navData.map((section) => (
           <SidebarGroup key={section.label}>
-            <SidebarGroupLabel className="text-[10px] uppercase tracking-widest text-sidebar-foreground/30 px-3 mb-1">
+            <SidebarGroupLabel className="mb-2 px-4 text-[10px] uppercase tracking-[0.22em] text-[#8b8e67]">
               {section.label}
             </SidebarGroupLabel>
             <SidebarGroupContent>
@@ -316,18 +316,18 @@ const SellerSidebar = () => {
                         isActive={isActive}
                         className={
                           isActive
-                            ? "bg-emerald-600/12 text-emerald-400 hover:bg-emerald-600/16 hover:text-emerald-300 font-medium transition-colors duration-150"
-                            : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/40 transition-colors duration-150"
+                            ? "mx-2 rounded-[22px] border border-lime-300/70 bg-white text-[#17320f] shadow-[0_12px_28px_rgba(132,178,31,0.12)] hover:bg-white font-medium transition-colors duration-150"
+                            : "mx-2 rounded-[22px] text-[#6e7556] hover:text-[#17320f] hover:bg-white/75 transition-colors duration-150"
                         }
                       >
                         <Link href={item.href} className="flex items-center gap-2.5">
                           <Icon
                             size={15}
-                            className={isActive ? "text-emerald-400" : "text-sidebar-foreground/35"}
+                            className={isActive ? "text-lime-600" : "text-[#8d916f]"}
                           />
                           <span className="text-[13px]">{item.title}</span>
                           {isActive && (
-                            <span className="ml-auto h-1.5 w-1.5 rounded-full bg-emerald-400 shrink-0" />
+                            <span className="ml-auto h-2 w-2 shrink-0 rounded-full bg-lime-500" />
                           )}
                         </Link>
                       </SidebarMenuButton>
@@ -340,13 +340,12 @@ const SellerSidebar = () => {
         ))}
       </SidebarContent>
 
-      {/* ── Footer logout ───────────────────────────────────────────────── */}
-      <SidebarFooter className="border-t border-white/[0.04] pt-3">
+      <SidebarFooter className="border-t border-[#dde0be] pt-3">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
               onClick={handleLogout}
-              className="text-sidebar-foreground/40 hover:text-red-400 hover:bg-red-500/8 transition-colors duration-150"
+              className="mx-2 rounded-[22px] text-[#7f8464] hover:bg-red-50 hover:text-red-500 transition-colors duration-150"
             >
               <LogOut size={15} />
               <span className="text-[13px]">Logout</span>

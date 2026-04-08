@@ -182,48 +182,44 @@ export default function AllProductsPage() {
 
   return (
     <div className="space-y-6 pb-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="seller-page-header">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">All Products</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Manage and track your product catalog</p>
+          <h1 className="text-3xl font-extrabold tracking-[-0.05em] text-[#17320f]">All Products</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Manage and track your product catalog</p>
         </div>
-        <Button asChild size="sm" className="gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white border-0 h-9 px-4 font-semibold">
+        <Button asChild size="sm" className="h-10 gap-1.5 rounded-2xl border-0 bg-[#86b81d] px-4 font-semibold text-white hover:bg-[#77a51b]">
           <Link href="/dashboard/create-product"><Plus size={14} /> Add Product</Link>
         </Button>
       </div>
 
-      {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {KPI_CARDS.map(({ label, value, sub, trend, Icon, iconCls }) => (
-          <Card key={label} className="border border-white/[0.08] bg-card/50 p-5">
+          <Card key={label} className="seller-kpi-card rounded-[28px] border-0 p-5">
             <div className="flex items-start justify-between mb-3">
-              <div className={`flex h-9 w-9 items-center justify-center rounded-full shrink-0 ${iconCls}`}>
+              <div className={`seller-metric-icon flex h-10 w-10 items-center justify-center rounded-[18px] shrink-0 ${iconCls}`}>
                 <Icon size={16} />
               </div>
               {trend === "up"
-                ? <ArrowUpRight size={14} className="text-emerald-400 mt-0.5" />
-                : <ArrowDownRight size={14} className="text-red-400 mt-0.5" />}
+                ? <ArrowUpRight size={14} className="mt-0.5 text-lime-600" />
+                : <ArrowDownRight size={14} className="mt-0.5 text-red-500" />}
             </div>
-            <p className="text-[22px] font-semibold tabular-nums leading-tight">{value}</p>
-            <p className="text-[11px] text-muted-foreground/60 mt-1">{sub}</p>
-            <p className="text-[11px] text-muted-foreground/40 mt-0.5">{label}</p>
+            <p className="text-[24px] font-extrabold tracking-[-0.05em] text-[#17320f] tabular-nums leading-tight">{value}</p>
+            <p className="mt-1 text-[11px] text-muted-foreground/70">{sub}</p>
+            <p className="mt-0.5 text-[11px] text-muted-foreground/50">{label}</p>
           </Card>
         ))}
       </div>
 
-      {/* Table Card */}
-      <Card className="border border-white/[0.06] bg-card/50 overflow-hidden">
-        {/* Toolbar */}
-        <div className="flex items-center gap-3 px-5 py-3.5 border-b border-white/[0.05]">
-          <div className="flex items-center gap-0.5 p-0.5 rounded-lg bg-white/[0.04] border border-white/[0.05]">
+      <Card className="seller-panel overflow-hidden rounded-[30px] border-0">
+        <div className="seller-toolbar flex items-center gap-3 px-5 py-4">
+          <div className="flex items-center gap-0.5 rounded-2xl border border-[#e0e4be] bg-white/70 p-1">
             {FILTER_TABS.map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-3 h-7 rounded-md text-xs font-medium transition-all duration-150 ${activeTab === tab
-                  ? "bg-card text-foreground border border-white/[0.08] shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
+                className={`h-8 rounded-xl px-3 text-xs font-semibold transition-all duration-150 ${activeTab === tab
+                  ? "seller-tab-active"
+                  : "seller-tab hover:text-foreground"
                   }`}
               >
                 {tab}
@@ -231,15 +227,15 @@ export default function AllProductsPage() {
             ))}
           </div>
           <div className="relative max-w-xs flex-1">
-            <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/40" />
+            <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
             <Input
               value={globalFilter}
               onChange={(e) => setGlobalFilter(e.target.value)}
               placeholder="Search products..."
-              className="pl-8 h-8 text-sm border-white/[0.08] bg-white/[0.03]"
+              className="h-9 rounded-2xl border-[#e0e4be] bg-white pl-8 text-sm"
             />
           </div>
-          <p className="text-xs text-muted-foreground/40 ml-auto tabular-nums">{filteredData.length} items</p>
+          <p className="ml-auto text-xs text-muted-foreground/50 tabular-nums">{filteredData.length} items</p>
         </div>
 
         {isLoading ? (
@@ -247,12 +243,12 @@ export default function AllProductsPage() {
             <div className="w-8 h-8 rounded-full border-2 border-emerald-500/30 border-t-emerald-500 animate-spin" />
           </div>
         ) : (
-          <table className="w-full text-sm">
+          <table className="seller-table w-full text-sm">
             <thead>
               {table.getHeaderGroups().map((hg) => (
-                <tr key={hg.id} className="border-b border-white/[0.05]">
+                <tr key={hg.id} className="border-b border-[#ecefd8] bg-[#fbf8eb]">
                   {hg.headers.map((h) => (
-                    <th key={h.id} className="text-left px-5 py-3 text-[10px] uppercase tracking-wider text-muted-foreground/50 font-medium">
+                    <th key={h.id} className="px-5 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/50">
                       {flexRender(h.column.columnDef.header, h.getContext())}
                     </th>
                   ))}
@@ -263,7 +259,7 @@ export default function AllProductsPage() {
               {table.getRowModel().rows.length === 0 ? (
                 <tr>
                   <td colSpan={columns.length} className="text-center py-20">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/[0.04] mx-auto mb-3">
+                    <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-[#f6f7eb]">
                       <Boxes size={22} className="text-muted-foreground/30" />
                     </div>
                     <p className="text-muted-foreground text-sm">No products found</p>
@@ -274,7 +270,7 @@ export default function AllProductsPage() {
                 </tr>
               ) : (
                 table.getRowModel().rows.map((row) => (
-                  <tr key={row.id} className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors duration-100">
+                  <tr key={row.id} className="border-b border-[#eff1df] transition-colors duration-100">
                     {row.getVisibleCells().map((cell) => (
                       <td key={cell.id} className="px-5 py-3.5">
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -288,15 +284,15 @@ export default function AllProductsPage() {
         )}
 
         {!isLoading && filteredData.length > 0 && (
-          <div className="px-5 py-3 border-t border-white/[0.04] flex items-center justify-between">
-            <p className="text-xs text-muted-foreground/40">Showing {filteredData.length} of {products.length} products</p>
+          <div className="flex items-center justify-between border-t border-[#ecefd8] px-5 py-3">
+            <p className="text-xs text-muted-foreground/50">Showing {filteredData.length} of {products.length} products</p>
             <div className="flex items-center gap-3">
               {[
                 { label: "Active", cls: "bg-emerald-400" },
                 { label: "Low Stock", cls: "bg-amber-400" },
                 { label: "Deleted", cls: "bg-red-400" },
               ].map((s) => (
-                <span key={s.label} className="flex items-center gap-1.5 text-[10px] text-muted-foreground/40">
+                <span key={s.label} className="flex items-center gap-1.5 text-[10px] text-muted-foreground/50">
                   <span className={`h-1.5 w-1.5 rounded-full ${s.cls}`} />{s.label}
                 </span>
               ))}
