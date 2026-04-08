@@ -1,15 +1,18 @@
 export default function HeroBanner() {
     return (
-        <div className="w-full rounded-xl bg-gradient-to-r from-green-700 to-green-400 text-white p-10 flex items-center justify-between">
-            <div>
-                <h1 className="text-4xl font-bold mb-3">
-                    Stock up on daily essentials
-                </h1>
-                <p className="text-lg opacity-90 mb-4 max-w-xl">
-                    Get farm-fresh goodness & a range of exotic fruits, vegetables,
-                    eggs & more
+        <div className="w-full rounded-2xl border border-black/10 bg-gradient-to-r from-[#fff8cf] via-[#fff2a8] to-[#ffe969] p-6 md:p-8 flex items-center justify-between">
+            <div className="max-w-2xl">
+                <p className="mb-2 inline-flex rounded-full bg-[#0c831f] px-3 py-1 text-xs font-semibold text-white">
+                    Delivery in minutes
                 </p>
-                <button className="bg-white text-green-700 px-5 py-2 rounded-md font-semibold">
+                <h1 className="mb-3 text-3xl font-extrabold leading-tight text-black md:text-4xl">
+                    Stock up on groceries,
+                    <br className="hidden md:block" /> daily essentials and more
+                </h1>
+                <p className="mb-4 max-w-xl text-sm text-black/70 md:text-base">
+                    Get farm-fresh goodness and your everyday needs delivered fast.
+                </p>
+                <button className="rounded-lg bg-[#0c831f] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0a6f1a] md:text-base">
                     Shop Now
                 </button>
             </div>
@@ -17,7 +20,7 @@ export default function HeroBanner() {
             <img
                 src="/banner-fruits.png"
                 alt="fruits"
-                className="h-48 object-contain hidden md:block"
+                className="hidden h-44 object-contain md:block"
             />
         </div>
     );

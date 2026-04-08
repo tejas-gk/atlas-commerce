@@ -319,7 +319,7 @@ const SellerPayments = () => {
       sub: "Awaiting settlement",
       trend: "down" as const,
       Icon: Clock,
-      iconCls: "bg-rose-500/15 text-rose-400"
+      iconCls: "bg-emerald-500/15 text-emerald-400"
     },
     {
       label: "Completed Orders",
@@ -402,7 +402,7 @@ const SellerPayments = () => {
 
         {isLoading || summaryLoading ? (
           <div className="flex items-center justify-center py-20">
-            <div className="w-8 h-8 rounded-full border-2 border-rose-500/30 border-t-rose-500 animate-spin" />
+            <div className="w-8 h-8 rounded-full border-2 border-emerald-500/30 border-t-emerald-500 animate-spin" />
           </div>
         ) : (
           <>

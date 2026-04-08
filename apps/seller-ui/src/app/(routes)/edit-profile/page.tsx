@@ -139,8 +139,8 @@ const EditProfile = () => {
           {/* Basic Information */}
           <Card className="border border-white/[0.06] bg-card/50 p-6">
             <div className="flex items-center gap-3 mb-5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-rose-500/15">
-                <Store size={16} className="text-rose-400" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500/15">
+                <Store size={16} className="text-emerald-400" />
               </div>
               <div>
                 <h3 className="text-foreground font-medium">Basic Information</h3>
@@ -176,7 +176,7 @@ const EditProfile = () => {
                       countWords(value || "") <= 100 || "Bio can't exceed 100 words",
                   })}
                   rows={4}
-                  className="w-full px-3 py-2 text-sm border border-white/[0.08] bg-white/[0.03] rounded-md text-foreground placeholder:text-muted-foreground/40 outline-none focus:border-rose-500/50 transition-colors resize-none"
+                  className="w-full px-3 py-2 text-sm border border-white/[0.08] bg-white/[0.03] rounded-md text-foreground placeholder:text-muted-foreground/40 outline-none focus:border-emerald-500/50 transition-colors resize-none"
                   placeholder="Tell customers about your shop..."
                 />
                 {errors.bio && (
@@ -274,7 +274,7 @@ const EditProfile = () => {
                         render={({ field }) => (
                           <select
                             {...field}
-                            className="w-32 h-9 px-3 text-sm border border-white/[0.08] bg-white/[0.03] rounded-md text-foreground outline-none focus:border-rose-500/50 transition-colors"
+                            className="w-32 h-9 px-3 text-sm border border-white/[0.08] bg-white/[0.03] rounded-md text-foreground outline-none focus:border-emerald-500/50 transition-colors"
                           >
                             {socialMediaOptions.map((option) => (
                               <option key={option.value} value={option.value} className="bg-card">
@@ -351,7 +351,7 @@ const EditProfile = () => {
             <Button
               type="submit"
               disabled={isPending}
-              className="gap-2 bg-rose-600 hover:bg-rose-700 text-white border-0"
+              className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white border-0"
             >
               {isPending ? (
                 <>

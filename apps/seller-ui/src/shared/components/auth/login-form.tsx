@@ -99,20 +99,20 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
       `}</style>
 
             {/* ── LEFT PANEL ── */}
-            <div className="relative hidden lg:flex flex-col justify-between overflow-hidden bg-[#080b14] p-12">
+            <div className="relative hidden lg:flex flex-col justify-between overflow-hidden bg-[#0a1117] p-12">
 
                 {/* Aurora mesh — soft, slow-drifting ambient lights */}
                 <div
                     className="pointer-events-none absolute -top-24 -left-24 h-[500px] w-[500px] rounded-full opacity-[0.07]"
-                    style={{ background: "radial-gradient(circle, #f43f5e 0%, transparent 70%)", animation: "aurora-drift 25s ease-in-out infinite" }}
+                    style={{ background: "radial-gradient(circle, #16a34a 0%, transparent 70%)", animation: "aurora-drift 25s ease-in-out infinite" }}
                 />
                 <div
                     className="pointer-events-none absolute bottom-[-10%] right-[-5%] h-[550px] w-[550px] rounded-full opacity-[0.05]"
-                    style={{ background: "radial-gradient(circle, #ef4444 0%, transparent 70%)", animation: "aurora-drift 30s ease-in-out infinite reverse" }}
+                    style={{ background: "radial-gradient(circle, #0891b2 0%, transparent 70%)", animation: "aurora-drift 30s ease-in-out infinite reverse" }}
                 />
                 <div
                     className="pointer-events-none absolute top-[40%] left-[50%] h-[400px] w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.04]"
-                    style={{ background: "radial-gradient(circle, #fb7185 0%, transparent 70%)", animation: "aurora-drift 35s ease-in-out infinite" }}
+                    style={{ background: "radial-gradient(circle, #22c55e 0%, transparent 70%)", animation: "aurora-drift 35s ease-in-out infinite" }}
                 />
 
                 {/* Grid texture */}
@@ -137,7 +137,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                         </span>
                         <h1 className="text-5xl font-semibold leading-[1.1] tracking-tight text-white">
                             Sell smarter.<br />
-                            <span className="text-[#fecdd3]" style={{ textShadow: "0 0 40px rgba(244,63,94,0.15)" }}>
+                            <span className="text-[#86efac]" style={{ textShadow: "0 0 40px rgba(34,197,94,0.2)" }}>
                                 Scale faster.
                             </span>
                         </h1>
@@ -168,12 +168,12 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
             </div>
 
             {/* ── RIGHT PANEL ── */}
-            <div className="relative flex items-center justify-center overflow-hidden bg-[#0a0d16] px-6 py-12 lg:px-12">
+            <div className="relative flex items-center justify-center overflow-hidden bg-[#0d141b] px-6 py-12 lg:px-12">
 
                 {/* Ambient glow — right panel */}
                 <div
                     className="pointer-events-none absolute bottom-[-15%] right-[-10%] h-[400px] w-[400px] rounded-full opacity-[0.06]"
-                    style={{ background: "radial-gradient(circle, #f43f5e 0%, transparent 70%)", animation: "aurora-drift 28s ease-in-out infinite" }}
+                    style={{ background: "radial-gradient(circle, #22c55e 0%, transparent 70%)", animation: "aurora-drift 28s ease-in-out infinite" }}
                 />
 
                 <div className="relative z-10 w-full max-w-sm space-y-6">
@@ -219,7 +219,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                                 type="email"
                                 placeholder="you@example.com"
                                 autoComplete="email"
-                                className="h-11 border-white/[0.08] bg-white/[0.04] text-white transition-all duration-200 placeholder:text-slate-600 focus-visible:border-rose-500/40 focus-visible:bg-white/[0.06] focus-visible:ring-rose-500/10"
+                                className="h-11 border-white/[0.08] bg-white/[0.04] text-white transition-all duration-200 placeholder:text-slate-600 focus-visible:border-emerald-500/40 focus-visible:bg-white/[0.06] focus-visible:ring-emerald-500/10"
                                 {...register("email", { required: "Email is required" })}
                             />
                             {errors.email && <p className="text-xs text-red-400 mt-0.5">{errors.email.message}</p>}
@@ -238,7 +238,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                                     type={showPassword ? "text" : "password"}
                                     placeholder="••••••••"
                                     autoComplete="current-password"
-                                    className="h-11 border-white/[0.08] bg-white/[0.04] pr-10 text-white transition-all duration-200 placeholder:text-slate-600 focus-visible:border-rose-500/40 focus-visible:bg-white/[0.06] focus-visible:ring-rose-500/10"
+                                    className="h-11 border-white/[0.08] bg-white/[0.04] pr-10 text-white transition-all duration-200 placeholder:text-slate-600 focus-visible:border-emerald-500/40 focus-visible:bg-white/[0.06] focus-visible:ring-emerald-500/10"
                                     {...register("password", { required: "Password is required" })}
                                 />
                                 <button
@@ -254,7 +254,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                         </div>
 
                         <div className="anim-fade-up flex items-center gap-2" style={{ animationDelay: "0.45s" }}>
-                            <Checkbox id="remember" className="border-white/15 data-[state=checked]:border-rose-500/60 data-[state=checked]:bg-rose-600/80" />
+                            <Checkbox id="remember" className="border-white/15 data-[state=checked]:border-emerald-500/60 data-[state=checked]:bg-emerald-600/80" />
                             <Label htmlFor="remember" className="cursor-pointer text-sm font-normal text-slate-500">
                                 Remember me
                             </Label>
@@ -268,7 +268,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                             <Button
                                 type="submit"
                                 disabled={isSubmitting}
-                                className="relative h-11 w-full overflow-hidden border border-rose-500/20 bg-[#1a0f10] text-sm font-semibold text-rose-200 shadow-[inset_0_1px_0_rgba(244,63,94,0.1)] transition-all duration-200 hover:border-rose-500/30 hover:bg-[#1f1214] hover:text-white hover:shadow-[inset_0_1px_0_rgba(244,63,94,0.15),0_0_20px_rgba(244,63,94,0.08)] disabled:opacity-60"
+                                className="relative h-11 w-full overflow-hidden border border-emerald-500/30 bg-[#0f1c17] text-sm font-semibold text-emerald-100 shadow-[inset_0_1px_0_rgba(16,185,129,0.12)] transition-all duration-200 hover:border-emerald-400/40 hover:bg-[#12231d] hover:text-white hover:shadow-[inset_0_1px_0_rgba(16,185,129,0.18),0_0_24px_rgba(16,185,129,0.12)] disabled:opacity-60"
                             >
                                 {isSubmitting ? "Signing in…" : "Sign in"}
                             </Button>

@@ -34,7 +34,7 @@ const KPI_CARDS = [
     sub: "+10 this month",
     trend: "up",
     Icon: Package,
-    iconCls: "bg-rose-500/15 text-rose-400",
+    iconCls: "bg-emerald-500/15 text-emerald-400",
   },
   {
     label: "Revenue",
@@ -207,7 +207,7 @@ const OrdersTable = () => {
 
         {isLoading ? (
           <div className="flex justify-center py-20">
-            <div className="w-8 h-8 border-2 border-rose-500/30 border-t-rose-500 rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />
           </div>
         ) : (
           <table className="w-full text-sm">

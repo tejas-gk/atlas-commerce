@@ -105,7 +105,7 @@ function StoreCard({
       className={cn(
         "flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left transition-colors duration-150",
         isActive
-          ? "bg-rose-500/10 ring-1 ring-rose-500/20"
+          ? "bg-emerald-500/12 ring-1 ring-emerald-500/30"
           : "hover:bg-white/[0.05] cursor-pointer"
       )}
     >
@@ -113,7 +113,7 @@ function StoreCard({
       <div
         className={cn(
           "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-bold text-white",
-          isActive ? "bg-rose-600" : "bg-white/10"
+          isActive ? "bg-emerald-600" : "bg-white/10"
         )}
       >
         {initial}
@@ -139,7 +139,7 @@ function StoreCard({
 
       {/* Active check */}
       {isActive && (
-        <Check size={13} className="shrink-0 text-rose-400" />
+        <Check size={13} className="shrink-0 text-emerald-400" />
       )}
     </button>
   );
@@ -181,7 +181,7 @@ const SellerSidebar = () => {
                   size="lg"
                   className="hover:bg-sidebar-accent/50 transition-colors duration-150"
                 >
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-600/90 text-white shrink-0">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-600/90 text-white shrink-0">
                     <span className="text-xs font-semibold">{shopInitial}</span>
                   </div>
                   <div className="flex flex-col gap-0.5 leading-none">
@@ -201,7 +201,7 @@ const SellerSidebar = () => {
                 align="start"
                 side="bottom"
                 sideOffset={6}
-                className="w-72 rounded-xl border border-white/[0.08] bg-[#0e1117] p-2 shadow-2xl shadow-black/60 ring-1 ring-white/[0.04]"
+                className="w-72 rounded-xl border border-white/[0.08] bg-[#101926] p-2 shadow-2xl shadow-black/60 ring-1 ring-white/[0.04]"
               >
                 {/* Header */}
                 <div className="mb-2 flex items-center justify-between px-1">
@@ -216,7 +216,7 @@ const SellerSidebar = () => {
                 {/* Active store highlight */}
                 <div className="mb-1.5 rounded-lg border border-white/[0.06] bg-white/[0.03] p-2.5">
                   <div className="flex items-center gap-2.5">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-rose-600/90 text-white text-sm font-bold">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-600/90 text-white text-sm font-bold">
                       {shopInitial}
                     </div>
                     <div className="min-w-0 flex-1">
@@ -232,7 +232,7 @@ const SellerSidebar = () => {
                         <span className="text-[10px] text-muted-foreground/50">Pro Plan</span>
                       </div>
                     </div>
-                    <Check size={13} className="shrink-0 text-rose-400" />
+                    <Check size={13} className="shrink-0 text-emerald-400" />
                   </div>
                 </div>
 
@@ -316,18 +316,18 @@ const SellerSidebar = () => {
                         isActive={isActive}
                         className={
                           isActive
-                            ? "bg-rose-600/10 text-rose-400 hover:bg-rose-600/15 hover:text-rose-400 font-medium transition-colors duration-150"
+                            ? "bg-emerald-600/12 text-emerald-400 hover:bg-emerald-600/16 hover:text-emerald-300 font-medium transition-colors duration-150"
                             : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/40 transition-colors duration-150"
                         }
                       >
                         <Link href={item.href} className="flex items-center gap-2.5">
                           <Icon
                             size={15}
-                            className={isActive ? "text-rose-400" : "text-sidebar-foreground/35"}
+                            className={isActive ? "text-emerald-400" : "text-sidebar-foreground/35"}
                           />
                           <span className="text-[13px]">{item.title}</span>
                           {isActive && (
-                            <span className="ml-auto h-1.5 w-1.5 rounded-full bg-rose-400 shrink-0" />
+                            <span className="ml-auto h-1.5 w-1.5 rounded-full bg-emerald-400 shrink-0" />
                           )}
                         </Link>
                       </SidebarMenuButton>

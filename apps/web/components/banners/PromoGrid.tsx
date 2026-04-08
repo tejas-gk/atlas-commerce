@@ -6,19 +6,19 @@ export default function PromoGrid() {
             <PromoBanner
                 title="Pharmacy at your doorstep!"
                 subtitle="Cough syrups, pain relief sprays & more"
-                bg="bg-teal-500"
+                bg="bg-[#0ea5a4]"
                 image="/pharma.png"
             />
             <PromoBanner
                 title="Pet care supplies at your door"
                 subtitle="Food, treats, toys & more"
-                bg="bg-yellow-400"
+                bg="bg-[#facc15]"
                 image="/pets.png"
             />
             <PromoBanner
                 title="No time for a diaper run?"
                 subtitle="Get baby care essentials"
-                bg="bg-gray-300"
+                bg="bg-[#d1d5db]"
                 image="/baby.png"
             />
         </div>

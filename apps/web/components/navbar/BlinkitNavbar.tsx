@@ -23,11 +23,11 @@ export default function BlinkitNavbar() {
     );
 
     return (
-        <header className="w-full border-b bg-white">
-            <div className="max-w-[1400px] mx-auto flex items-center gap-6 px-6 py-3">
+        <header className="sticky top-0 z-50 w-full border-b border-black/10 bg-[#f8d544]">
+            <div className="max-w-[1400px] mx-auto flex items-center gap-4 px-4 py-3 md:gap-6 md:px-6">
 
                 {/* Logo */}
-                <Link href="/" className="flex items-center">
+                <Link href="/" className="flex items-center shrink-0">
                     <span className="text-3xl font-bold text-[#F7C600] tracking-tight">
                         blink
                     </span>
@@ -37,23 +37,23 @@ export default function BlinkitNavbar() {
                 </Link>
 
                 {/* Location */}
-                <div className="flex flex-col leading-tight cursor-pointer">
+                <div className="hidden flex-col leading-tight cursor-pointer md:flex">
                     <span className="font-semibold text-black text-sm">
-                        Store Closed
+                        Delivery in 10 minutes
                     </span>
                     <div className="flex items-center gap-1 text-xs text-gray-600">
-                        <span>3-31-2666, near Vinaya Hospital...</span>
+                        <span>3-31-2666, near Vinaya Hospital</span>
                         <ChevronDown size={14} />
                     </div>
                 </div>
 
                 {/* Search */}
-                <div className="flex-1">
-                    <div className="flex items-center bg-gray-100 rounded-lg px-4 py-2">
+                <div className="flex-1 min-w-0">
+                    <div className="flex items-center rounded-xl border border-black/10 bg-white px-4 py-2.5 shadow-sm">
                         <Search className="text-gray-500" size={18} />
                         <input
                             type="text"
-                            placeholder='Search "butter"'
+                            placeholder='Search "milk", "chips", "fruits"'
                             className="bg-transparent outline-none w-full ml-2 text-sm text-black"
                         />
                     </div>
@@ -62,7 +62,7 @@ export default function BlinkitNavbar() {
                 {/* Wishlist Sheet */}
                 <Sheet>
                     <SheetTrigger asChild>
-                        <button className="relative">
+                        <button className="relative hidden md:block">
                             <Heart size={22} />
                             {state.wishlist.length > 0 && (
                                 <span className="absolute -top-2 -right-2 text-xs bg-red-500 text-white rounded-full px-2">
@@ -113,7 +113,7 @@ export default function BlinkitNavbar() {
                 {/* Cart Sheet */}
                 <Sheet>
                     <SheetTrigger asChild>
-                        <button className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-700 transition">
+                        <button className="flex items-center gap-2 rounded-lg bg-[#0c831f] px-3 py-2 text-white shadow-sm transition hover:bg-[#0a6f1a] md:px-4">
                             <ShoppingCart size={18} />
 
                             <div className="text-left leading-tight">

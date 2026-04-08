@@ -1,8 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import {DistrictNavbar} from "./DistrictNavbar";
-import StoresNavbar from "./StoresNavbar";
+import BlinkitNavbar from "./BlinkitNavbar";
 import { ArrowLeft } from "lucide-react";
 import HeaderBottom from "./header-bottom";
 
@@ -10,22 +9,19 @@ export default function Navbar() {
     const pathname = usePathname();
     const router = useRouter();
 
-    const isHome = pathname === "/";
+    const isAuth = ["/login", "/signup", "/forgot-password"].some((route) =>
+        pathname.startsWith(route)
+    );
     const isMovies = pathname.startsWith("/movies");
     const isEvents = pathname.startsWith("/events");
     const isPlay = pathname.startsWith("/play");
 
-    const isStores =
-        pathname.startsWith("/stores") ||
-        pathname.startsWith("/product") ||
-        pathname.startsWith("/category");
-
-    if (isHome) {
-        return <DistrictNavbar />;
+    if (isAuth) {
+        return null;
     }
 
-    if (isStores) {
-        return <StoresNavbar />;
+    if (!isMovies && !isEvents && !isPlay) {
+        return <BlinkitNavbar />;
     }
 
     if (isMovies) {
@@ -70,7 +66,7 @@ function SectionNavbar({
                 <h1 className="font-semibold text-lg">{title}</h1>
 
             </div>
-            <HeaderBottom/>
+            <HeaderBottom />
         </header>
     );
 }

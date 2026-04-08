@@ -192,7 +192,7 @@ export function SellerSiteHeader() {
             >
                 <Link href="/dashboard/notifications">
                     <BellIcon size={16} />
-                    <Badge className="absolute -top-1 -right-1 h-4 w-4 rounded-full p-0 flex items-center justify-center text-[10px] bg-rose-600/90 border-0">
+                    <Badge className="absolute -top-1 -right-1 h-4 w-4 rounded-full p-0 flex items-center justify-center text-[10px] bg-emerald-600/90 border-0">
                         3
                     </Badge>
                 </Link>
@@ -204,10 +204,10 @@ export function SellerSiteHeader() {
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="rounded-full h-8 w-8 ring-1 ring-border/40 hover:ring-rose-500/40 transition-all duration-150"
+                        className="rounded-full h-8 w-8 ring-1 ring-border/40 hover:ring-emerald-500/40 transition-all duration-150"
                     >
                         <Avatar className="h-7 w-7">
-                            <AvatarFallback className="bg-rose-600/90 text-white text-xs font-semibold">
+                            <AvatarFallback className="bg-emerald-600/90 text-white text-xs font-semibold">
                                 {sellerInitial}
                             </AvatarFallback>
                         </Avatar>
@@ -217,24 +217,24 @@ export function SellerSiteHeader() {
                 <DropdownMenuContent
                     align="end"
                     sideOffset={8}
-                    className="w-72 rounded-xl border border-white/[0.08] bg-[#0e1117] p-2 shadow-2xl shadow-black/60 ring-1 ring-white/[0.04]"
+                    className="w-72 rounded-xl border border-white/[0.08] bg-[#101926] p-2 shadow-2xl shadow-black/60 ring-1 ring-white/[0.04]"
                 >
                     {/* ── Identity card ── */}
                     <div className="flex items-center gap-3 rounded-lg border border-white/[0.06] bg-white/[0.03] p-3 mb-2">
                         <div className="relative shrink-0">
                             <Avatar className="h-10 w-10">
-                                <AvatarFallback className="bg-rose-600/90 text-white text-sm font-semibold">
+                                <AvatarFallback className="bg-emerald-600/90 text-white text-sm font-semibold">
                                     {sellerInitial}
                                 </AvatarFallback>
                             </Avatar>
                             {/* Online indicator */}
-                            <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-[#0e1117] bg-emerald-400" />
+                            <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-[#101926] bg-emerald-400" />
                         </div>
                         <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2">
                                 <p className="text-sm font-semibold text-foreground truncate">{sellerName}</p>
-                                <span className="shrink-0 inline-flex items-center gap-1 rounded-full border border-rose-500/30 bg-rose-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-rose-400">
-                                    <Zap size={8} className="fill-rose-400" />
+                                <span className="shrink-0 inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-300">
+                                    <Zap size={8} className="fill-emerald-300" />
                                     Pro
                                 </span>
                             </div>

@@ -23,7 +23,6 @@ const CustomProperties = ({ control, errors }: any) => {
               rules={{ required: "Property name is required" }}
               render={({ field }) => (
                 <Input
-                  label="Property Name"
                   placeholder="e.g., Color, Size, Brand"
                   {...field}
                 />
@@ -35,7 +34,6 @@ const CustomProperties = ({ control, errors }: any) => {
               rules={{ required: "Value is required" }}
               render={({ field }) => (
                 <Input
-                  label="Value"
                   placeholder="e.g., Red, Large, Apple"
                   {...field}
                 />

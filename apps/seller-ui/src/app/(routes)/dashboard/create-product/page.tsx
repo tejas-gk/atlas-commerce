@@ -149,7 +149,7 @@ const Page = () => {
         <Button
           type="submit"
           disabled={loading}
-          className="gap-2 bg-rose-600 hover:bg-rose-700 text-white font-semibold border-0 disabled:opacity-60"
+          className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold border-0 disabled:opacity-60"
         >
           {loading ? "Creating…" : "Create Product"}
         </Button>
@@ -200,7 +200,7 @@ const Page = () => {
                 <Label className="text-xs font-medium text-muted-foreground">Product Title *</Label>
                 <Input
                   placeholder="Enter product title"
-                  className="h-9 border-white/[0.08] bg-white/[0.03] focus-visible:border-rose-500/60 focus-visible:bg-white/[0.05]"
+                  className="h-9 border-white/[0.08] bg-white/[0.03] focus-visible:border-emerald-500/60 focus-visible:bg-white/[0.05]"
                   {...register("title", { required: "Title is required" })}
                 />
                 {errors.title && <p className="text-red-400 text-xs">{errors.title.message as string}</p>}
@@ -219,7 +219,7 @@ const Page = () => {
                     render={({ field }) => (
                       <select
                         {...field}
-                        className="w-full h-9 px-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-foreground text-sm outline-none focus:border-rose-500/60 transition-colors"
+                        className="w-full h-9 px-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-foreground text-sm outline-none focus:border-emerald-500/60 transition-colors"
                       >
                         <option value="" className="bg-card">Select Category</option>
                         {categories?.map((c: string) => (
@@ -238,7 +238,7 @@ const Page = () => {
                 <Textarea
                   rows={5}
                   placeholder="Enter product description for quick view"
-                  className="border-white/[0.08] bg-white/[0.03] resize-none focus-visible:border-rose-500/60 focus-visible:bg-white/[0.05]"
+                  className="border-white/[0.08] bg-white/[0.03] resize-none focus-visible:border-emerald-500/60 focus-visible:bg-white/[0.05]"
                   {...register("short_description", {
                     required: "Description is required",
                     validate: (v) => {
@@ -260,7 +260,7 @@ const Page = () => {
                   render={({ field }) => (
                     <select
                       {...field}
-                      className="w-full h-9 px-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-foreground text-sm outline-none focus:border-rose-500/60 transition-colors"
+                      className="w-full h-9 px-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-foreground text-sm outline-none focus:border-emerald-500/60 transition-colors"
                     >
                       <option value="" className="bg-card">Select Subcategory</option>
                       {subcategories?.map((s: string) => (
@@ -277,7 +277,7 @@ const Page = () => {
                 <Label className="text-xs font-medium text-muted-foreground">Tags * <span className="text-muted-foreground/50">(comma separated)</span></Label>
                 <Input
                   placeholder="apple, flagship, new"
-                  className="h-9 border-white/[0.08] bg-white/[0.03] focus-visible:border-rose-500/60 focus-visible:bg-white/[0.05]"
+                  className="h-9 border-white/[0.08] bg-white/[0.03] focus-visible:border-emerald-500/60 focus-visible:bg-white/[0.05]"
                   {...register("tags", { required: "Separate tags with a comma" })}
                 />
                 {errors.tags && <p className="text-red-400 text-xs">{errors.tags.message as string}</p>}
@@ -288,7 +288,7 @@ const Page = () => {
                 <Label className="text-xs font-medium text-muted-foreground">Warranty *</Label>
                 <Input
                   placeholder="1 Year / No Warranty"
-                  className="h-9 border-white/[0.08] bg-white/[0.03] focus-visible:border-rose-500/60 focus-visible:bg-white/[0.05]"
+                  className="h-9 border-white/[0.08] bg-white/[0.03] focus-visible:border-emerald-500/60 focus-visible:bg-white/[0.05]"
                   {...register("warranty", { required: "Warranty is required" })}
                 />
               </div>
@@ -305,12 +305,12 @@ const Page = () => {
                       formOnChange(e);
                     }}
                     value={watch("slug") ?? ""}
-                    className="h-9 pr-10 border-white/[0.08] bg-white/[0.03] focus-visible:border-rose-500/60 focus-visible:bg-white/[0.05]"
+                    className="h-9 pr-10 border-white/[0.08] bg-white/[0.03] focus-visible:border-emerald-500/60 focus-visible:bg-white/[0.05]"
                     {...restSlugProps}
                   />
                   <button
                     type="button"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 flex h-6 w-6 items-center justify-center rounded-md bg-rose-600/80 hover:bg-rose-600 transition-colors text-white"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 flex h-6 w-6 items-center justify-center rounded-md bg-emerald-600/80 hover:bg-emerald-600 transition-colors text-white"
                     onClick={async () => {
                       const title = getValues("title");
                       if (!title) { toast.error("Enter a title first"); return; }
@@ -335,7 +335,7 @@ const Page = () => {
                 <Label className="text-xs font-medium text-muted-foreground">Brand</Label>
                 <Input
                   placeholder="Apple"
-                  className="h-9 border-white/[0.08] bg-white/[0.03] focus-visible:border-rose-500/60 focus-visible:bg-white/[0.05]"
+                  className="h-9 border-white/[0.08] bg-white/[0.03] focus-visible:border-emerald-500/60 focus-visible:bg-white/[0.05]"
                   {...register("brand")}
                 />
               </div>
@@ -389,7 +389,7 @@ const Page = () => {
                 <Input
                   type="number"
                   placeholder="0"
-                  className="h-9 border-white/[0.08] bg-white/[0.03] focus-visible:border-rose-500/60 focus-visible:bg-white/[0.05]"
+                  className="h-9 border-white/[0.08] bg-white/[0.03] focus-visible:border-emerald-500/60 focus-visible:bg-white/[0.05]"
                   {...register("regular_price", {
                     valueAsNumber: true,
                     min: { value: 1, message: "Must be at least 1" },
@@ -405,7 +405,7 @@ const Page = () => {
                 <Input
                   type="number"
                   placeholder="0"
-                  className="h-9 border-white/[0.08] bg-white/[0.03] focus-visible:border-rose-500/60 focus-visible:bg-white/[0.05]"
+                  className="h-9 border-white/[0.08] bg-white/[0.03] focus-visible:border-emerald-500/60 focus-visible:bg-white/[0.05]"
                   {...register("sale_price", {
                     required: "Sale price is required",
                     valueAsNumber: true,
@@ -426,7 +426,7 @@ const Page = () => {
                 <Input
                   type="number"
                   placeholder="100"
-                  className="h-9 border-white/[0.08] bg-white/[0.03] focus-visible:border-rose-500/60 focus-visible:bg-white/[0.05]"
+                  className="h-9 border-white/[0.08] bg-white/[0.03] focus-visible:border-emerald-500/60 focus-visible:bg-white/[0.05]"
                   {...register("stock", {
                     required: "Stock is required",
                     valueAsNumber: true,
@@ -447,7 +447,7 @@ const Page = () => {
                 <Label className="text-xs font-medium text-muted-foreground">Video URL <span className="text-muted-foreground/50">(YouTube embed)</span></Label>
                 <Input
                   placeholder="https://www.youtube.com/embed/xyz123"
-                  className="h-9 border-white/[0.08] bg-white/[0.03] focus-visible:border-rose-500/60 focus-visible:bg-white/[0.05]"
+                  className="h-9 border-white/[0.08] bg-white/[0.03] focus-visible:border-emerald-500/60 focus-visible:bg-white/[0.05]"
                   {...register("video_url", {
                     pattern: {
                       value: /^https:\/\/(www\.)?youtube\.com\/embed\/[a-zA-Z0-9_-]+$/,
@@ -464,7 +464,7 @@ const Page = () => {
                 <select
                   {...register("cash_on_delivery", { required: "Required" })}
                   defaultValue="yes"
-                  className="w-full h-9 px-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-foreground text-sm outline-none focus:border-rose-500/60 transition-colors"
+                  className="w-full h-9 px-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-foreground text-sm outline-none focus:border-emerald-500/60 transition-colors"
                 >
                   <option value="yes" className="bg-card">Yes</option>
                   <option value="no" className="bg-card">No</option>
@@ -486,7 +486,7 @@ const Page = () => {
                       key={code.id}
                       type="button"
                       className={`px-3 py-1 rounded-md text-xs font-semibold border transition-colors ${watch("discountCodes")?.includes(code.id)
-                          ? "bg-rose-600/90 text-white border-rose-500/60"
+                          ? "bg-emerald-600/90 text-white border-emerald-500/60"
                           : "bg-white/[0.03] text-muted-foreground border-white/[0.08] hover:border-border hover:text-foreground"
                         }`}
                       onClick={() => {
@@ -512,3 +512,4 @@ const Page = () => {
 };
 
 export default Page;
+

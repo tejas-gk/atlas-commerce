@@ -24,7 +24,6 @@ const CustomSpecifications = ({ control, errors }: any) => {
               rules={{ required: "Specificion name is required" }}
               render={({ field }) => (
                 <Input
-                  label="Specification Name"
                   placeholder="e.g., Battery Life, Weight, Material"
                   {...field}
                 />
@@ -36,7 +35,6 @@ const CustomSpecifications = ({ control, errors }: any) => {
               rules={{ required: "Value is required" }}
               render={({ field }) => (
                 <Input
-                  label="Value"
                   placeholder="e.g., 4000mAh, 1.5kg, Plastic"
                   {...field}
                 />

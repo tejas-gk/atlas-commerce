@@ -22,7 +22,7 @@ import { Card } from "@workspace/ui/components/card";
 import useSeller from "@/hooks/useSeller";
 
 const KPI_CARDS = [
-  { label: "Active Events", value: "8", sub: "running right now", trend: "up" as const, Icon: Zap, iconCls: "bg-rose-500/15 text-rose-400" },
+  { label: "Active Events", value: "8", sub: "running right now", trend: "up" as const, Icon: Zap, iconCls: "bg-emerald-500/15 text-emerald-400" },
   { label: "Ending Soon", value: "3", sub: "within 48 hours", trend: "down" as const, Icon: Clock, iconCls: "bg-amber-500/15 text-amber-400" },
   { label: "Event Revenue", value: "$12,840", sub: "+14.2% this week", trend: "up" as const, Icon: TrendingUp, iconCls: "bg-emerald-500/15 text-emerald-400" },
   { label: "Avg Discount", value: "32%", sub: "across all events", trend: "up" as const, Icon: Tag, iconCls: "bg-violet-500/15 text-violet-400" },
@@ -101,7 +101,7 @@ export default function AllEventsPage() {
           <div className="min-w-0">
             <Link
               href={`${process.env.NEXT_PUBLIC_USER_UI_LINK}/product/${row.original.slug}`}
-              className="text-foreground/90 hover:text-rose-400 transition-colors text-sm font-medium truncate block max-w-[180px]"
+              className="text-foreground/90 hover:text-emerald-400 transition-colors text-sm font-medium truncate block max-w-[180px]"
             >
               {row.original.title?.length > 28 ? `${row.original.title.substring(0, 28)}…` : row.original.title}
             </Link>
@@ -120,7 +120,7 @@ export default function AllEventsPage() {
         return (
           <div>
             <p className="text-foreground font-semibold text-sm">${row.original.sale_price}</p>
-            {discount > 0 && <span className="text-[10px] text-rose-400 font-medium">{discount}% off</span>}
+            {discount > 0 && <span className="text-[10px] text-emerald-400 font-medium">{discount}% off</span>}
           </div>
         );
       },
@@ -171,7 +171,7 @@ export default function AllEventsPage() {
           <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" asChild>
             <Link href={`${process.env.NEXT_PUBLIC_USER_UI_LINK}/product/${row.original.slug}`}><Eye size={14} /></Link>
           </Button>
-          <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-rose-400"
+          <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-emerald-400"
             onClick={() => { setAnalyticsData(row.original); setShowAnalytics(true); }}>
             <BarChart size={14} />
           </Button>
@@ -202,7 +202,7 @@ export default function AllEventsPage() {
           <h1 className="text-2xl font-semibold tracking-tight">All Events</h1>
           <p className="text-sm text-muted-foreground mt-0.5">Manage time-limited deals and flash events</p>
         </div>
-        <Button asChild size="sm" className="gap-1.5 bg-rose-600 hover:bg-rose-700 text-white border-0 h-9 px-4 font-semibold">
+        <Button asChild size="sm" className="gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white border-0 h-9 px-4 font-semibold">
           <Link href="/dashboard/create-event"><Plus size={14} /> Create Event</Link>
         </Button>
       </div>
@@ -257,7 +257,7 @@ export default function AllEventsPage() {
 
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
-            <div className="w-8 h-8 rounded-full border-2 border-rose-500/30 border-t-rose-500 animate-spin" />
+            <div className="w-8 h-8 rounded-full border-2 border-emerald-500/30 border-t-emerald-500 animate-spin" />
           </div>
         ) : (
           <table className="w-full text-sm">
@@ -335,3 +335,4 @@ export default function AllEventsPage() {
     </div>
   );
 }
+

@@ -22,7 +22,7 @@ import { Card } from "@workspace/ui/components/card";
 import useSeller from "@/hooks/useSeller";
 
 const KPI_CARDS = [
-  { label: "Total Products", value: "128", sub: "+12 this month", trend: "up" as const, Icon: Package, iconCls: "bg-rose-500/15 text-rose-400" },
+  { label: "Total Products", value: "128", sub: "+12 this month", trend: "up" as const, Icon: Package, iconCls: "bg-emerald-500/15 text-emerald-400" },
   { label: "Total Revenue", value: "$48,290", sub: "+8.3% vs last month", trend: "up" as const, Icon: TrendingUp, iconCls: "bg-emerald-500/15 text-emerald-400" },
   { label: "Low Stock", value: "7", sub: "items below threshold", trend: "down" as const, Icon: AlertTriangle, iconCls: "bg-amber-500/15 text-amber-400" },
   { label: "Avg Rating", value: "4.7 / 5", sub: "across all products", trend: "up" as const, Icon: Star, iconCls: "bg-violet-500/15 text-violet-400" },
@@ -88,9 +88,9 @@ export default function AllProductsPage() {
           <div className="min-w-0">
             <Link
               href={`${process.env.NEXT_PUBLIC_USER_UI_LINK}/product/${row.original.slug}`}
-              className="text-foreground/90 hover:text-rose-400 transition-colors text-sm font-medium truncate block max-w-[200px]"
+              className="text-foreground/90 hover:text-emerald-400 transition-colors text-sm font-medium truncate block max-w-[200px]"
             >
-              {row.original.title?.length > 32 ? `${row.original.title.substring(0, 32)}â€¦` : row.original.title}
+              {row.original.title?.length > 32 ? `${row.original.title.substring(0, 32)}...` : row.original.title}
             </Link>
             <p className="text-[11px] text-muted-foreground/50 mt-0.5">{row.original.category}</p>
           </div>
@@ -157,7 +157,7 @@ export default function AllProductsPage() {
           <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" asChild>
             <Link href={`${process.env.NEXT_PUBLIC_USER_UI_LINK}/product/${row.original.slug}`}><Eye size={14} /></Link>
           </Button>
-          <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-rose-400"
+          <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-emerald-400"
             onClick={() => { setAnalyticsData(row.original); setShowAnalytics(true); }}>
             <BarChart size={14} />
           </Button>
@@ -188,7 +188,7 @@ export default function AllProductsPage() {
           <h1 className="text-2xl font-semibold tracking-tight">All Products</h1>
           <p className="text-sm text-muted-foreground mt-0.5">Manage and track your product catalog</p>
         </div>
-        <Button asChild size="sm" className="gap-1.5 bg-rose-600 hover:bg-rose-700 text-white border-0 h-9 px-4 font-semibold">
+        <Button asChild size="sm" className="gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white border-0 h-9 px-4 font-semibold">
           <Link href="/dashboard/create-product"><Plus size={14} /> Add Product</Link>
         </Button>
       </div>
@@ -222,8 +222,8 @@ export default function AllProductsPage() {
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`px-3 h-7 rounded-md text-xs font-medium transition-all duration-150 ${activeTab === tab
-                    ? "bg-card text-foreground border border-white/[0.08] shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
+                  ? "bg-card text-foreground border border-white/[0.08] shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
                   }`}
               >
                 {tab}
@@ -235,7 +235,7 @@ export default function AllProductsPage() {
             <Input
               value={globalFilter}
               onChange={(e) => setGlobalFilter(e.target.value)}
-              placeholder="Search productsâ€¦"
+              placeholder="Search products..."
               className="pl-8 h-8 text-sm border-white/[0.08] bg-white/[0.03]"
             />
           </div>
@@ -244,7 +244,7 @@ export default function AllProductsPage() {
 
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
-            <div className="w-8 h-8 rounded-full border-2 border-rose-500/30 border-t-rose-500 animate-spin" />
+            <div className="w-8 h-8 rounded-full border-2 border-emerald-500/30 border-t-emerald-500 animate-spin" />
           </div>
         ) : (
           <table className="w-full text-sm">
@@ -322,3 +322,4 @@ export default function AllProductsPage() {
     </div>
   );
 }
+

@@ -11,12 +11,14 @@ export default function PromoBanner({
     bg,
     image,
 }: PromoBannerProps) {
+    const isLight = bg.includes("#facc15") || bg.includes("#d1d5db");
+
     return (
-        <div className={`${bg} rounded-xl p-6 flex justify-between items-center`}>
+        <div className={`${bg} rounded-xl border border-black/10 p-5 md:p-6 flex justify-between items-center`}>
             <div>
-                <h3 className="text-lg font-bold text-white mb-1">{title}</h3>
-                <p className="text-sm text-white/90 mb-3">{subtitle}</p>
-                <button className="bg-white text-black text-sm px-3 py-1 rounded-md">
+                <h3 className={`mb-1 text-lg font-bold ${isLight ? "text-black" : "text-white"}`}>{title}</h3>
+                <p className={`mb-3 text-sm ${isLight ? "text-black/75" : "text-white/90"}`}>{subtitle}</p>
+                <button className={`rounded-md px-3 py-1 text-sm font-semibold ${isLight ? "bg-black text-white" : "bg-white text-black"}`}>
                     Order Now
                 </button>
             </div>

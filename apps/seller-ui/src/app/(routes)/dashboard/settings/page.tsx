@@ -105,8 +105,8 @@ const SettingsPage = () => {
     {
       key: "lowStock",
       icon: Bell,
-      iconColor: "text-rose-400",
-      iconBg: "bg-rose-500/15",
+      iconColor: "text-emerald-400",
+      iconBg: "bg-emerald-500/15",
       title: "Low Stock Alert Threshold",
       description: "Get notified when stock falls below the set limit.",
     },
@@ -207,7 +207,7 @@ const SettingsPage = () => {
                           </label>
                           <select
                             {...register("notificationPreference", { required: "Required" })}
-                            className="w-full h-9 px-3 text-sm border border-white/[0.08] bg-white/[0.03] rounded-md text-foreground outline-none focus:border-rose-500/50 transition-colors"
+                            className="w-full h-9 px-3 text-sm border border-white/[0.08] bg-white/[0.03] rounded-md text-foreground outline-none focus:border-emerald-500/50 transition-colors"
                             onClick={(e) => e.stopPropagation()}
                           >
                             <option value="email" className="bg-card">Email</option>
@@ -221,7 +221,7 @@ const SettingsPage = () => {
                       <Button
                         type="submit"
                         size="sm"
-                        className="gap-2 bg-rose-600 hover:bg-rose-700 text-white border-0"
+                        className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white border-0"
                       >
                         <Save size={14} />
                         Save Changes

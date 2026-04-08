@@ -46,23 +46,22 @@ const Signup = () => {
   }, [seller?.id]);
 
   if (isLoading) {
-    return <div className="min-h-screen bg-[#f1f1f1]" />;
+    return <div className="min-h-screen bg-[#0b121a]" />;
   }
 
   return (
-    <div className="w-full bg-[#f1f1f1] flex flex-col items-center pt-10 min-h-screen">
+    <div className="w-full bg-[#0b121a] text-foreground flex flex-col items-center pt-10 min-h-screen px-4">
       <div className="relative flex items-center justify-between md:w-[50%] mb-8">
-        <div className="absolute top-[25%] left-0 w-[80%] md:w-[90%] h-1 bg-gray-300 z-10" />
+        <div className="absolute top-[25%] left-0 w-[80%] md:w-[90%] h-1 bg-white/10 z-10" />
         {[1, 2, 3].map((step) => (
           <div key={step}>
             <div
-              className={`w-10 h-10 relative z-20 flex items-center justify-center rounded-full text-white font-bold ${
-                step <= activeStep ? "bg-blue-600" : "bg-gray-300"
-              }`}
+              className={`w-10 h-10 relative z-20 flex items-center justify-center rounded-full text-white font-bold ${step <= activeStep ? "bg-emerald-600" : "bg-white/20"
+                }`}
             >
               {step}
             </div>
-            <span className="ml-[-15px]">
+            <span className="ml-[-15px] text-xs text-muted-foreground">
               {step === 1
                 ? "Login"
                 : step === 2
@@ -73,20 +72,20 @@ const Signup = () => {
         ))}
       </div>
 
-      <div className="md:w-[480px] p-8 bg-white shadow rounded-lg">
+      <div className="md:w-[480px] p-8 bg-card/70 border border-border/60 shadow-2xl rounded-xl backdrop-blur-sm">
         {!seller?.id || isError ? (
           <div className="text-center">
             <h3 className="text-2xl font-semibold mb-4">
               Start from your buyer account
             </h3>
-            <p className="text-gray-500 mb-6">
+            <p className="text-muted-foreground mb-6">
               Sign in with the account you already use as a buyer. Once you are
               logged in, you can create your first shop and we will upgrade that
               same account to seller automatically.
             </p>
             <Link
               href="/login"
-              className="inline-flex items-center justify-center w-full text-lg bg-black text-white py-2 rounded-lg"
+              className="inline-flex items-center justify-center w-full text-lg bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-lg transition-colors"
             >
               Login with Existing Account
             </Link>
@@ -98,14 +97,14 @@ const Signup = () => {
         ) : null}
 
         {seller?.id && hasShop ? (
-          <div className="text-center mt-8 pt-8 border-t border-gray-200">
+          <div className="text-center mt-8 pt-8 border-t border-border/60">
             <h3 className="text-2xl font-semibold">Withdraw Method</h3>
-            <p className="text-gray-500 mt-3 mb-6">
+            <p className="text-muted-foreground mt-3 mb-6">
               You can keep adding shops under the same seller account and switch
               between them from the dashboard sidebar.
             </p>
             <button
-              className="w-full m-auto flex items-center justify-center gap-3 text-lg bg-[#334155] text-white py-2 rounded-lg"
+              className="w-full m-auto flex items-center justify-center gap-3 text-lg bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-lg transition-colors"
               onClick={connectStripe}
             >
               Connect Stripe <Home />

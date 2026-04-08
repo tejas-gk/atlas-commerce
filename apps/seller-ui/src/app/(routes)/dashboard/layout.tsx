@@ -9,8 +9,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       <SellerSidebar />
       <SidebarInset>
         <SellerSiteHeader />
-        <main className="flex flex-1 flex-col gap-4 p-6">
-          {children}
+        <main className="flex flex-1 flex-col p-4 md:p-6">
+          <div className="mx-auto w-full max-w-[1600px]">
+            {children}
+          </div>
         </main>
       </SidebarInset>
     </SidebarProvider>

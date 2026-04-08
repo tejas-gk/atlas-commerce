@@ -81,7 +81,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
     return (
         <div
             className={cn(
-                "relative min-h-svh overflow-hidden bg-[#080b14] flex flex-col items-center justify-center px-4 py-12",
+                "relative min-h-svh overflow-hidden bg-[#0a1117] flex flex-col items-center justify-center px-4 py-12",
                 className
             )}
             {...props}
@@ -112,15 +112,15 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
             {/* Aurora mesh background */}
             <div
                 className="pointer-events-none absolute -top-24 left-[20%] h-[500px] w-[500px] rounded-full opacity-[0.07]"
-                style={{ background: "radial-gradient(circle, #f43f5e 0%, transparent 70%)", animation: "aurora-drift 25s ease-in-out infinite" }}
+                style={{ background: "radial-gradient(circle, #16a34a 0%, transparent 70%)", animation: "aurora-drift 25s ease-in-out infinite" }}
             />
             <div
                 className="pointer-events-none absolute bottom-[-15%] right-[15%] h-[450px] w-[450px] rounded-full opacity-[0.05]"
-                style={{ background: "radial-gradient(circle, #ef4444 0%, transparent 70%)", animation: "aurora-drift 30s ease-in-out infinite reverse" }}
+                style={{ background: "radial-gradient(circle, #0891b2 0%, transparent 70%)", animation: "aurora-drift 30s ease-in-out infinite reverse" }}
             />
             <div
                 className="pointer-events-none absolute top-[45%] left-[55%] h-[400px] w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.04]"
-                style={{ background: "radial-gradient(circle, #fb7185 0%, transparent 70%)", animation: "aurora-drift 35s ease-in-out infinite" }}
+                style={{ background: "radial-gradient(circle, #22c55e 0%, transparent 70%)", animation: "aurora-drift 35s ease-in-out infinite" }}
             />
 
             {/* Grid texture */}
@@ -180,7 +180,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
                                     required
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
-                                    className="h-11 border-white/[0.08] bg-white/[0.04] text-white transition-all duration-200 placeholder:text-slate-600 focus-visible:border-rose-500/40 focus-visible:bg-white/[0.06] focus-visible:ring-rose-500/10"
+                                    className="h-11 border-white/[0.08] bg-white/[0.04] text-white transition-all duration-200 placeholder:text-slate-600 focus-visible:border-emerald-500/40 focus-visible:bg-white/[0.06] focus-visible:ring-emerald-500/10"
                                 />
                             </div>
 
@@ -194,7 +194,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="h-11 border-white/[0.08] bg-white/[0.04] text-white transition-all duration-200 placeholder:text-slate-600 focus-visible:border-rose-500/40 focus-visible:bg-white/[0.06] focus-visible:ring-rose-500/10"
+                                    className="h-11 border-white/[0.08] bg-white/[0.04] text-white transition-all duration-200 placeholder:text-slate-600 focus-visible:border-emerald-500/40 focus-visible:bg-white/[0.06] focus-visible:ring-emerald-500/10"
                                 />
                             </div>
 
@@ -204,7 +204,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
                                 <Button
                                     type="submit"
                                     disabled={loading}
-                                    className="relative mt-1 h-11 w-full overflow-hidden border border-rose-500/20 bg-[#1a0f10] text-sm font-semibold text-rose-200 shadow-[inset_0_1px_0_rgba(244,63,94,0.1)] transition-all duration-200 hover:border-rose-500/30 hover:bg-[#1f1214] hover:text-white hover:shadow-[inset_0_1px_0_rgba(244,63,94,0.15),0_0_20px_rgba(244,63,94,0.08)] disabled:opacity-60"
+                                    className="relative mt-1 h-11 w-full overflow-hidden border border-emerald-500/30 bg-[#0f1c17] text-sm font-semibold text-emerald-100 shadow-[inset_0_1px_0_rgba(16,185,129,0.12)] transition-all duration-200 hover:border-emerald-400/40 hover:bg-[#12231d] hover:text-white hover:shadow-[inset_0_1px_0_rgba(16,185,129,0.18),0_0_24px_rgba(16,185,129,0.12)] disabled:opacity-60"
                                 >
                                     {loading ? "Sending OTP…" : "Continue"}
                                 </Button>
@@ -228,7 +228,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
                                     required
                                     value={otp}
                                     onChange={(e) => setOtp(e.target.value)}
-                                    className="h-11 border-white/[0.08] bg-white/[0.04] text-white transition-all duration-200 placeholder:text-slate-600 focus-visible:border-rose-500/40 focus-visible:bg-white/[0.06] focus-visible:ring-rose-500/10"
+                                    className="h-11 border-white/[0.08] bg-white/[0.04] text-white transition-all duration-200 placeholder:text-slate-600 focus-visible:border-emerald-500/40 focus-visible:bg-white/[0.06] focus-visible:ring-emerald-500/10"
                                 />
                             </div>
 
@@ -243,7 +243,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
                                         required
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        className="h-11 border-white/[0.08] bg-white/[0.04] pr-10 text-white transition-all duration-200 placeholder:text-slate-600 focus-visible:border-rose-500/40 focus-visible:bg-white/[0.06] focus-visible:ring-rose-500/10"
+                                        className="h-11 border-white/[0.08] bg-white/[0.04] pr-10 text-white transition-all duration-200 placeholder:text-slate-600 focus-visible:border-emerald-500/40 focus-visible:bg-white/[0.06] focus-visible:ring-emerald-500/10"
                                     />
                                     <button
                                         type="button"
@@ -276,7 +276,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
                                     required
                                     value={phone}
                                     onChange={(e) => setPhone(e.target.value)}
-                                    className="h-11 border-white/[0.08] bg-white/[0.04] text-white transition-all duration-200 placeholder:text-slate-600 focus-visible:border-rose-500/40 focus-visible:bg-white/[0.06] focus-visible:ring-rose-500/10"
+                                    className="h-11 border-white/[0.08] bg-white/[0.04] text-white transition-all duration-200 placeholder:text-slate-600 focus-visible:border-emerald-500/40 focus-visible:bg-white/[0.06] focus-visible:ring-emerald-500/10"
                                 />
                             </div>
 
@@ -289,7 +289,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
                                     required
                                     value={country}
                                     onChange={(e) => setCountry(e.target.value)}
-                                    className="h-11 border-white/[0.08] bg-white/[0.04] text-white transition-all duration-200 placeholder:text-slate-600 focus-visible:border-rose-500/40 focus-visible:bg-white/[0.06] focus-visible:ring-rose-500/10"
+                                    className="h-11 border-white/[0.08] bg-white/[0.04] text-white transition-all duration-200 placeholder:text-slate-600 focus-visible:border-emerald-500/40 focus-visible:bg-white/[0.06] focus-visible:ring-emerald-500/10"
                                 />
                             </div>
 
@@ -298,7 +298,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
                             <Button
                                 type="submit"
                                 disabled={loading}
-                                className="relative mt-1 h-11 w-full overflow-hidden border border-rose-500/20 bg-[#1a0f10] text-sm font-semibold text-rose-200 shadow-[inset_0_1px_0_rgba(244,63,94,0.1)] transition-all duration-200 hover:border-rose-500/30 hover:bg-[#1f1214] hover:text-white hover:shadow-[inset_0_1px_0_rgba(244,63,94,0.15),0_0_20px_rgba(244,63,94,0.08)] disabled:opacity-60"
+                                className="relative mt-1 h-11 w-full overflow-hidden border border-emerald-500/30 bg-[#0f1c17] text-sm font-semibold text-emerald-100 shadow-[inset_0_1px_0_rgba(16,185,129,0.12)] transition-all duration-200 hover:border-emerald-400/40 hover:bg-[#12231d] hover:text-white hover:shadow-[inset_0_1px_0_rgba(16,185,129,0.18),0_0_24px_rgba(16,185,129,0.12)] disabled:opacity-60"
                             >
                                 {loading ? "Verifying…" : "Create account"}
                             </Button>

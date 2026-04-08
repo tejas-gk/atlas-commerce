@@ -175,8 +175,10 @@ const Page = () => {
           <div className="w-full flex gap-6">
             {/* Product Title Input */}
             <div className="w-2/4">
+              <label className="block font-semibold text-gray-300 mb-1">
+                Product Title *
+              </label>
               <Input
-                label="Product Title *"
                 placeholder="Enter product title"
                 {...register("title", { required: "Title is required" })}
               />
@@ -187,11 +189,12 @@ const Page = () => {
               )}
 
               <div className="mt-2">
-                <Input
-                  type="textarea"
+                <label className="block font-semibold text-gray-300 mb-1">
+                  Short Description * (Max 150 words)
+                </label>
+                <textarea
                   rows={7}
-                  cols={10}
-                  label="Short Description * (Max 150 words)"
+                  className="w-full border outline-none border-gray-700 bg-transparent p-2 rounded-md text-white"
                   placeholder="Enter product description for quick view"
                   {...register("short_description", {
                     required: "Description is required",
@@ -212,8 +215,10 @@ const Page = () => {
               </div>
 
               <div className="mt-2">
+                <label className="block font-semibold text-gray-300 mb-1">
+                  Tags *
+                </label>
                 <Input
-                  label="Tags *"
                   placeholder="apple,flagship"
                   {...register("tags", {
                     required: "Seperate related products tags with a coma,",
@@ -241,8 +246,10 @@ const Page = () => {
               </div>
 
               <div className="mt-2">
+                <label className="block font-semibold text-gray-300 mb-1">
+                  Warranty *
+                </label>
                 <Input
-                  label="Warranty *"
                   placeholder="1 Year / No Warranty"
                   {...register("warranty", {
                     required: "Warranty is required!",
@@ -257,8 +264,10 @@ const Page = () => {
 
               <div className="mt-2">
                 <div className="relative">
+                  <label className="block font-semibold text-gray-300 mb-1">
+                    Slug *
+                  </label>
                   <Input
-                    label="Slug *"
                     placeholder="product_slug"
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       setSlugValue(e.target.value);
@@ -327,8 +336,10 @@ const Page = () => {
               </div>
 
               <div className="mt-2">
+                <label className="block font-semibold text-gray-300 mb-1">
+                  Brand
+                </label>
                 <Input
-                  label="Brand"
                   placeholder="Apple"
                   {...register("brand")}
                 />
@@ -490,8 +501,10 @@ const Page = () => {
               </div>
 
               <div className="mt-2">
+                <label className="block font-semibold text-gray-300 mb-1">
+                  Video URL
+                </label>
                 <Input
-                  label="Video URL"
                   placeholder="https://www.youtube.com/embed/xyz123"
                   {...register("video_url", {
                     pattern: {
@@ -510,8 +523,10 @@ const Page = () => {
               </div>
 
               <div className="mt-2">
+                <label className="block font-semibold text-gray-300 mb-1">
+                  Regular Price
+                </label>
                 <Input
-                  label="Regular Price"
                   placeholder="20$"
                   {...register("regular_price", {
                     valueAsNumber: true,
@@ -528,8 +543,10 @@ const Page = () => {
               </div>
 
               <div className="mt-2">
+                <label className="block font-semibold text-gray-300 mb-1">
+                  Sale Price *
+                </label>
                 <Input
-                  label="Sale Price *"
                   placeholder="15$"
                   {...register("sale_price", {
                     required: "Sale Price is required",
@@ -552,8 +569,10 @@ const Page = () => {
               </div>
 
               <div className="mt-2">
+                <label className="block font-semibold text-gray-300 mb-1">
+                  Stock *
+                </label>
                 <Input
-                  label="Stock *"
                   placeholder="100"
                   {...register("stock", {
                     required: "Stock is required!",
@@ -596,8 +615,8 @@ const Page = () => {
                         key={code.id}
                         type="button"
                         className={`px-3 py-1 rounded-md text-sm font-semibold border ${watch("discountCodes")?.includes(code.id)
-                            ? "bg-blue-600 text-white border-blue-600"
-                            : "bg-gray-800 text-gray-300 border-gray-600 hover:bg-gray-700"
+                          ? "bg-blue-600 text-white border-blue-600"
+                          : "bg-gray-800 text-gray-300 border-gray-600 hover:bg-gray-700"
                           }`}
                         onClick={() => {
                           const currentSelection = watch("discountCodes") || [];

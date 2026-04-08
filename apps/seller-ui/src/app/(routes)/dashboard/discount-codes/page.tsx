@@ -76,7 +76,7 @@ export default function DiscountCodesPage() {
         <Button
           onClick={() => setShowModal(true)}
           size="sm"
-          className="gap-1.5 bg-rose-600 hover:bg-rose-700 text-white font-semibold border-0"
+          className="gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold border-0"
         >
           <Plus size={15} /> Add Code
         </Button>
@@ -84,7 +84,7 @@ export default function DiscountCodesPage() {
 
       {isLoading ? (
         <div className="flex items-center justify-center py-20">
-          <div className="w-8 h-8 rounded-full border-2 border-rose-500/30 border-t-rose-500 animate-spin" />
+          <div className="w-8 h-8 rounded-full border-2 border-emerald-500/30 border-t-emerald-500 animate-spin" />
         </div>
       ) : discountCodes.length === 0 ? (
         <Card className="border border-white/[0.06] bg-card/50 flex flex-col items-center justify-center py-20">
@@ -100,7 +100,7 @@ export default function DiscountCodesPage() {
             <Card key={code.id} className="border border-white/[0.06] bg-card/50 hover:bg-card/80 transition-colors duration-200">
               <CardContent className="p-5 flex items-start justify-between">
                 <div>
-                  <Badge className={code.discountType === "percentage" ? "bg-rose-500/10 text-rose-400 border-0" : "bg-muted text-muted-foreground border-0"}>
+                  <Badge className={code.discountType === "percentage" ? "bg-emerald-500/10 text-emerald-400 border-0" : "bg-muted text-muted-foreground border-0"}>
                     {code.discountType.toUpperCase()}
                   </Badge>
                   <p className="font-mono text-foreground bg-white/[0.06] rounded-lg px-3 py-1.5 text-sm mt-2 inline-block">{code.discountCode}</p>
@@ -128,18 +128,18 @@ export default function DiscountCodesPage() {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-1.5">
               <Label className="text-muted-foreground text-sm font-medium">Public Name</Label>
-              <Input placeholder="Summer Sale" className="focus:border-rose-500"
+              <Input placeholder="Summer Sale" className="focus:border-emerald-500"
                 {...register("public_name", { required: true })} />
             </div>
             <div className="space-y-1.5">
               <Label className="text-muted-foreground text-sm font-medium">Discount Code</Label>
-              <Input placeholder="SAVE20" className="focus:border-rose-500 font-mono uppercase"
+              <Input placeholder="SAVE20" className="focus:border-emerald-500 font-mono uppercase"
                 {...register("discountCode", { required: true })} />
             </div>
             <div className="space-y-1.5">
               <Label className="text-muted-foreground text-sm font-medium">Type</Label>
               <Controller name="discountType" control={control} render={({ field }) => (
-                <select {...field} className="w-full h-10 px-3 rounded-lg bg-background border border-white/[0.08] text-foreground text-sm outline-none focus:border-rose-500">
+                <select {...field} className="w-full h-10 px-3 rounded-lg bg-background border border-white/[0.08] text-foreground text-sm outline-none focus:border-emerald-500">
                   <option value="percentage" className="bg-card">Percentage</option>
                   <option value="flat" className="bg-card">Flat Amount</option>
                 </select>
@@ -147,7 +147,7 @@ export default function DiscountCodesPage() {
             </div>
             <div className="space-y-1.5">
               <Label className="text-muted-foreground text-sm font-medium">Value</Label>
-              <Input type="number" placeholder="20" className="focus:border-rose-500"
+              <Input type="number" placeholder="20" className="focus:border-emerald-500"
                 {...register("discountValue", { required: true })} />
             </div>
             <div className="flex gap-3 pt-1">
@@ -156,7 +156,7 @@ export default function DiscountCodesPage() {
                 Cancel
               </Button>
               <Button type="submit"
-                className="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-semibold border-0">
+                className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold border-0">
                 Create
               </Button>
             </div>
@@ -174,3 +174,4 @@ export default function DiscountCodesPage() {
     </div>
   );
 }
+

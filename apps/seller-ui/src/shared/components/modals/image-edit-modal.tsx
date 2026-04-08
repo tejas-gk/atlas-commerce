@@ -6,7 +6,7 @@ import Image from "next/image";
 import toast from "react-hot-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "@/utils/axiosInstance";
-import { convertFileToBase64 } from "apps/seller-ui/src/utils/convertToBase64";
+import { convertFileToBase64 } from "@/utils/convertToBase64";
 
 interface ImageEditModalProps {
   editType: "cover" | "avatar";
@@ -180,8 +180,8 @@ const ImageEditModal = ({ editType, onClose }: ImageEditModalProps) => {
                 <button
                   key={effect}
                   className={`p-2 rounded-md flex items-center gap-2 ${activeEffect === effect
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-700 hover:bg-gray-600"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-700 hover:bg-gray-600"
                     }`}
                   onClick={() => applyTransformation(effect)}
                   disabled={processing}

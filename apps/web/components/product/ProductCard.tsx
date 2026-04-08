@@ -54,18 +54,18 @@ const ProductCard = ({
         return;
     }, [isEvent, product?.ending_date]);
 
-   
+
 
     return (
-        <div className="w-full min-h-[350px] h-max bg-white rounded-lg relative">
+        <div className="relative h-full min-h-[320px] w-full rounded-xl border border-black/10 bg-white p-3 shadow-[0_1px_0_rgba(0,0,0,0.04)]">
             {isEvent && (
-                <div className="absolute top-2 left-2 bg-red-600 text-white text-[10px] font-semibold px-2 py-1 rounded-sm shadow-md">
+                <div className="absolute left-2 top-2 rounded-sm bg-red-600 px-2 py-1 text-[10px] font-semibold text-white shadow-md">
                     OFFER
                 </div>
             )}
 
             {product?.stock <= 5 && (
-                <div className="absolute top-2 right-2 bg-yellow-400 text-slate-700 text-[10px] font-semibold px-2 py-1 rounded-sm shadow-md">
+                <div className="absolute right-2 top-2 rounded-sm bg-yellow-300 px-2 py-1 text-[10px] font-semibold text-slate-700 shadow-sm">
                     Limited Stock
                 </div>
             )}
@@ -79,30 +79,30 @@ const ProductCard = ({
                     alt={product?.title}
                     width={300}
                     height={300}
-                    className="w-full h-[220px] object-cover mx-auto rounded-t-md"
+                    className="mx-auto h-[150px] w-full rounded-lg object-cover"
                 />
             </Link>
 
             <Link
                 href={`/shop/${product?.Shop?.id}`}
-                className="block text-blue-500 text-sm font-medium my-2 px-2"
+                className="mt-2 block text-xs font-medium text-[#0c831f]"
             >
                 {product?.Shop?.name}
             </Link>
 
             <Link href={`/product/${product?.slug}`}>
-                <h3 className="text-base font-semibold px-2 text-gray-800 line-clamp-2">
+                <h3 className="line-clamp-2 min-h-[42px] text-sm font-semibold text-gray-900">
                     {product?.title}
                 </h3>
             </Link>
 
-            <div className="mt-2 px-2">
+            <div className="mt-1">
                 <Ratings rating={product?.ratings} />
             </div>
 
-            <div className="mt-3 flex justify-between items-center px-2">
+            <div className="mt-2 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                    <span className="text-lg font-bold text-gray-900">
+                    <span className="text-base font-bold text-gray-900">
                         ${product?.sale_price}
                     </span>
                     <span className="text-sm line-through text-gray-400">
@@ -110,24 +110,24 @@ const ProductCard = ({
                     </span>
                 </div>
 
-                <span className="text-green-500 text-sm font-medium">
+                <span className="text-xs font-medium text-gray-500">
                     {product?.totalSales || 0} sold
                 </span>
             </div>
 
             {isEvent && timeLeft && (
                 <div className="mt-2">
-                    <span className="inline-block text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded font-medium">
+                    <span className="inline-block rounded bg-orange-100 px-2 py-1 text-xs font-medium text-orange-600">
                         {timeLeft}
                     </span>
                 </div>
             )}
 
-            <div className="absolute z-10 flex flex-col gap-3 right-3 top-10">
-                <div className="bg-white rounded-full p-[6px] shadow-md">
+            <div className="absolute right-4 top-4 z-10 flex flex-col gap-2">
+                <div className="rounded-full bg-white p-[6px] shadow-sm ring-1 ring-black/10">
                     <Heart
                         className="cursor-pointer hover:scale-110 transition"
-                        size={22}
+                        size={18}
                         fill={isWishlisted ? "red" : "transparent"}
                         onClick={() =>
                             isWishlisted
@@ -143,25 +143,31 @@ const ProductCard = ({
                     />
                 </div>
 
-                <div className="bg-white rounded-full p-[6px] shadow-md">
+                <div className="rounded-full bg-white p-[6px] shadow-sm ring-1 ring-black/10">
                     <Eye
                         className="cursor-pointer text-[#4b5563] hover:scale-110 transition"
-                        size={22}
+                        size={18}
                         onClick={() => setOpen(!open)}
                     />
                 </div>
 
-                <div className="bg-white rounded-full p-[6px] shadow-md">
-                    <ShoppingBag
-                        size={22}
-                        onClick={() =>
-                            !isInCart &&
-                            addToCart({ ...product, quantity: 1 }, user, location, deviceInfo)
-                        }
-                        className="cursor-pointer text-[#4b5563] hover:scale-110 transition"
-                    />
-                </div>
             </div>
+
+            <button
+                type="button"
+                onClick={() =>
+                    !isInCart &&
+                    addToCart({ ...product, quantity: 1 }, user, location, deviceInfo)
+                }
+                disabled={isInCart}
+                className={`mt-3 flex w-full items-center justify-center gap-2 rounded-md border px-3 py-2 text-sm font-semibold transition ${isInCart
+                        ? "cursor-not-allowed border-gray-200 bg-gray-100 text-gray-500"
+                        : "border-[#0c831f] bg-[#e7f9ea] text-[#0c831f] hover:bg-[#d9f3dd]"
+                    }`}
+            >
+                <ShoppingBag size={16} />
+                {isInCart ? "Added" : "Add"}
+            </button>
 
             {/* {open && <ProductDetailsCard data={product} setOpen={setOpen} />} */}
         </div>

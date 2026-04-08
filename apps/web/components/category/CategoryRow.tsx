@@ -9,10 +9,13 @@ export default function CategoryRow() {
     ];
 
     return (
-        <div className="grid grid-cols-4 md:grid-cols-8 gap-4 mt-6">
-            {categories.map((cat, index) => (
-                <CategoryCard key={index} {...cat} />
-            ))}
-        </div>
+        <section className="mt-6">
+            <h2 className="mb-3 text-lg font-semibold text-black">Shop by category</h2>
+            <div className="grid grid-cols-4 gap-2 md:grid-cols-8 md:gap-3">
+                {categories.map((cat, index) => (
+                    <CategoryCard key={index} {...cat} />
+                ))}
+            </div>
+        </section>
     );
 }

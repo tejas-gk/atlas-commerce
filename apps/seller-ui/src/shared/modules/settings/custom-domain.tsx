@@ -108,8 +108,10 @@ const CustomDomains = () => {
             onSubmit={handleSubmit((data) => addDomainMutation.mutate(data))}
             className="mt-4 border-t border-gray-700 pt-4"
           >
+            <label className="block text-sm font-medium text-gray-300 mb-1">
+              Domain Name
+            </label>
             <Input
-              label="Domain Name"
               placeholder="yourdomain.com"
               {...register("domainName", { required: "Domain is required" })}
             />

@@ -9,7 +9,7 @@ export const products = [
         price: 26,
     },
     {
-            id: "2",
+        id: "2",
         image: "/curd.png",
         name: "Nandini Pouch Curd",
         weight: "415 g",
@@ -64,9 +64,9 @@ export default function ProductSection() {
                 </button>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-6 md:gap-4">
                 {products.map((product, index) => (
-                    <ProductCard key={index} {...product} />
+                    <ProductCard key={index} product={product} />
                 ))}
             </div>
         </div>
