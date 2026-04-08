@@ -2,29 +2,31 @@
 
 import React, { useState } from "react";
 import {
-  ChevronRight,
   Bell,
   Shield,
   Trash2,
   AlertTriangle,
-  ChevronDownCircle,
-  ChevronRightCircle,
+  ChevronDown,
+  ChevronRight,
   Save,
+  Globe,
+  Wallet,
+  Settings2,
 } from "lucide-react";
-
 import { useForm } from "react-hook-form";
-
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "@/utils/axiosInstance";
 import toast from "react-hot-toast";
 import useSeller from "@/hooks/useSeller";
 import CustomDomains from "@/shared/modules/settings";
 import WithdrawMethod from "@/shared/modules/settings/withdraw-method";
-import { Input } from "../../../../../../../packages/ui/src/components/input";
+import { Input } from "@workspace/ui/components/input";
+import { Button } from "@workspace/ui/components/button";
+import { Card } from "@workspace/ui/components/card";
 
 const SettingsPage = () => {
   const [activeTab, setActiveTab] = useState("general");
-  const [expandedSection, setExpandedSection] = useState<string | null>(null);
+  const [expandedSection, setExpandedSection] = useState<string | null>("lowStock");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { seller } = useSeller();
   const queryClient = useQueryClient();
@@ -77,15 +79,14 @@ const SettingsPage = () => {
 
   const onSubmit = (data: any) => {
     console.log("Settings Updated:", data);
-    alert("Settings saved successfully!");
+    toast.success("Settings saved successfully!");
   };
 
-  // Toggle Sections (Prevents accidental collapse when clicking inputs)
   const toggleSection = (section: string) => {
     setExpandedSection((prev) => (prev === section ? null : section));
   };
 
-  const deleteShopHanlder = () => {
+  const deleteShopHandler = () => {
     if (seller?.isDeleted) {
       restoreShopMutation.mutate();
     } else {
@@ -94,222 +95,252 @@ const SettingsPage = () => {
     setShowDeleteModal(false);
   };
 
+  const SETTINGS_TABS = [
+    { key: "general", label: "General", icon: Settings2 },
+    { key: "custom-domains", label: "Custom Domains", icon: Globe },
+    { key: "withdraw", label: "Withdraw Method", icon: Wallet },
+  ];
+
+  const SETTINGS_SECTIONS = [
+    {
+      key: "lowStock",
+      icon: Bell,
+      iconColor: "text-rose-400",
+      iconBg: "bg-rose-500/15",
+      title: "Low Stock Alert Threshold",
+      description: "Get notified when stock falls below the set limit.",
+    },
+    {
+      key: "notifications",
+      icon: Shield,
+      iconColor: "text-amber-400",
+      iconBg: "bg-amber-500/15",
+      title: "Order Notification Preferences",
+      description: "Choose how you receive order notifications (Email, Web, App).",
+    },
+  ];
+
   return (
-    <div className="w-full min-h-screen p-8">
-      {/* Header & Breadcrumbs */}
-      <h2 className="text-2xl text-white font-semibold">Settings</h2>
-      <div className="flex items-center mb-6">
-        <a href="/dashboard" className="text-blue-400 cursor-pointer">
-          Dashboard
-        </a>
-        <ChevronRight size={20} className="text-gray-200" />
-        <span className="text-white">Settings</span>
+    <div className="space-y-6 pb-8">
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
+        <p className="text-sm text-muted-foreground mt-0.5">Manage your shop preferences and configurations</p>
       </div>
 
       {/* Tabs Navigation */}
-      <div className="flex border-b border-gray-700 mb-6">
-        {[
-          { key: "general", label: "General" },
-          { key: "custom-domains", label: "Custom Domains" },
-          { key: "withdraw", label: "Withdraw Method" },
-        ].map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => setActiveTab(tab.key)}
-            className={`py-3 px-6 text-lg font-semibold transition ${activeTab === tab.key
-                ? "text-white border-b-2 border-blue-500"
-                : "text-gray-400"
-              }`}
-          >
-            {tab.label}
-          </button>
-        ))}
+      <div className="flex items-center gap-0.5 p-0.5 rounded-lg bg-white/[0.04] border border-white/[0.05] w-fit">
+        {SETTINGS_TABS.map((tab) => {
+          const Icon = tab.icon;
+          return (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className={`flex items-center gap-2 px-4 h-9 rounded-md text-sm font-medium transition-all duration-150 ${activeTab === tab.key
+                  ? "bg-card text-foreground border border-white/[0.08] shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+                }`}
+            >
+              <Icon size={14} />
+              {tab.label}
+            </button>
+          );
+        })}
       </div>
 
       {/* General Settings */}
       {activeTab === "general" && (
-        <div className="max-w-2xl space-y-6">
-          {/* Low Stock Alert */}
-          <div className="px-4 rounded-lg cursor-pointer">
-            <div
-              className="flex justify-between items-center"
-              onClick={() => toggleSection("lowStock")}
-            >
-              <div className="flex items-center gap-3">
-                <Bell size={22} className="text-blue-400" />
-                <div>
-                  <h3 className="text-white font-semibold">
-                    Low Stock Alert Threshold
-                  </h3>
-                  <p className="text-gray-400 text-sm">
-                    Get notified when stock falls below the set limit.
-                  </p>
-                </div>
-              </div>
-              {expandedSection === "lowStock" ? (
-                <ChevronDownCircle size={22} className="text-gray-400" />
-              ) : (
-                <ChevronRightCircle size={22} className="text-gray-400" />
-              )}
-            </div>
+        <div className="max-w-3xl space-y-4">
+          {SETTINGS_SECTIONS.map((section) => {
+            const Icon = section.icon;
+            const isExpanded = expandedSection === section.key;
 
-            {expandedSection === "lowStock" && (
-              <form
-                onSubmit={handleSubmit(onSubmit)}
-                className="mt-4 border-t border-gray-700 pt-4"
-              >
-                <Input
-                  type="number"
-                  label="Threshold Value"
-                  min="1"
-                  {...register("lowStockThreshold", { required: "Required" })}
-                  onClick={(e: any) => e.stopPropagation()}
-                />
-                {errors.lowStockThreshold && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.lowStockThreshold.message}
-                  </p>
+            return (
+              <Card key={section.key} className="border border-white/[0.06] bg-card/50 overflow-hidden">
+                <button
+                  onClick={() => toggleSection(section.key)}
+                  className="w-full px-5 py-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className={`flex h-10 w-10 items-center justify-center rounded-full shrink-0 ${section.iconBg}`}>
+                      <Icon size={18} className={section.iconColor} />
+                    </div>
+                    <div className="text-left">
+                      <h3 className="text-foreground font-medium">{section.title}</h3>
+                      <p className="text-sm text-muted-foreground/60 mt-0.5">{section.description}</p>
+                    </div>
+                  </div>
+                  {isExpanded ? (
+                    <ChevronDown size={18} className="text-muted-foreground" />
+                  ) : (
+                    <ChevronRight size={18} className="text-muted-foreground" />
+                  )}
+                </button>
+
+                {isExpanded && (
+                  <div className="px-5 pb-5 border-t border-white/[0.05]">
+                    <form onSubmit={handleSubmit(onSubmit)} className="mt-5 space-y-4">
+                      {section.key === "lowStock" && (
+                        <div>
+                          <label className="text-xs text-muted-foreground mb-2 block">
+                            Threshold Value
+                          </label>
+                          <Input
+                            type="number"
+                            min="1"
+                            {...register("lowStockThreshold", { required: "Required" })}
+                            className="border-white/[0.08] bg-white/[0.03]"
+                            onClick={(e: any) => e.stopPropagation()}
+                          />
+                          {errors.lowStockThreshold && (
+                            <p className="text-red-400 text-xs mt-1.5">
+                              {errors.lowStockThreshold.message}
+                            </p>
+                          )}
+                        </div>
+                      )}
+
+                      {section.key === "notifications" && (
+                        <div>
+                          <label className="text-xs text-muted-foreground mb-2 block">
+                            Notification Method
+                          </label>
+                          <select
+                            {...register("notificationPreference", { required: "Required" })}
+                            className="w-full h-9 px-3 text-sm border border-white/[0.08] bg-white/[0.03] rounded-md text-foreground outline-none focus:border-rose-500/50 transition-colors"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <option value="email" className="bg-card">Email</option>
+                            <option value="web" className="bg-card">Web Push Notification</option>
+                            <option value="app" className="bg-card">App Push Notification</option>
+                            <option value="all" className="bg-card">All of the above</option>
+                          </select>
+                        </div>
+                      )}
+
+                      <Button
+                        type="submit"
+                        size="sm"
+                        className="gap-2 bg-rose-600 hover:bg-rose-700 text-white border-0"
+                      >
+                        <Save size={14} />
+                        Save Changes
+                      </Button>
+                    </form>
+                  </div>
                 )}
-                <button
-                  type="submit"
-                  className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center gap-2"
-                >
-                  <Save size={18} /> Save Changes
-                </button>
-              </form>
-            )}
-          </div>
-
-          {/* Order Notification Preferences */}
-          <div className="px-4 rounded-lg cursor-pointer">
-            <div
-              className="flex justify-between items-center"
-              onClick={() => toggleSection("notifications")}
-            >
-              <div className="flex items-center gap-3">
-                <Shield size={22} className="text-yellow-400" />
-                <div>
-                  <h3 className="text-white font-semibold">
-                    Order Notification Preferences
-                  </h3>
-                  <p className="text-gray-400 text-sm">
-                    Choose how you receive order notifications (Email, Web,
-                    App).
-                  </p>
-                </div>
-              </div>
-              {expandedSection === "notifications" ? (
-                <ChevronDownCircle size={22} className="text-gray-400" />
-              ) : (
-                <ChevronRightCircle size={22} className="text-gray-400" />
-              )}
-            </div>
-
-            {expandedSection === "notifications" && (
-              <form
-                onSubmit={handleSubmit(onSubmit)}
-                className="mt-4 border-t border-gray-700 pt-4"
-              >
-                <select
-                  {...register("notificationPreference", {
-                    required: "Required",
-                  })}
-                  className="w-full border outline-none border-gray-700 bg-transparent p-2 rounded-md text-white"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <option value="email">Email</option>
-                  <option value="web">Web Push Notification</option>
-                  <option value="app">App Push Notification</option>
-                  <option value="all">All of the above</option>
-                </select>
-                <button
-                  type="submit"
-                  className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center gap-2"
-                >
-                  <Save size={18} /> Save Changes
-                </button>
-              </form>
-            )}
-          </div>
+              </Card>
+            );
+          })}
 
           {/* Danger Zone */}
-          <div className="mt-10 border-t border-gray-700 pt-6">
-            <h3 className="text-xl text-red-500 font-semibold mb-3 flex items-center gap-2">
-              <AlertTriangle size={22} className="text-red-500" />
-              Danger Zone
-            </h3>
-            <div
-              className="flex justify-between items-center p-4 rounded-lg cursor-pointer"
+          <Card className="border border-red-500/20 bg-red-500/[0.02] overflow-hidden mt-8">
+            <button
               onClick={() => setShowDeleteModal(true)}
+              className="w-full px-5 py-4 flex items-center justify-between hover:bg-red-500/[0.04] transition-colors"
             >
-              <div className="flex items-center gap-3">
-                <Trash2 size={22} className="text-white" />
-                <div>
-                  <h3 className="text-white font-semibold">Delete Shop</h3>
-                  <p className="text-red-400 text-sm">
-                    Deleting your shop is irreversible. Proceed with caution.
+              <div className="flex items-center gap-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full shrink-0 bg-red-500/15">
+                  <Trash2 size={18} className="text-red-400" />
+                </div>
+                <div className="text-left">
+                  <h3 className="text-foreground font-medium">Delete Shop</h3>
+                  <p className="text-sm text-red-400/60 mt-0.5">
+                    Permanently delete your shop and all associated data
                   </p>
                 </div>
               </div>
-              <ChevronRightCircle size={22} className="text-white" />
-            </div>
-          </div>
+              <ChevronRight size={18} className="text-red-400/60" />
+            </button>
+          </Card>
         </div>
       )}
 
       {activeTab === "custom-domains" && <CustomDomains />}
 
       {activeTab === "withdraw" && <WithdrawMethod />}
+
       {/* Delete Shop Modal */}
       {showDeleteModal && (
-        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-gray-800 p-6 rounded-lg w-[450px] shadow-lg">
-            {/* Header */}
-            <h3 className="text-xl text-white mb-4 flex items-center gap-2">
-              <Trash2 size={22} className="text-red-500" /> Delete Shop
-            </h3>
-
-            {/* Warning Message */}
-            <p className="text-gray-300">
-              Deleting your shop is a **permanent action**. However, you have
-              **28 days** to restore your shop before it is permanently removed.
-            </p>
-
-            <p className="text-gray-300 mt-3">
-              <span className="text-yellow-400 font-semibold">
-                ⚠️ Important:
-              </span>{" "}
-              Once the shop is permanently deleted, you **cannot** create a new
-              account with the same email in the future.
-            </p>
-
-            {/* Recovery Period Warning */}
-            <div className="bg-gray-900 text-yellow-400 p-3 mt-4 rounded-md border border-yellow-500">
-              <p className="text-sm">
-                You can **restore** your shop within 28 days from the date of
-                deletion. After that, it will be **permanently removed**.
-              </p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowDeleteModal(false)}
+          />
+          <Card className="relative w-full max-w-md p-6 border border-white/[0.08] bg-card shadow-2xl">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-500/15">
+                <AlertTriangle size={20} className="text-red-400" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">
+                  {seller?.isDeleted ? "Restore Shop" : "Delete Shop"}
+                </h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {seller?.isDeleted
+                    ? "Restore your shop to resume selling"
+                    : "This action can be reversed within 28 days"}
+                </p>
+              </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex justify-end gap-3 mt-6">
-              <button
+            <div className="space-y-3 mb-6">
+              <p className="text-sm text-muted-foreground">
+                {seller?.isDeleted ? (
+                  "Your shop is currently marked for deletion. You can restore it now to resume all operations."
+                ) : (
+                  <>
+                    Deleting your shop is a <span className="text-foreground font-medium">permanent action</span>.
+                    However, you have <span className="text-amber-400 font-medium">28 days</span> to restore your
+                    shop before it is permanently removed.
+                  </>
+                )}
+              </p>
+
+              {!seller?.isDeleted && (
+                <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3">
+                  <p className="text-xs text-amber-400/80">
+                    <span className="font-medium">⚠️ Important:</span> Once permanently deleted,
+                    you cannot create a new account with the same email.
+                  </p>
+                </div>
+              )}
+
+              <div className="bg-white/[0.03] border border-white/[0.08] rounded-lg p-3">
+                <p className="text-xs text-muted-foreground">
+                  {seller?.isDeleted ? (
+                    "Restoring your shop will reactivate all your products and settings immediately."
+                  ) : (
+                    <>
+                      Recovery period ends in <span className="text-foreground font-medium">28 days</span>.
+                      After that, all data will be permanently erased.
+                    </>
+                  )}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setShowDeleteModal(false)}
-                className="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-md text-white transition"
+                className="border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06]"
               >
                 Cancel
-              </button>
-              <button
-                className={`${!seller?.isDeleted
-                    ? "bg-red-600 hover:bg-red-700"
-                    : "bg-green-600 hover:bg-green-700"
-                  } px-4 py-2 rounded-md text-white font-semibold transition`}
-                onClick={deleteShopHanlder}
+              </Button>
+              <Button
+                size="sm"
+                onClick={deleteShopHandler}
+                className={seller?.isDeleted
+                  ? "bg-emerald-600 hover:bg-emerald-700 text-white border-0"
+                  : "bg-red-600 hover:bg-red-700 text-white border-0"
+                }
               >
-                {!seller?.isDeleted ? "Confirm Delete" : "Restore"}
-              </button>
+                {seller?.isDeleted ? "Restore Shop" : "Delete Shop"}
+              </Button>
             </div>
-          </div>
+          </Card>
         </div>
       )}
     </div>

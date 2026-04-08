@@ -6,17 +6,53 @@ import {
   getFilteredRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { Search, Eye } from "lucide-react";
+import {
+  Search,
+  Eye,
+  ArrowUpRight,
+  ArrowDownRight,
+  Package,
+  TrendingUp,
+  AlertTriangle,
+} from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/utils/axiosInstance";
 import Link from "next/link";
-import BreadCrumbs from "@/shared/components/breadcrumbs";
 import useSeller from "@/hooks/useSeller";
+import { Input } from "@workspace/ui/components/input";
+import { Card } from "@workspace/ui/components/card";
 
 const fetchOrders = async () => {
   const res = await axiosInstance.get("/order/api/get-seller-orders");
   return res.data.orders;
 };
+
+const KPI_CARDS = [
+  {
+    label: "Total Orders",
+    value: "124",
+    sub: "+10 this month",
+    trend: "up",
+    Icon: Package,
+    iconCls: "bg-rose-500/15 text-rose-400",
+  },
+  {
+    label: "Revenue",
+    value: "$12,480",
+    sub: "+5.2%",
+    trend: "up",
+    Icon: TrendingUp,
+    iconCls: "bg-emerald-500/15 text-emerald-400",
+  },
+  {
+    label: "Pending",
+    value: "8",
+    sub: "Awaiting action",
+    trend: "down",
+    Icon: AlertTriangle,
+    iconCls: "bg-amber-500/15 text-amber-400",
+  },
+];
 
 const OrdersTable = () => {
   const { seller } = useSeller();
@@ -32,36 +68,40 @@ const OrdersTable = () => {
   const columns = useMemo(
     () => [
       {
-        accessorKey: "id",
-        header: "Order ID",
+        id: "order",
+        header: "Order",
         cell: ({ row }: any) => (
-          <span className="text-white text-sm truncate">
+          <span className="text-sm font-medium text-foreground/90">
             #{row.original.id.slice(-6).toUpperCase()}
           </span>
         ),
       },
       {
-        accessorKey: "user.name",
+        id: "buyer",
         header: "Buyer",
         cell: ({ row }: any) => (
-          <span className="text-white">
+          <span className="text-muted-foreground">
             {row.original.user?.name ?? "Guest"}
           </span>
         ),
       },
       {
-        accessorKey: "total",
+        id: "total",
         header: "Total",
-        cell: ({ row }: any) => <span>${row.original.total}</span>,
+        cell: ({ row }: any) => (
+          <span className="font-semibold text-foreground">
+            ${row.original.total}
+          </span>
+        ),
       },
       {
-        accessorKey: "status",
+        id: "status",
         header: "Status",
         cell: ({ row }: any) => (
           <span
-            className={`px-2 py-1 rounded-full text-xs font-medium ${row.original.status === "Paid"
-              ? "bg-green-600 text-white"
-              : "bg-yellow-500 text-white"
+            className={`text-xs px-2 py-1 rounded-full ${row.original.status === "Paid"
+                ? "bg-emerald-500/15 text-emerald-400"
+                : "bg-amber-500/15 text-amber-400"
               }`}
           >
             {row.original.status}
@@ -69,21 +109,26 @@ const OrdersTable = () => {
         ),
       },
       {
-        accessorKey: "createdAt",
+        id: "date",
         header: "Date",
         cell: ({ row }: any) => {
           const date = new Date(row.original.createdAt).toLocaleDateString();
-          return <span className="text-white text-sm">{date}</span>;
+          return (
+            <span className="text-muted-foreground text-sm">
+              {date}
+            </span>
+          );
         },
       },
       {
-        header: "Actions",
+        id: "actions",
+        header: "",
         cell: ({ row }: any) => (
           <Link
             href={`/order/${row.original.id}`}
-            className="text-blue-400 hover:text-blue-300 transition"
+            className="text-muted-foreground hover:text-foreground"
           >
-            <Eye size={18} />
+            <Eye size={16} />
           </Link>
         ),
       },
@@ -102,38 +147,81 @@ const OrdersTable = () => {
   });
 
   return (
-    <div className="w-full min-h-screen p-8">
-      <h2 className="text-2xl text-white font-semibold mb-2">All Orders</h2>
+    <div className="space-y-6 pb-8">
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          All Orders
+        </h1>
+        <p className="text-sm text-muted-foreground mt-0.5">
+          Track and manage your orders
+        </p>
+      </div>
 
-      {/* Breadcrumbs */}
-      <BreadCrumbs title="All Orders" />
-
-      {/* Search Bar */}
-      <div className="my-4 flex items-center bg-gray-900 p-2 rounded-md flex-1">
-        <Search size={18} className="text-gray-400 mr-2" />
-        <input
-          type="text"
-          placeholder="Search orders..."
-          className="w-full bg-transparent text-white outline-none"
-          value={globalFilter}
-          onChange={(e) => setGlobalFilter(e.target.value)}
-        />
+      {/* KPI */}
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+        {KPI_CARDS.map(({ label, value, sub, trend, Icon, iconCls }) => (
+          <Card key={label} className="p-5 border bg-card/50">
+            <div className="flex justify-between mb-3">
+              <div
+                className={`h-9 w-9 flex items-center justify-center rounded-full ${iconCls}`}
+              >
+                <Icon size={16} />
+              </div>
+              {trend === "up" ? (
+                <ArrowUpRight className="text-emerald-400" size={14} />
+              ) : (
+                <ArrowDownRight className="text-red-400" size={14} />
+              )}
+            </div>
+            <p className="text-xl font-semibold">{value}</p>
+            <p className="text-xs text-muted-foreground">{sub}</p>
+            <p className="text-xs text-muted-foreground/40 mt-1">
+              {label}
+            </p>
+          </Card>
+        ))}
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto bg-gray-900 rounded-lg p-4">
+      <Card className="border bg-card/50 overflow-hidden">
+        {/* Toolbar */}
+        <div className="flex items-center gap-3 px-5 py-3 border-b">
+          <div className="relative max-w-xs w-full">
+            <Search
+              size={14}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+            />
+            <Input
+              value={globalFilter}
+              onChange={(e) => setGlobalFilter(e.target.value)}
+              placeholder="Search orders..."
+              className="pl-8 h-8 text-sm"
+            />
+          </div>
+
+          <p className="ml-auto text-xs text-muted-foreground">
+            {orders.length} items
+          </p>
+        </div>
+
         {isLoading ? (
-          <p className="text-center text-white">Loading orders...</p>
+          <div className="flex justify-center py-20">
+            <div className="w-8 h-8 border-2 border-rose-500/30 border-t-rose-500 rounded-full animate-spin" />
+          </div>
         ) : (
-          <table className="w-full text-white">
+          <table className="w-full text-sm">
             <thead>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id} className="border-b border-gray-800">
-                  {headerGroup.headers.map((header) => (
-                    <th key={header.id} className="p-3 text-left text-sm">
+              {table.getHeaderGroups().map((hg) => (
+                <tr key={hg.id} className="border-b">
+                  {hg.headers.map((h) => (
+                    <th
+                      key={h.id}
+                      className="px-5 py-3 text-left text-xs text-muted-foreground"
+                    >
                       {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
+                        h.column.columnDef.header,
+                        h.getContext()
                       )}
                     </th>
                   ))}
@@ -141,29 +229,35 @@ const OrdersTable = () => {
               ))}
             </thead>
             <tbody>
-              {table.getRowModel().rows.map((row) => (
-                <tr
-                  key={row.id}
-                  className="border-b border-gray-800 hover:bg-gray-900 transition"
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="p-3 text-sm">
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </td>
-                  ))}
+              {table.getRowModel().rows.length === 0 ? (
+                <tr>
+                  <td colSpan={columns.length} className="py-20 text-center">
+                    <p className="text-muted-foreground text-sm">
+                      No orders found
+                    </p>
+                  </td>
                 </tr>
-              ))}
+              ) : (
+                table.getRowModel().rows.map((row) => (
+                  <tr
+                    key={row.id}
+                    className="border-b hover:bg-white/[0.02]"
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id} className="px-5 py-3">
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         )}
-
-        {!isLoading && orders?.length === 0 && (
-          <p className="text-center py-3 text-white">No Orders found!</p>
-        )}
-      </div>
+      </Card>
     </div>
   );
 };

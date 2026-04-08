@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { useState } from "react";
 
 import { Toaster } from "sonner";
+import { ThemeProvider } from "next-themes";
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
   const [queryClient] = useState(
@@ -21,10 +22,13 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ProvidersWithWebSocket>
-        {children}
-      </ProvidersWithWebSocket>
-      <Toaster />
+      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+
+        <ProvidersWithWebSocket>
+          {children}
+        </ProvidersWithWebSocket>
+        <Toaster />
+      </ThemeProvider>
     </QueryClientProvider>
   );
 };
@@ -40,7 +44,7 @@ const ProvidersWithWebSocket = ({
 
   return (
     <>
-        {children}
+      {children}
       {/* {seller && (
         <WebSocketProvider seller={seller}>
         </WebSocketProvider>

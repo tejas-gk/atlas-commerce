@@ -5,6 +5,15 @@ import { useAuthStore } from "../store/authStore";
 import React from "react";
 import { isProtected } from "../utils/protected";
 
+export const DEV_MOCK_SELLER = {
+  id: "dev-seller-001",
+  name: "Demo Seller",
+  email: "demo@atlas.dev",
+  activeShopId: "dev-shop-001",
+  shop: { id: "dev-shop-001", name: "Demo Store" },
+  shops: [{ id: "dev-shop-001", name: "Demo Store" }],
+};
+
 // fetch seller data from API
 const fetchSeller = async () => {
   const response = await axiosInstance.get(
