@@ -11,6 +11,26 @@ import { productApi } from "../../lib/product-api"
 import { DRAG_TYPE_KEY, createNewElement } from "../../lib/builder-types"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
+import { Label } from "@/components/ui/label"
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Slider } from "@/components/ui/slider"
+import { Switch } from "@/components/ui/switch"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
     GripVertical,
     Plus,
@@ -24,6 +44,10 @@ import {
     SlidersHorizontal,
     Sparkles,
     LogIn,
+    AlertCircle,
+    Info,
+    Flag,
+    ChevronsUpDown as ChevronsUpDownIcon,
 } from "lucide-react"
 
 // ───── Drop Indicator Line ─────
@@ -63,13 +87,16 @@ function getLinkedProduct(element: BuilderElement, shopProducts: ProductRecord[]
 function SearchBarPreview({
     element,
     baseStyles,
+    showPreview,
 }: {
     element: BuilderElement
     baseStyles: React.CSSProperties
+    showPreview: boolean
 }) {
     const [query, setQuery] = useState("")
     const [results, setResults] = useState<ProductRecord[]>([])
     const [isSearching, setIsSearching] = useState(false)
+    const [navigated, setNavigated] = useState<string | null>(null)
 
     useEffect(() => {
         const trimmed = query.trim()
@@ -93,6 +120,17 @@ function SearchBarPreview({
         return () => clearTimeout(timer)
     }, [query])
 
+    const handleSearch = () => {
+        const q = query.trim()
+        if (!q) return
+        const route = (element.href || "/products?query={query}").replace("{query}", encodeURIComponent(q))
+        if (showPreview) {
+            window.open(route, "_blank")
+        } else {
+            setNavigated(route)
+        }
+    }
+
     return (
         <div className="space-y-3">
             <div
@@ -104,15 +142,26 @@ function SearchBarPreview({
                 <input
                     value={query}
                     onChange={(event) => setQuery(event.target.value)}
+                    onKeyDown={(event) => { if (event.key === "Enter") handleSearch() }}
                     placeholder={element.content || "Search products"}
                     className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
                 />
-                <span className="ml-auto rounded-full bg-foreground px-3 py-1 text-xs text-background">
+                <button
+                    onClick={handleSearch}
+                    className="ml-auto rounded-full bg-foreground px-3 py-1 text-xs text-background hover:bg-foreground/80 transition-colors"
+                >
                     Search
-                </span>
+                </button>
             </div>
+            {navigated && (
+                <div className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-700">
+                    ↗ Would navigate to: <span className="font-medium">{navigated}</span>
+                    <button className="ml-2 underline" onClick={() => setNavigated(null)}>dismiss</button>
+                </div>
+            )}
             <div className="text-[11px] text-muted-foreground">
                 Route: <span className="font-medium text-foreground">{element.href || "/products?query={query}"}</span>
+                {showPreview && <span className="ml-1 text-blue-600">(Enter = opens in new tab)</span>}
             </div>
             {(query.trim().length >= 2 || results.length > 0) && (
                 <div className="rounded-2xl border bg-background p-3 shadow-sm">
@@ -362,12 +411,12 @@ function OAuthLoginPreview({
                 onClick={(event) => event.preventDefault()}
             >
                 <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
-                    <path fill="#fbc02d" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12 s5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20 s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z" />
-                    <path fill="#e53935" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039 l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z" />
-                    <path fill="#4caf50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36 c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z" />
-                    <path fill="#1565c0" d="M43.611,20.083L43.595,20L42,20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571 l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z" />
-                </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+                        <path fill="#fbc02d" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12 s5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20 s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z" />
+                        <path fill="#e53935" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039 l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z" />
+                        <path fill="#4caf50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36 c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z" />
+                        <path fill="#1565c0" d="M43.611,20.083L43.595,20L42,20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571 l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z" />
+                    </svg>
                 </span>
                 <span className="text-sm font-medium text-foreground">{element.content || "Continue with Google"}</span>
                 <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-1 text-[11px] text-blue-700">
@@ -387,11 +436,13 @@ function RenderElement({
     element,
     isEditing,
     shopProducts,
+    showPreview,
     onInlineEdit,
 }: {
     element: BuilderElement
     isEditing: boolean
     shopProducts: ProductRecord[]
+    showPreview: boolean
     onInlineEdit: (id: string, content: string) => void
 }) {
     const baseStyles: React.CSSProperties = {
@@ -492,7 +543,7 @@ function RenderElement({
                 </button>
             )
         case "search-bar":
-            return <SearchBarPreview element={element} baseStyles={baseStyles} />
+            return <SearchBarPreview element={element} baseStyles={baseStyles} showPreview={showPreview} />
         case "oauth-login":
             return <OAuthLoginPreview element={element} baseStyles={baseStyles} />
         case "image":
@@ -945,6 +996,421 @@ function RenderElement({
                 </div>
             )
         }
+
+        // ───── shadcn/ui Components ─────
+
+        case "card-element": {
+            const [title, description, footer] = (element.content || "Card Title||Card Footer").split("|")
+            return (
+                <Card id={element.htmlId || undefined} className={element.cssClasses} style={baseStyles}>
+                    <CardHeader>
+                        <CardTitle className="text-base">{title || "Card Title"}</CardTitle>
+                        {description && <CardDescription>{description}</CardDescription>}
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-sm text-muted-foreground">Card content goes here. Add any elements inside this card.</p>
+                    </CardContent>
+                    {footer && (
+                        <CardFooter>
+                            <Button size="sm" variant="outline">{footer}</Button>
+                        </CardFooter>
+                    )}
+                </Card>
+            )
+        }
+
+        case "tabs-element": {
+            const tabLines = (element.content || "Tab 1|Content\nTab 2|Content 2").split("\n").map(l => {
+                const [label, content] = l.split("|")
+                return { label: label?.trim() || "Tab", content: content?.trim() || "" }
+            }).filter(t => t.label)
+            const defaultTab = tabLines[0]?.label?.toLowerCase().replace(/\s+/g, "-") || "tab-1"
+            return (
+                <Tabs id={element.htmlId || undefined} defaultValue={defaultTab} className={element.cssClasses} style={baseStyles}>
+                    <TabsList>
+                        {tabLines.map(t => (
+                            <TabsTrigger key={t.label} value={t.label.toLowerCase().replace(/\s+/g, "-")}>
+                                {t.label}
+                            </TabsTrigger>
+                        ))}
+                    </TabsList>
+                    {tabLines.map(t => (
+                        <TabsContent key={t.label} value={t.label.toLowerCase().replace(/\s+/g, "-")}>
+                            <p className="text-sm text-muted-foreground p-2">{t.content || "Tab content goes here."}</p>
+                        </TabsContent>
+                    ))}
+                </Tabs>
+            )
+        }
+
+        case "avatar-element": {
+            const [name, initials, src] = (element.content || "User|U").split("|")
+            return (
+                <div id={element.htmlId || undefined} className={`${element.cssClasses} flex items-center gap-3`} style={baseStyles}>
+                    <Avatar>
+                        {src && <AvatarImage src={src} alt={name || "User"} />}
+                        <AvatarFallback>{initials || (name || "U").slice(0, 2).toUpperCase()}</AvatarFallback>
+                    </Avatar>
+                    {name && <span className="text-sm font-medium">{name}</span>}
+                </div>
+            )
+        }
+
+        case "alert-element": {
+            const [title, description] = (element.content || "Alert|Description").split("|")
+            const variant = element.cssClasses?.includes("destructive") ? "destructive" : "default"
+            return (
+                <Alert id={element.htmlId || undefined} variant={variant} style={baseStyles}>
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>{title || "Alert"}</AlertTitle>
+                    {description && <AlertDescription>{description}</AlertDescription>}
+                </Alert>
+            )
+        }
+
+        case "dialog-element": {
+            const [trigger, title, description] = (element.content || "Open Dialog|Dialog Title|Dialog content.").split("|")
+            return (
+                <div id={element.htmlId || undefined} className={element.cssClasses} style={baseStyles}>
+                    <Dialog>
+                        <DialogTrigger asChild>
+                            <Button variant="outline">{trigger || "Open Dialog"}</Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>{title || "Dialog Title"}</DialogTitle>
+                                {description && <DialogDescription>{description}</DialogDescription>}
+                            </DialogHeader>
+                            <p className="text-sm text-muted-foreground">Dialog body content goes here. Customize via the content field.</p>
+                        </DialogContent>
+                    </Dialog>
+                </div>
+            )
+        }
+
+        case "popover-element": {
+            const [trigger, title, description] = (element.content || "Open Popover|Popover Title|Popover content.").split("|")
+            return (
+                <div id={element.htmlId || undefined} className={element.cssClasses} style={baseStyles}>
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button variant="outline">{trigger || "Open Popover"}</Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-64">
+                            {title && <h4 className="mb-1 text-sm font-semibold">{title}</h4>}
+                            <p className="text-xs text-muted-foreground">{description || "Popover content."}</p>
+                        </PopoverContent>
+                    </Popover>
+                </div>
+            )
+        }
+
+        case "collapsible-element": {
+            const [trigger, content] = (element.content || "Toggle|Hidden content goes here.").split("|")
+            return (
+                <div id={element.htmlId || undefined} className={element.cssClasses} style={baseStyles}>
+                    <Collapsible>
+                        <CollapsibleTrigger asChild>
+                            <Button variant="ghost" className="flex items-center gap-2 px-2">
+                                {trigger || "Toggle Section"}
+                                <ChevronsUpDownIcon className="h-4 w-4" />
+                            </Button>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="px-2 py-3 text-sm text-muted-foreground border-l-2 border-border ml-2 mt-1">
+                            {content || "Hidden content goes here."}
+                        </CollapsibleContent>
+                    </Collapsible>
+                </div>
+            )
+        }
+
+        case "hover-card-element": {
+            const [trigger, title, description] = (element.content || "Hover me|@user|Bio shown on hover.").split("|")
+            return (
+                <div id={element.htmlId || undefined} className={element.cssClasses} style={baseStyles}>
+                    <HoverCard>
+                        <HoverCardTrigger asChild>
+                            <Button variant="link" className="px-0">{trigger || "Hover me"}</Button>
+                        </HoverCardTrigger>
+                        <HoverCardContent className="w-64">
+                            <div className="flex items-center gap-3">
+                                <Avatar>
+                                    <AvatarFallback>{(title || "U").slice(0, 2)}</AvatarFallback>
+                                </Avatar>
+                                <div>
+                                    <p className="text-sm font-semibold">{title || "@user"}</p>
+                                    <p className="text-xs text-muted-foreground">{description || "Description."}</p>
+                                </div>
+                            </div>
+                        </HoverCardContent>
+                    </HoverCard>
+                </div>
+            )
+        }
+
+        case "skeleton-element": {
+            const count = Math.max(1, Math.min(6, Number(element.content) || 3))
+            return (
+                <div id={element.htmlId || undefined} className={`${element.cssClasses} space-y-3`} style={baseStyles}>
+                    <div className="flex items-center gap-3">
+                        <Skeleton className="h-10 w-10 rounded-full" />
+                        <div className="space-y-2 flex-1">
+                            <Skeleton className="h-3 w-3/4" />
+                            <Skeleton className="h-3 w-1/2" />
+                        </div>
+                    </div>
+                    {Array.from({ length: count }).map((_, i) => (
+                        <Skeleton key={i} className="h-4 w-full" />
+                    ))}
+                </div>
+            )
+        }
+
+        case "select-element": {
+            const [placeholder, optionsStr] = (element.content || "Select...|Option 1,Option 2,Option 3").split("|")
+            const options = (optionsStr || "Option 1,Option 2,Option 3").split(",").map(o => o.trim()).filter(Boolean)
+            return (
+                <div id={element.htmlId || undefined} className={`${element.cssClasses} space-y-1.5`} style={baseStyles}>
+                    {element.label && <Label className="text-sm">{element.label}</Label>}
+                    <Select>
+                        <SelectTrigger>
+                            <SelectValue placeholder={placeholder || "Select an option"} />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {options.map(opt => (
+                                <SelectItem key={opt} value={opt.toLowerCase().replace(/\s+/g, "-")}>{opt}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+            )
+        }
+
+        case "checkbox-element": {
+            const [label] = (element.content || "Accept terms and conditions").split("|")
+            return (
+                <div id={element.htmlId || undefined} className={`${element.cssClasses} flex items-center gap-2`} style={baseStyles}>
+                    <Checkbox id={`cb-${element.id}`} />
+                    <Label htmlFor={`cb-${element.id}`} className="text-sm cursor-pointer">{label || "Checkbox label"}</Label>
+                </div>
+            )
+        }
+
+        case "switch-element": {
+            const [label] = (element.content || "Enable notifications").split("|")
+            return (
+                <div id={element.htmlId || undefined} className={`${element.cssClasses} flex items-center gap-2`} style={baseStyles}>
+                    <Switch id={`sw-${element.id}`} />
+                    <Label htmlFor={`sw-${element.id}`} className="text-sm cursor-pointer">{label || "Toggle label"}</Label>
+                </div>
+            )
+        }
+
+        case "slider-element": {
+            const [defaultVal, min, max] = (element.content || "50|0|100").split("|")
+            const val = Number(defaultVal) || 50
+            return (
+                <div id={element.htmlId || undefined} className={`${element.cssClasses} space-y-3`} style={baseStyles}>
+                    {element.label && <Label className="text-sm">{element.label}</Label>}
+                    <div className="flex items-center gap-3">
+                        <span className="text-xs text-muted-foreground">{min || 0}</span>
+                        <Slider defaultValue={[val]} min={Number(min) || 0} max={Number(max) || 100} step={1} className="flex-1" />
+                        <span className="text-xs text-muted-foreground">{max || 100}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground text-center">Current: {val}</p>
+                </div>
+            )
+        }
+
+        case "carousel-element": {
+            const slides = (element.content || "Slide 1|Content\nSlide 2|Content 2").split("\n").map(l => {
+                const [title, content] = l.split("|")
+                return { title: title?.trim() || "Slide", content: content?.trim() || "" }
+            }).filter(s => s.title)
+            return (
+                <div id={element.htmlId || undefined} className={`${element.cssClasses} w-full`} style={baseStyles}>
+                    <Carousel>
+                        <CarouselContent>
+                            {slides.map((slide, i) => (
+                                <CarouselItem key={i}>
+                                    <Card>
+                                        <CardContent className="flex flex-col items-center justify-center p-8 gap-2">
+                                            <h3 className="text-lg font-semibold">{slide.title}</h3>
+                                            <p className="text-sm text-muted-foreground text-center">{slide.content || "Slide content goes here."}</p>
+                                        </CardContent>
+                                    </Card>
+                                </CarouselItem>
+                            ))}
+                        </CarouselContent>
+                        <CarouselPrevious />
+                        <CarouselNext />
+                    </Carousel>
+                </div>
+            )
+        }
+
+        case "command-element": {
+            const lines = (element.content || "Search...\nHome\nSettings\nProfile").split("\n")
+            const placeholder = lines[0] || "Search..."
+            const commandItems = lines.slice(1).filter(Boolean)
+            return (
+                <div id={element.htmlId || undefined} className={`${element.cssClasses} rounded-lg border shadow-sm`} style={baseStyles}>
+                    <Command>
+                        <CommandInput placeholder={placeholder} />
+                        <CommandList>
+                            <CommandEmpty>No results found.</CommandEmpty>
+                            <CommandGroup heading="Suggestions">
+                                {commandItems.map(item => (
+                                    <CommandItem key={item}>{item}</CommandItem>
+                                ))}
+                            </CommandGroup>
+                        </CommandList>
+                    </Command>
+                </div>
+            )
+        }
+
+        case "radio-group-element": {
+            const [defaultVal, optionsStr] = (element.content || "a|Option A,Option B,Option C").split("|")
+            const options = (optionsStr || "Option A,Option B,Option C").split(",").map(o => o.trim()).filter(Boolean)
+            return (
+                <div id={element.htmlId || undefined} className={`${element.cssClasses} space-y-2`} style={baseStyles}>
+                    {element.label && <Label className="text-sm font-medium">{element.label}</Label>}
+                    <RadioGroup defaultValue={defaultVal || options[0]?.toLowerCase().replace(/\s+/g, "-")}>
+                        {options.map(opt => {
+                            const val = opt.toLowerCase().replace(/\s+/g, "-")
+                            return (
+                                <div key={val} className="flex items-center gap-2">
+                                    <RadioGroupItem value={val} id={`${element.id}-${val}`} />
+                                    <Label htmlFor={`${element.id}-${val}`} className="text-sm cursor-pointer">{opt}</Label>
+                                </div>
+                            )
+                        })}
+                    </RadioGroup>
+                </div>
+            )
+        }
+
+        case "breadcrumb-element": {
+            const crumbs = (element.content || "Home,Products,Current Page").split(",").map(c => c.trim()).filter(Boolean)
+            return (
+                <div id={element.htmlId || undefined} className={element.cssClasses} style={baseStyles}>
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            {crumbs.map((crumb, i) => (
+                                <BreadcrumbItem key={i}>
+                                    {i < crumbs.length - 1 ? (
+                                        <>
+                                            <BreadcrumbLink href="#">{crumb}</BreadcrumbLink>
+                                            <BreadcrumbSeparator />
+                                        </>
+                                    ) : (
+                                        <BreadcrumbPage>{crumb}</BreadcrumbPage>
+                                    )}
+                                </BreadcrumbItem>
+                            ))}
+                        </BreadcrumbList>
+                    </Breadcrumb>
+                </div>
+            )
+        }
+
+        case "pagination-element": {
+            const [currentPage, totalPages] = (element.content || "1|10").split("|").map(Number)
+            const current = currentPage || 1
+            const total = totalPages || 10
+            return (
+                <div id={element.htmlId || undefined} className={element.cssClasses} style={baseStyles}>
+                    <Pagination>
+                        <PaginationContent>
+                            <PaginationItem>
+                                <PaginationPrevious href="#" />
+                            </PaginationItem>
+                            {current > 2 && (
+                                <PaginationItem>
+                                    <PaginationLink href="#">1</PaginationLink>
+                                </PaginationItem>
+                            )}
+                            {current > 3 && (
+                                <PaginationItem>
+                                    <PaginationEllipsis />
+                                </PaginationItem>
+                            )}
+                            {current > 1 && (
+                                <PaginationItem>
+                                    <PaginationLink href="#">{current - 1}</PaginationLink>
+                                </PaginationItem>
+                            )}
+                            <PaginationItem>
+                                <PaginationLink href="#" isActive>{current}</PaginationLink>
+                            </PaginationItem>
+                            {current < total && (
+                                <PaginationItem>
+                                    <PaginationLink href="#">{current + 1}</PaginationLink>
+                                </PaginationItem>
+                            )}
+                            {current < total - 2 && (
+                                <PaginationItem>
+                                    <PaginationEllipsis />
+                                </PaginationItem>
+                            )}
+                            {current < total - 1 && (
+                                <PaginationItem>
+                                    <PaginationLink href="#">{total}</PaginationLink>
+                                </PaginationItem>
+                            )}
+                            <PaginationItem>
+                                <PaginationNext href="#" />
+                            </PaginationItem>
+                        </PaginationContent>
+                    </Pagination>
+                </div>
+            )
+        }
+
+        case "callout": {
+            const [type, title, description] = (element.content || "info|Note|This is a callout message.").split("|")
+            const variantMap: Record<string, { bg: string; border: string; icon: React.ReactNode }> = {
+                info: { bg: "bg-blue-50", border: "border-blue-200", icon: <Info className="h-4 w-4 text-blue-600" /> },
+                warning: { bg: "bg-amber-50", border: "border-amber-200", icon: <AlertCircle className="h-4 w-4 text-amber-600" /> },
+                error: { bg: "bg-red-50", border: "border-red-200", icon: <AlertCircle className="h-4 w-4 text-red-600" /> },
+                success: { bg: "bg-emerald-50", border: "border-emerald-200", icon: <Info className="h-4 w-4 text-emerald-600" /> },
+            }
+            const v = variantMap[type] || variantMap.info
+            return (
+                <div
+                    id={element.htmlId || undefined}
+                    className={`${element.cssClasses} flex gap-3 rounded-lg border p-4 ${v.bg} ${v.border}`}
+                    style={baseStyles}
+                >
+                    <span className="mt-0.5 shrink-0">{v.icon}</span>
+                    <div>
+                        {title && <p className="text-sm font-semibold">{title}</p>}
+                        {description && <p className="text-sm text-muted-foreground mt-0.5">{description}</p>}
+                    </div>
+                </div>
+            )
+        }
+
+        case "ribbon": {
+            const [label, subtitle] = (element.content || "New|Limited time offer").split("|")
+            return (
+                <div
+                    id={element.htmlId || undefined}
+                    className={`${element.cssClasses} relative overflow-hidden rounded-lg`}
+                    style={baseStyles}
+                >
+                    <div className="flex items-center gap-3 rounded-lg border bg-foreground px-4 py-2.5">
+                        <Flag className="h-4 w-4 text-background" />
+                        <div>
+                            <p className="text-sm font-bold text-background">{label || "New"}</p>
+                            {subtitle && <p className="text-xs text-background/70">{subtitle}</p>}
+                        </div>
+                    </div>
+                </div>
+            )
+        }
+
         default:
             return null
     }
@@ -957,6 +1423,7 @@ function ColumnElement({
     selectedElementId,
     hoveredElementId,
     editingElementId,
+    showPreview,
     onSelect,
     onHover,
     onInlineEdit,
@@ -973,6 +1440,7 @@ function ColumnElement({
     selectedElementId: string | null
     hoveredElementId: string | null
     editingElementId: string | null
+    showPreview: boolean
     onSelect: (elementId: string, sectionId: string) => void
     onHover: (id: string | null) => void
     onInlineEdit: (id: string, content: string) => void
@@ -1015,8 +1483,8 @@ function ColumnElement({
                     <button
                         key={n}
                         className={`h-5 w-5 rounded text-[10px] font-medium transition-colors ${colCount === n
-                                ? "bg-foreground text-background"
-                                : "bg-muted text-muted-foreground hover:bg-accent"
+                            ? "bg-foreground text-background"
+                            : "bg-muted text-muted-foreground hover:bg-accent"
                             }`}
                         onClick={(e) => {
                             e.stopPropagation()
@@ -1039,8 +1507,8 @@ function ColumnElement({
                         <div
                             key={colIndex}
                             className={`min-h-[80px] border-2 border-dashed rounded-lg p-2 transition-colors ${dropTarget?.colIndex === colIndex
-                                    ? "border-blue-400 bg-blue-50/50"
-                                    : "border-muted-foreground/20 hover:border-muted-foreground/40"
+                                ? "border-blue-400 bg-blue-50/50"
+                                : "border-muted-foreground/20 hover:border-muted-foreground/40"
                                 }`}
                             onDragOver={(e) => {
                                 e.preventDefault()
@@ -1105,6 +1573,7 @@ function ColumnElement({
                                         selectedElementId={selectedElementId}
                                         hoveredElementId={hoveredElementId}
                                         editingElementId={editingElementId}
+                                        showPreview={showPreview}
                                         onSelect={onSelect}
                                         onHover={onHover}
                                         onInlineEdit={onInlineEdit}
@@ -1143,6 +1612,7 @@ function CanvasElement({
     selectedElementId,
     hoveredElementId,
     editingElementId,
+    showPreview,
     onSelect,
     onHover,
     onInlineEdit,
@@ -1159,6 +1629,7 @@ function CanvasElement({
     selectedElementId: string | null
     hoveredElementId: string | null
     editingElementId: string | null
+    showPreview: boolean
     onSelect: (elementId: string, sectionId: string) => void
     onHover: (id: string | null) => void
     onInlineEdit: (id: string, content: string) => void
@@ -1174,10 +1645,10 @@ function CanvasElement({
     return (
         <div
             className={`relative group transition-all duration-100 rounded ${isSelected
-                    ? "ring-2 ring-blue-500 ring-offset-2"
-                    : isHovered
-                        ? "ring-1 ring-blue-300 ring-offset-1"
-                        : ""
+                ? "ring-2 ring-blue-500 ring-offset-2"
+                : isHovered
+                    ? "ring-1 ring-blue-300 ring-offset-1"
+                    : ""
                 }`}
             draggable={element.type !== "columns"}
             onDragStart={onDragStart}
@@ -1249,6 +1720,7 @@ function CanvasElement({
                 element={element}
                 isEditing={editingElementId === element.id}
                 shopProducts={shopProducts}
+                showPreview={showPreview}
                 onInlineEdit={onInlineEdit}
             />
         </div>
@@ -1264,6 +1736,7 @@ function DroppableSection({
     editingElementId,
     dropIndicator,
     isDragActive,
+    showPreview,
     onSelect,
     onHover,
     onInlineEdit,
@@ -1288,6 +1761,7 @@ function DroppableSection({
     editingElementId: string | null
     dropIndicator: { sectionId: string; index: number } | null
     isDragActive: boolean
+    showPreview: boolean
     onSelect: (elementId: string, sectionId: string) => void
     onHover: (id: string | null) => void
     onInlineEdit: (id: string, content: string) => void
@@ -1336,8 +1810,8 @@ function DroppableSection({
     return (
         <div
             className={`rounded-lg border-2 transition-all duration-200 mb-3 relative ${isDragActive
-                    ? "border-dashed border-blue-300 bg-blue-50/20"
-                    : "border-transparent hover:border-border"
+                ? "border-dashed border-blue-300 bg-blue-50/20"
+                : "border-transparent hover:border-border"
                 }`}
             onDragOver={(e) => {
                 e.preventDefault()
@@ -1427,10 +1901,10 @@ function DroppableSection({
                                     {element.type === "columns" ? (
                                         <div
                                             className={`relative group transition-all duration-100 rounded ${element.id === selectedElementId
-                                                    ? "ring-2 ring-blue-500 ring-offset-2"
-                                                    : element.id === hoveredElementId
-                                                        ? "ring-1 ring-blue-300 ring-offset-1"
-                                                        : ""
+                                                ? "ring-2 ring-blue-500 ring-offset-2"
+                                                : element.id === hoveredElementId
+                                                    ? "ring-1 ring-blue-300 ring-offset-1"
+                                                    : ""
                                                 }`}
                                             onMouseEnter={() => onHover(element.id)}
                                             onMouseLeave={() => onHover(null)}
@@ -1476,6 +1950,7 @@ function DroppableSection({
                                                 selectedElementId={selectedElementId}
                                                 hoveredElementId={hoveredElementId}
                                                 editingElementId={editingElementId}
+                                                showPreview={showPreview}
                                                 onSelect={onSelect}
                                                 onHover={onHover}
                                                 onInlineEdit={onInlineEdit}
@@ -1505,6 +1980,7 @@ function DroppableSection({
                                             selectedElementId={selectedElementId}
                                             hoveredElementId={hoveredElementId}
                                             editingElementId={editingElementId}
+                                            showPreview={showPreview}
                                             onSelect={onSelect}
                                             onHover={onHover}
                                             onInlineEdit={onInlineEdit}
@@ -2032,6 +2508,7 @@ export function BuilderCanvas({
                                                                 element={child}
                                                                 isEditing={false}
                                                                 shopProducts={shopProducts}
+                                                                showPreview={showPreview}
                                                                 onInlineEdit={() => { }}
                                                             />
                                                         ))}
@@ -2042,6 +2519,7 @@ export function BuilderCanvas({
                                             <RenderElement
                                                 element={el}
                                                 isEditing={false}
+                                                showPreview={showPreview}
                                                 shopProducts={shopProducts}
                                                 onInlineEdit={() => { }}
                                             />
@@ -2091,6 +2569,7 @@ export function BuilderCanvas({
                             editingElementId={editingElementId}
                             dropIndicator={dropIndicator}
                             isDragActive={isDragActive}
+                            showPreview={showPreview}
                             onSelect={handleSelect}
                             onHover={setHoveredElementId}
                             onInlineEdit={handleInlineEdit}

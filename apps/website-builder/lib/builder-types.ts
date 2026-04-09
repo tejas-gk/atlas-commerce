@@ -34,6 +34,27 @@ export type ElementType =
     | "recommended-products"
     | "product-filters"
     | "shopping-cart"
+    // shadcn/ui components
+    | "card-element"
+    | "tabs-element"
+    | "avatar-element"
+    | "alert-element"
+    | "dialog-element"
+    | "popover-element"
+    | "collapsible-element"
+    | "hover-card-element"
+    | "skeleton-element"
+    | "select-element"
+    | "checkbox-element"
+    | "switch-element"
+    | "slider-element"
+    | "carousel-element"
+    | "command-element"
+    | "radio-group-element"
+    | "breadcrumb-element"
+    | "pagination-element"
+    | "callout"
+    | "ribbon"
 
 
 export interface ElementStyles {
@@ -116,7 +137,7 @@ export interface CatalogItem {
     type: ElementType
     label: string
     icon: string
-    category: "layout" | "basic" | "media" | "advanced" | "forms" | "interactive"
+    category: "layout" | "basic" | "media" | "advanced" | "forms" | "interactive" | "shadcn"
     description: string
 }
 
@@ -168,6 +189,28 @@ export const ELEMENT_CATALOG: CatalogItem[] = [
 
     // Advanced
     { type: "custom-code", label: "HTML Code", icon: "Code", category: "advanced", description: "Custom HTML/CSS" },
+
+    // shadcn/ui Components
+    { type: "card-element", label: "Card", icon: "CreditCard", category: "shadcn", description: "Card container" },
+    { type: "tabs-element", label: "Tabs", icon: "PanelTop", category: "shadcn", description: "Tab navigation panel" },
+    { type: "avatar-element", label: "Avatar", icon: "UserCircle2", category: "shadcn", description: "User avatar" },
+    { type: "alert-element", label: "Alert", icon: "AlertCircle", category: "shadcn", description: "Alert/notification box" },
+    { type: "dialog-element", label: "Dialog", icon: "AppWindow", category: "shadcn", description: "Modal dialog trigger" },
+    { type: "popover-element", label: "Popover", icon: "MessageCircle", category: "shadcn", description: "Floating popover" },
+    { type: "collapsible-element", label: "Collapsible", icon: "ChevronsUpDown", category: "shadcn", description: "Collapsible content" },
+    { type: "hover-card-element", label: "Hover Card", icon: "MousePointer2", category: "shadcn", description: "Card revealed on hover" },
+    { type: "skeleton-element", label: "Skeleton", icon: "Rows3", category: "shadcn", description: "Loading skeleton" },
+    { type: "select-element", label: "Select", icon: "ListFilter", category: "shadcn", description: "Dropdown select" },
+    { type: "checkbox-element", label: "Checkbox", icon: "CheckSquare", category: "shadcn", description: "Checkbox input" },
+    { type: "switch-element", label: "Switch", icon: "ToggleLeft", category: "shadcn", description: "Toggle switch" },
+    { type: "slider-element", label: "Slider", icon: "SlidersHorizontal", category: "shadcn", description: "Range slider" },
+    { type: "carousel-element", label: "Carousel", icon: "GalleryHorizontal", category: "shadcn", description: "Sliding carousel" },
+    { type: "command-element", label: "Command", icon: "CommandIcon", category: "shadcn", description: "Command palette search" },
+    { type: "radio-group-element", label: "Radio Group", icon: "CircleDot", category: "shadcn", description: "Radio button group" },
+    { type: "breadcrumb-element", label: "Breadcrumb", icon: "ChevronRight", category: "shadcn", description: "Breadcrumb navigation" },
+    { type: "pagination-element", label: "Pagination", icon: "MoreHorizontal", category: "shadcn", description: "Page pagination" },
+    { type: "callout", label: "Callout", icon: "Info", category: "shadcn", description: "Info callout box" },
+    { type: "ribbon", label: "Ribbon", icon: "Flag", category: "shadcn", description: "Banner ribbon" },
 ]
 
 // ───── Default content for new elements ─────
@@ -243,6 +286,46 @@ export function getDefaultContent(type: ElementType): string {
             return "Browse Products"
         case "shopping-cart":
             return "Cart"
+        case "card-element":
+            return "Card Title|This is the card description with supporting text.|Card Footer"
+        case "tabs-element":
+            return "Tab 1|Content for tab one goes here.\nTab 2|Content for tab two goes here.\nTab 3|Content for tab three goes here."
+        case "avatar-element":
+            return "John Doe|JD"
+        case "alert-element":
+            return "Heads up!|You can add components to your website using the sidebar."
+        case "dialog-element":
+            return "Open Dialog|Dialog Title|This is the dialog content. You can put anything here."
+        case "popover-element":
+            return "Open Popover|Popover Title|This is popover content."
+        case "collapsible-element":
+            return "Toggle Section|This is the hidden collapsible content that appears when you click the trigger."
+        case "hover-card-element":
+            return "Hover me|@username|Bio or description shown on hover."
+        case "skeleton-element":
+            return "3"
+        case "select-element":
+            return "Select an option|Option 1,Option 2,Option 3,Option 4"
+        case "checkbox-element":
+            return "Accept terms and conditions|true"
+        case "switch-element":
+            return "Enable notifications|false"
+        case "slider-element":
+            return "50|0|100"
+        case "carousel-element":
+            return "Slide 1|First slide content\nSlide 2|Second slide content\nSlide 3|Third slide content"
+        case "command-element":
+            return "Search...\nHome\nSettings\nProfile\nHelp"
+        case "radio-group-element":
+            return "default|Option A,Option B,Option C"
+        case "breadcrumb-element":
+            return "Home,Products,Electronics,Headphones"
+        case "pagination-element":
+            return "1|10"
+        case "callout":
+            return "info|Note|This is an important callout message for your visitors."
+        case "ribbon":
+            return "New|Sale ends soon!"
         default:
             return ""
     }

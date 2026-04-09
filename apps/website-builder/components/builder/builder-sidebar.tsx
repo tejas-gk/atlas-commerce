@@ -66,6 +66,25 @@ import {
     Store,
     Sparkles,
     SlidersHorizontal,
+    ShoppingBag,
+    // shadcn icons
+    CreditCard,
+    PanelTop,
+    UserCircle2,
+    AlertCircle,
+    AppWindow,
+    MessageCircle,
+    MousePointer2,
+    Rows3,
+    ListFilter,
+    CheckSquare,
+    ToggleLeft,
+    GalleryHorizontal,
+    Command as CommandIcon,
+    CircleDot,
+    MoreHorizontal,
+    Info,
+    Flag,
 } from "lucide-react"
 
 // ───── Icon map for catalog items ─────
@@ -101,6 +120,26 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
     Store,
     Sparkles,
     SlidersHorizontal,
+    ShoppingBag,
+    // shadcn icons
+    CreditCard,
+    PanelTop,
+    UserCircle2,
+    AlertCircle,
+    AppWindow,
+    MessageCircle,
+    MousePointer2,
+    Rows3,
+    ListFilter,
+    CheckSquare,
+    ToggleLeft,
+    GalleryHorizontal,
+    CommandIcon,
+    CircleDot,
+    ChevronRight,
+    MoreHorizontal,
+    Info,
+    Flag,
 }
 
 // ───── Draggable Sidebar Element Card ─────
@@ -183,8 +222,8 @@ function LayerTree({
                 <div key={section.id}>
                     <button
                         className={`w-full text-left text-xs px-2 py-1.5 rounded-md flex items-center gap-1.5 transition-colors ${selectedSectionId === section.id && !selectedElementId
-                                ? "bg-accent text-accent-foreground font-medium"
-                                : "text-foreground hover:bg-muted"
+                            ? "bg-accent text-accent-foreground font-medium"
+                            : "text-foreground hover:bg-muted"
                             }`}
                         onClick={() => onSelectSection(section.id)}
                     >
@@ -202,8 +241,8 @@ function LayerTree({
                             <div key={el.id}>
                                 <button
                                     className={`w-full text-left text-[11px] px-2 py-1 rounded-md truncate flex items-center gap-1.5 transition-colors ${selectedElementId === el.id
-                                            ? "bg-blue-100 text-blue-700 font-medium"
-                                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                                        ? "bg-blue-100 text-blue-700 font-medium"
+                                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
                                         }`}
                                     onClick={() => onSelectElement(el.id, section.id)}
                                 >
@@ -222,8 +261,8 @@ function LayerTree({
                                                 <button
                                                     key={child.id}
                                                     className={`w-full text-left text-[10px] px-2 py-0.5 rounded-md truncate transition-colors ${selectedElementId === child.id
-                                                            ? "bg-blue-100 text-blue-700"
-                                                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                                                        ? "bg-blue-100 text-blue-700"
+                                                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
                                                         }`}
                                                     onClick={() =>
                                                         onSelectElement(child.id, section.id)
@@ -285,15 +324,15 @@ function PagesPanel({
                     <div
                         key={page.id}
                         className={`flex items-center gap-2 px-2.5 py-2 rounded-lg transition-all cursor-pointer group ${activePageId === page.id
-                                ? "bg-blue-50 border border-blue-200 text-blue-800"
-                                : "border border-transparent hover:bg-muted hover:border-border"
+                            ? "bg-blue-50 border border-blue-200 text-blue-800"
+                            : "border border-transparent hover:bg-muted hover:border-border"
                             }`}
                         onClick={() => onSelectPage(page.id)}
                     >
                         <div
                             className={`h-7 w-7 rounded-md flex items-center justify-center shrink-0 ${activePageId === page.id
-                                    ? "bg-blue-100"
-                                    : "bg-muted"
+                                ? "bg-blue-100"
+                                : "bg-muted"
                                 }`}
                         >
                             {page.isHome ? (
@@ -441,7 +480,47 @@ export function PropertiesPanel({
                                                                 ? "Social names (comma-separated)"
                                                                 : element.type === "icon"
                                                                     ? "Icon name"
-                                                                    : "Text Content"}
+                                                                    : element.type === "card-element"
+                                                                        ? "Title|Description|Footer"
+                                                                        : element.type === "tabs-element"
+                                                                            ? "Tab Label|Content (one per line)"
+                                                                            : element.type === "avatar-element"
+                                                                                ? "Name|Initials|Image URL"
+                                                                                : element.type === "alert-element"
+                                                                                    ? "Title|Description"
+                                                                                    : element.type === "dialog-element"
+                                                                                        ? "Button Label|Title|Description"
+                                                                                        : element.type === "popover-element"
+                                                                                            ? "Button Label|Title|Description"
+                                                                                            : element.type === "collapsible-element"
+                                                                                                ? "Trigger|Hidden content"
+                                                                                                : element.type === "hover-card-element"
+                                                                                                    ? "Trigger|Name|Description"
+                                                                                                    : element.type === "skeleton-element"
+                                                                                                        ? "Row count (1-6)"
+                                                                                                        : element.type === "select-element"
+                                                                                                            ? "Placeholder|Option 1,Option 2,..."
+                                                                                                            : element.type === "checkbox-element"
+                                                                                                                ? "Label text"
+                                                                                                                : element.type === "switch-element"
+                                                                                                                    ? "Label text"
+                                                                                                                    : element.type === "slider-element"
+                                                                                                                        ? "Default|Min|Max"
+                                                                                                                        : element.type === "carousel-element"
+                                                                                                                            ? "Title|Content (one per line)"
+                                                                                                                            : element.type === "command-element"
+                                                                                                                                ? "Placeholder (line 1), then list items"
+                                                                                                                                : element.type === "radio-group-element"
+                                                                                                                                    ? "Default|Option 1,Option 2,..."
+                                                                                                                                    : element.type === "breadcrumb-element"
+                                                                                                                                        ? "Crumb 1,Crumb 2,... (comma-separated)"
+                                                                                                                                        : element.type === "pagination-element"
+                                                                                                                                            ? "Current page|Total pages"
+                                                                                                                                            : element.type === "callout"
+                                                                                                                                                ? "type (info/warning/error)|Title|Description"
+                                                                                                                                                : element.type === "ribbon"
+                                                                                                                                                    ? "Label|Subtitle"
+                                                                                                                                                    : "Text Content"}
                                 </Label>
                                 <Textarea
                                     value={element.content}
@@ -454,32 +533,36 @@ export function PropertiesPanel({
                         )}
 
                         {/* Form-specific fields */}
-                        {(element.type === "form-input" || element.type === "form-textarea") && (
-                            <>
-                                <div className="space-y-1.5">
-                                    <Label className="text-xs">Label</Label>
-                                    <Input
-                                        value={element.label || ""}
-                                        onChange={(e) =>
-                                            onUpdate(element.id, { label: e.target.value })
-                                        }
-                                        className="h-7 text-xs"
-                                        placeholder="Field label"
-                                    />
-                                </div>
-                                <div className="space-y-1.5">
-                                    <Label className="text-xs">Placeholder</Label>
-                                    <Input
-                                        value={element.placeholder || ""}
-                                        onChange={(e) =>
-                                            onUpdate(element.id, { placeholder: e.target.value })
-                                        }
-                                        className="h-7 text-xs"
-                                        placeholder="Placeholder text"
-                                    />
-                                </div>
-                            </>
-                        )}
+                        {(element.type === "form-input" || element.type === "form-textarea" ||
+                            element.type === "select-element" || element.type === "slider-element" ||
+                            element.type === "radio-group-element") && (
+                                <>
+                                    <div className="space-y-1.5">
+                                        <Label className="text-xs">Label</Label>
+                                        <Input
+                                            value={element.label || ""}
+                                            onChange={(e) =>
+                                                onUpdate(element.id, { label: e.target.value })
+                                            }
+                                            className="h-7 text-xs"
+                                            placeholder="Field label"
+                                        />
+                                    </div>
+                                    {(element.type === "form-input" || element.type === "form-textarea") && (
+                                        <div className="space-y-1.5">
+                                            <Label className="text-xs">Placeholder</Label>
+                                            <Input
+                                                value={element.placeholder || ""}
+                                                onChange={(e) =>
+                                                    onUpdate(element.id, { placeholder: e.target.value })
+                                                }
+                                                className="h-7 text-xs"
+                                                placeholder="Placeholder text"
+                                            />
+                                        </div>
+                                    )}
+                                </>
+                            )}
 
                         {(
                             element.type === "product-card" ||
@@ -487,66 +570,66 @@ export function PropertiesPanel({
                             element.type === "recommended-products" ||
                             element.type === "product-filters"
                         ) && (
-                            <>
-                                <div className="space-y-1.5">
-                                    <Label className="text-xs">Product Source</Label>
-                                    <select
-                                        value={element.dataSource || "shop-products"}
-                                        onChange={(e) =>
-                                            onUpdate(element.id, {
-                                                dataSource: e.target.value as "manual" | "shop-products",
-                                            })
-                                        }
-                                        className="h-8 w-full rounded-md border border-input bg-background px-2 text-xs"
-                                    >
-                                        <option value="shop-products">Sync from active shop</option>
-                                        <option value="manual">Manual content</option>
-                                    </select>
-                                </div>
-
-                                {element.type === "product-card" && (
+                                <>
                                     <div className="space-y-1.5">
-                                        <Label className="text-xs">Linked Product</Label>
+                                        <Label className="text-xs">Product Source</Label>
                                         <select
-                                            value={element.productId || ""}
+                                            value={element.dataSource || "shop-products"}
                                             onChange={(e) =>
                                                 onUpdate(element.id, {
-                                                    productId: e.target.value || null,
+                                                    dataSource: e.target.value as "manual" | "shop-products",
                                                 })
                                             }
                                             className="h-8 w-full rounded-md border border-input bg-background px-2 text-xs"
                                         >
-                                            <option value="">Auto pick first product</option>
-                                            {products.map((product) => (
-                                                <option key={product.id} value={product.id}>
-                                                    {product.title}
-                                                </option>
-                                            ))}
+                                            <option value="shop-products">Sync from active shop</option>
+                                            <option value="manual">Manual content</option>
                                         </select>
                                     </div>
-                                )}
 
-                                {(element.type === "product-grid" ||
-                                    element.type === "recommended-products" ||
-                                    element.type === "product-filters") && (
-                                    <div className="space-y-1.5">
-                                        <Label className="text-xs">Products to Show</Label>
-                                        <Input
-                                            type="number"
-                                            min={1}
-                                            max={24}
-                                            value={String(element.productLimit || 4)}
-                                            onChange={(e) =>
-                                                onUpdate(element.id, {
-                                                    productLimit: Math.max(1, Number(e.target.value) || 4),
-                                                })
-                                            }
-                                            className="h-7 text-xs"
-                                        />
-                                    </div>
-                                )}
-                            </>
-                        )}
+                                    {element.type === "product-card" && (
+                                        <div className="space-y-1.5">
+                                            <Label className="text-xs">Linked Product</Label>
+                                            <select
+                                                value={element.productId || ""}
+                                                onChange={(e) =>
+                                                    onUpdate(element.id, {
+                                                        productId: e.target.value || null,
+                                                    })
+                                                }
+                                                className="h-8 w-full rounded-md border border-input bg-background px-2 text-xs"
+                                            >
+                                                <option value="">Auto pick first product</option>
+                                                {products.map((product) => (
+                                                    <option key={product.id} value={product.id}>
+                                                        {product.title}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    )}
+
+                                    {(element.type === "product-grid" ||
+                                        element.type === "recommended-products" ||
+                                        element.type === "product-filters") && (
+                                            <div className="space-y-1.5">
+                                                <Label className="text-xs">Products to Show</Label>
+                                                <Input
+                                                    type="number"
+                                                    min={1}
+                                                    max={24}
+                                                    value={String(element.productLimit || 4)}
+                                                    onChange={(e) =>
+                                                        onUpdate(element.id, {
+                                                            productLimit: Math.max(1, Number(e.target.value) || 4),
+                                                        })
+                                                    }
+                                                    className="h-7 text-xs"
+                                                />
+                                            </div>
+                                        )}
+                                </>
+                            )}
 
                         {/* Action links */}
                         {["button", "search-bar", "product-card", "oauth-login", "image"].includes(element.type) && (
@@ -616,8 +699,8 @@ export function PropertiesPanel({
                                             <button
                                                 key={name}
                                                 className={`h-8 w-full rounded text-lg flex items-center justify-center transition-colors ${element.content === name
-                                                        ? "bg-foreground text-background"
-                                                        : "bg-muted hover:bg-accent"
+                                                    ? "bg-foreground text-background"
+                                                    : "bg-muted hover:bg-accent"
                                                     }`}
                                                 onClick={() => onUpdate(element.id, { content: name })}
                                             >
@@ -1141,6 +1224,7 @@ export function BuilderSidebar({
         { key: "forms", title: "Forms" },
         { key: "interactive", title: "Interactive" },
         { key: "advanced", title: "Advanced" },
+        { key: "shadcn", title: "shadcn/ui Components" },
     ] as const
 
     return (
