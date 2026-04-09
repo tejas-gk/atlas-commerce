@@ -4,6 +4,9 @@ export type ElementType =
     | "paragraph"
     | "image"
     | "button"
+    | "search-bar"
+    | "hero-slider"
+    | "oauth-login"
     | "navigation"
     | "list"
     | "custom-code"
@@ -27,6 +30,9 @@ export type ElementType =
     | "countdown"
     | "gallery"
     | "product-card"
+    | "product-grid"
+    | "recommended-products"
+    | "product-filters"
     | "shopping-cart"
 
 
@@ -48,6 +54,8 @@ export interface ElementStyles {
     boxShadow?: string
     letterSpacing?: string
     lineHeight?: string
+    backgroundImage?: string
+    price?: string
 }
 
 export interface BuilderElement {
@@ -68,6 +76,12 @@ export interface BuilderElement {
     label?: string
     // Link-specific
     href?: string
+    openInNewTab?: boolean
+    mediaItems?: string[]
+    // Commerce-specific
+    dataSource?: "manual" | "shop-products"
+    productId?: string | null
+    productLimit?: number
 }
 
 export interface BuilderSection {
@@ -116,6 +130,8 @@ export const ELEMENT_CATALOG: CatalogItem[] = [
     { type: "heading", label: "Heading", icon: "Heading1", category: "basic", description: "Title text" },
     { type: "paragraph", label: "Text", icon: "Type", category: "basic", description: "Body text" },
     { type: "button", label: "Button", icon: "RectangleHorizontal", category: "basic", description: "Clickable button" },
+    { type: "search-bar", label: "Search Bar", icon: "Search", category: "basic", description: "Store search input" },
+    { type: "oauth-login", label: "OAuth Login", icon: "LogIn", category: "basic", description: "Customer sign-in CTA" },
     { type: "navigation", label: "Nav Links", icon: "Menu", category: "basic", description: "Navigation menu" },
     { type: "list", label: "List", icon: "List", category: "basic", description: "Bulleted list" },
     { type: "quote", label: "Quote", icon: "Quote", category: "basic", description: "Block quote" },
@@ -124,6 +140,7 @@ export const ELEMENT_CATALOG: CatalogItem[] = [
 
     // Media
     { type: "image", label: "Image", icon: "ImageIcon", category: "media", description: "Picture element" },
+    { type: "hero-slider", label: "Hero Slider", icon: "Images", category: "media", description: "Rotating hero banners" },
     { type: "video", label: "Video", icon: "Play", category: "media", description: "Embed video" },
     { type: "gallery", label: "Gallery", icon: "LayoutGrid", category: "media", description: "Image gallery" },
     { type: "map", label: "Map", icon: "MapPin", category: "media", description: "Google Map" },
@@ -132,6 +149,9 @@ export const ELEMENT_CATALOG: CatalogItem[] = [
 
     // e-Commerce
     { type: "product-card", label: "Product Card", icon: "ShoppingCart", category: "advanced", description: "Individual product display" },
+    { type: "product-grid", label: "Product Grid", icon: "Store", category: "advanced", description: "Grid of shop products" },
+    { type: "recommended-products", label: "Recommendations", icon: "Sparkles", category: "advanced", description: "Recommended products shelf" },
+    { type: "product-filters", label: "Product Filters", icon: "SlidersHorizontal", category: "advanced", description: "Filterable product listing" },
     { type: "shopping-cart", label: "Shopping Cart", icon: "ShoppingBag", category: "advanced", description: "Cart summary" },
 
 
@@ -159,8 +179,18 @@ export function getDefaultContent(type: ElementType): string {
             return "This is a new paragraph. Click to edit this text and add your own content."
         case "button":
             return "Click Me"
+        case "search-bar":
+            return "Search products, collections, and categories"
+        case "oauth-login":
+            return "Continue with Google"
         case "image":
             return "/placeholder.svg?height=200&width=400"
+        case "hero-slider":
+            return [
+                "Fresh arrivals|Discover this week's best sellers|/placeholder.svg?height=420&width=1200",
+                "Build your storefront|Swap banners, products, and copy in seconds|/placeholder.svg?height=420&width=1200",
+                "Launch seasonal drops|Run promotions with custom hero slides|/placeholder.svg?height=420&width=1200",
+            ].join("\n")
         case "navigation":
             return '<a href="#">Home</a><a href="#">About</a><a href="#">Services</a><a href="#">Contact</a>'
         case "list":
@@ -203,6 +233,16 @@ export function getDefaultContent(type: ElementType): string {
             return "2026-12-31T00:00:00"
         case "gallery":
             return "/placeholder.svg?height=200&width=200,/placeholder.svg?height=200&width=200,/placeholder.svg?height=200&width=200,/placeholder.svg?height=200&width=200"
+        case "product-card":
+            return "Signature Product"
+        case "product-grid":
+            return "Shop all products"
+        case "recommended-products":
+            return "Recommended for you"
+        case "product-filters":
+            return "Browse Products"
+        case "shopping-cart":
+            return "Cart"
         default:
             return ""
     }
@@ -238,8 +278,38 @@ export function getDefaultStyles(type: ElementType): ElementStyles {
                 padding: { top: "10", right: "24", bottom: "10", left: "24" },
                 borderRadius: "6px",
             }
+        case "search-bar":
+            return {
+                ...base,
+                color: "#111827",
+                backgroundColor: "#ffffff",
+                padding: { top: "12", right: "18", bottom: "12", left: "18" },
+                borderRadius: "999px",
+                border: "1px solid #d1d5db",
+                boxShadow: "0 10px 30px rgba(15, 23, 42, 0.08)",
+            }
+        case "oauth-login":
+            return {
+                ...base,
+                width: "auto",
+                backgroundColor: "#ffffff",
+                border: "1px solid #dbeafe",
+                borderRadius: "12px",
+                padding: { top: "12", right: "18", bottom: "12", left: "18" },
+                boxShadow: "0 12px 24px rgba(37, 99, 235, 0.08)",
+            }
         case "image":
             return { ...base, width: "100%" }
+        case "hero-slider":
+            return {
+                ...base,
+                width: "100%",
+                height: "420px",
+                color: "#ffffff",
+                backgroundColor: "#111827",
+                borderRadius: "24px",
+                padding: { top: "32", right: "32", bottom: "32", left: "32" },
+            }
         case "divider":
             return { ...base, margin: { top: "16", right: "0", bottom: "16", left: "0" } }
         case "spacer":
@@ -294,6 +364,36 @@ export function getDefaultStyles(type: ElementType): ElementStyles {
             return { ...base, fontSize: "32px", fontWeight: "bold", alignment: "center" }
         case "gallery":
             return { ...base }
+        case "product-card":
+            return {
+                ...base,
+                width: "100%",
+                borderRadius: "18px",
+                border: "1px solid #e5e7eb",
+                backgroundColor: "#ffffff",
+                boxShadow: "0 12px 30px rgba(15, 23, 42, 0.08)",
+                padding: { top: "0", right: "0", bottom: "0", left: "0" },
+                backgroundImage: "/placeholder.svg?height=240&width=320",
+                price: "49.00",
+            }
+        case "product-grid":
+            return {
+                ...base,
+                width: "100%",
+                padding: { top: "12", right: "0", bottom: "12", left: "0" },
+            }
+        case "recommended-products":
+            return {
+                ...base,
+                width: "100%",
+                padding: { top: "12", right: "0", bottom: "12", left: "0" },
+            }
+        case "product-filters":
+            return {
+                ...base,
+                width: "100%",
+                padding: { top: "12", right: "0", bottom: "12", left: "0" },
+            }
         default:
             return base
     }
@@ -314,6 +414,14 @@ export function createNewElement(type: ElementType): BuilderElement {
         ...(type === "form-input" ? { placeholder: "Enter your email", label: "Email Address" } : {}),
         ...(type === "form-textarea" ? { placeholder: "Type your message here...", label: "Message" } : {}),
         ...(type === "button" ? { href: "#" } : {}),
+        ...(type === "search-bar" ? { href: "/products?query={query}" } : {}),
+        ...(type === "oauth-login" ? { href: "/login" } : {}),
+        ...(type === "product-card" ? { dataSource: "shop-products" as const, productId: null } : {}),
+        ...(type === "product-grid" ? { dataSource: "shop-products" as const, productLimit: 4 } : {}),
+        ...(type === "recommended-products" ? { dataSource: "shop-products" as const, productLimit: 4 } : {}),
+        ...(type === "product-filters" ? { dataSource: "shop-products" as const, productLimit: 8 } : {}),
+        ...(type === "product-card" ? { href: "/product/{slug}", mediaItems: ["/placeholder.svg?height=240&width=320"] } : {}),
+        ...(type === "hero-slider" ? { mediaItems: ["/placeholder.svg?height=420&width=1200", "/placeholder.svg?height=420&width=1200", "/placeholder.svg?height=420&width=1200"] } : {}),
     }
 }
 
@@ -337,6 +445,17 @@ export function createDefaultPage(name: string, slug: string, isHome = false): B
     ]
 
     if (isHome) {
+        const heroSlider = createNewElement("hero-slider")
+        sections[0].elements.unshift(heroSlider)
+
+        const searchBar = createNewElement("search-bar")
+        searchBar.styles = {
+            ...searchBar.styles,
+            margin: { top: "16", right: "auto", bottom: "20", left: "auto" },
+            width: "min(680px, 100%)",
+        }
+        sections[0].elements.push(searchBar)
+
         const btn = createNewElement("button")
         btn.content = "Get Started"
         btn.styles = { ...btn.styles, margin: { top: "0", right: "auto", bottom: "16", left: "auto" } }
@@ -393,6 +512,27 @@ export function createEcommercePages(shopName = "Your Shop"): BuilderPage[] {
         elements: [productHighlights],
     })
 
+    const productGrid = createNewElement("product-grid")
+    catalog.sections.push({
+        id: `section-${Date.now()}-product-grid`,
+        name: "Product Grid",
+        elements: [productGrid],
+    })
+
+    const filters = createNewElement("product-filters")
+    catalog.sections.push({
+        id: `section-${Date.now()}-product-filters`,
+        name: "Filterable Catalog",
+        elements: [filters],
+    })
+
+    const recommendations = createNewElement("recommended-products")
+    home.sections.push({
+        id: `section-${Date.now()}-recommendations`,
+        name: "Recommendations",
+        elements: [recommendations],
+    })
+
     const contact = createDefaultPage("Contact", "contact")
     contact.sections[0].elements[1].content =
         "Add support details, store policies, delivery zones, or a simple contact form."
@@ -417,6 +557,12 @@ export function createStarterWebsitePayload(shopName = "Your Shop") {
             currency: "USD",
             showFeaturedProducts: true,
             showNewsletter: true,
+            enableStoreSearch: true,
+            enableOauthLogin: true,
+            enableRecommendations: true,
+            enableProductFilters: true,
+            enableCart: true,
+            enableWishlist: true,
         },
         seo: {
             title: `${shopName} Online Store`,

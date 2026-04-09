@@ -7,6 +7,12 @@ export interface SellerAuthRecord {
   email: string
   name: string
   activeShopId?: string | null
+  shops?: Array<{
+    id: string
+    name: string
+    website?: string | null
+    isDeleted?: boolean
+  }>
   shop?: {
     id: string
     name: string
@@ -44,6 +50,11 @@ export const authApi = {
     }),
   getLoggedInSeller: async () =>
     request<{ success: boolean; seller: SellerAuthRecord }>(`/auth/api/logged-in-seller`),
+  switchActiveShop: async (shopId: string) =>
+    request<{ success: boolean; seller: SellerAuthRecord }>(`/auth/api/switch-active-shop`, {
+      method: "PUT",
+      body: JSON.stringify({ shopId }),
+    }),
   logoutSeller: async () =>
     request<{ success: boolean }>(`/auth/api/logout-seller`),
 }

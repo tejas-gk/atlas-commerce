@@ -78,27 +78,49 @@ export const websiteApi = {
       method: "POST",
       body: JSON.stringify({ ...(shopId ? { shopId } : {}), ...payload }),
     }),
-  update: async (websiteId: string, payload: Record<string, unknown>) =>
-    request<{ website: WebsiteRecord }>(`/seller/api/websites/${websiteId}`, {
+  update: async (
+    websiteId: string,
+    payload: Record<string, unknown>,
+    shopId?: string
+  ) =>
+    request<{ website: WebsiteRecord }>(
+      `/seller/api/websites/${websiteId}${shopId ? `?shopId=${encodeURIComponent(shopId)}` : ""}`,
+      {
       method: "PUT",
       body: JSON.stringify(payload),
-    }),
-  publish: async (websiteId: string, payload: Record<string, unknown>) =>
+      }
+    ),
+  publish: async (
+    websiteId: string,
+    payload: Record<string, unknown>,
+    shopId?: string
+  ) =>
     request<{ website: WebsiteRecord }>(
-      `/seller/api/websites/${websiteId}/publish`,
+      `/seller/api/websites/${websiteId}/publish${shopId ? `?shopId=${encodeURIComponent(shopId)}` : ""}`,
       {
         method: "POST",
         body: JSON.stringify(payload),
       }
     ),
-  remove: async (websiteId: string, payload?: Record<string, unknown>) =>
-    request<{ message: string }>(`/seller/api/websites/${websiteId}`, {
+  remove: async (
+    websiteId: string,
+    payload?: Record<string, unknown>,
+    shopId?: string
+  ) =>
+    request<{ message: string }>(
+      `/seller/api/websites/${websiteId}${shopId ? `?shopId=${encodeURIComponent(shopId)}` : ""}`,
+      {
       method: "DELETE",
       body: JSON.stringify(payload || {}),
-    }),
-  addDomain: async (websiteId: string, payload: Record<string, unknown>) =>
+      }
+    ),
+  addDomain: async (
+    websiteId: string,
+    payload: Record<string, unknown>,
+    shopId?: string
+  ) =>
     request<{ domain: WebsiteDomainRecord }>(
-      `/seller/api/websites/${websiteId}/domains`,
+      `/seller/api/websites/${websiteId}/domains${shopId ? `?shopId=${encodeURIComponent(shopId)}` : ""}`,
       {
         method: "POST",
         body: JSON.stringify(payload),
@@ -107,10 +129,11 @@ export const websiteApi = {
   connectDomain: async (
     websiteId: string,
     domainId: string,
-    payload?: Record<string, unknown>
+    payload?: Record<string, unknown>,
+    shopId?: string
   ) =>
     request<{ domain: WebsiteDomainRecord }>(
-      `/seller/api/websites/${websiteId}/domains/${domainId}/connect`,
+      `/seller/api/websites/${websiteId}/domains/${domainId}/connect${shopId ? `?shopId=${encodeURIComponent(shopId)}` : ""}`,
       {
         method: "PATCH",
         body: JSON.stringify(payload || {}),
@@ -119,10 +142,11 @@ export const websiteApi = {
   deleteDomain: async (
     websiteId: string,
     domainId: string,
-    payload?: Record<string, unknown>
+    payload?: Record<string, unknown>,
+    shopId?: string
   ) =>
     request<{ message: string }>(
-      `/seller/api/websites/${websiteId}/domains/${domainId}`,
+      `/seller/api/websites/${websiteId}/domains/${domainId}${shopId ? `?shopId=${encodeURIComponent(shopId)}` : ""}`,
       {
         method: "DELETE",
         body: JSON.stringify(payload || {}),

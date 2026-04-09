@@ -1,0 +1,166 @@
+[
+    {
+        "input": "write python function to add two numbers",
+        "output": "def add(a, b): return a + b"
+    },
+    {
+        "input": "reverse string python",
+        "output": "def reverse(s): return s[::-1]"
+    },
+    {
+        "input": "check even number python",
+        "output": "def is_even(n): return n % 2 == 0"
+    },
+    {
+        "input": "sum list python",
+        "output": "def sum_list(lst): return sum(lst)"
+    },
+    {
+        "input": "find maximum in list python",
+        "output": "def find_max(lst): return max(lst)"
+    },
+    {
+        "input": "factorial python function",
+        "output": "def factorial(n): return 1 if n <= 1 else n * factorial(n-1)"
+    },
+    {
+        "input": "check prime number python",
+        "output": "def is_prime(n): return n > 1 and all(n % i != 0 for i in range(2, int(n**0.5) + 1))"
+    },
+    {
+        "input": "merge two dictionaries python",
+        "output": "def merge_dicts(d1, d2): return {**d1, **d2}"
+    },
+    {
+        "input": "remove duplicates from list python",
+        "output": "def remove_dups(lst): return list(set(lst))"
+    },
+    {
+        "input": "count vowels in string python",
+        "output": "def count_vowels(s): return sum(1 for ch in s.lower() if ch in 'aeiou')"
+    },
+    {
+        "input": "fibonacci sequence python generator",
+        "output": "def fibonacci(n): a, b = 0, 1; return [a, b] + [b := a + (a := b) for _ in range(n-2)]"
+    },
+    {
+        "input": "flatten nested list python",
+        "output": "def flatten(lst): return [item for sublist in lst for item in sublist]"
+    },
+    {
+        "input": "check palindrome python",
+        "output": "def is_palindrome(s): s = s.lower().replace(' ', ''); return s == s[::-1]"
+    },
+    {
+        "input": "find second largest number in list python",
+        "output": "def second_largest(lst): return sorted(set(lst))[-2] if len(set(lst)) >= 2 else None"
+    },
+    {
+        "input": "list intersection python",
+        "output": "def intersect(lst1, lst2): return list(set(lst1) & set(lst2))"
+    },
+    {
+        "input": "sort list of tuples by second element python",
+        "output": "def sort_by_second(tuples_list): return sorted(tuples_list, key=lambda x: x[1])"
+    },
+    {
+        "input": "read file line by line python",
+        "output": "def read_lines(filename): return [line.strip() for line in open(filename)]"
+    },
+    {
+        "input": "write string to file python",
+        "output": "def write_file(filename, content): open(filename, 'w').write(content)"
+    },
+    {
+        "input": "current datetime python function",
+        "output": "def now(): from datetime import datetime; return datetime.now()"
+    },
+    {
+        "input": "sleep for seconds python",
+        "output": "def wait(secs): import time; time.sleep(secs)"
+    },
+    {
+        "input": "random number between range python",
+        "output": "def rand_between(a, b): import random; return random.randint(a, b)"
+    },
+    {
+        "input": "check if key exists in dictionary python",
+        "output": "def key_exists(d, key): return key in d"
+    },
+    {
+        "input": "square all elements in list python",
+        "output": "def square_list(lst): return [x**2 for x in lst]"
+    },
+    {
+        "input": "filter odd numbers from list python",
+        "output": "def filter_odd(lst): return [x for x in lst if x % 2 != 0]"
+    },
+    {
+        "input": "convert celsius to fahrenheit python",
+        "output": "def celsius_to_f(c): return (c * 9/5) + 32"
+    },
+    {
+        "input": "count occurrences of element in list python",
+        "output": "def count_occurrences(lst, elem): return lst.count(elem)"
+    },
+    {
+        "input": "find common elements in three lists python",
+        "output": "def common_three(lst1, lst2, lst3): return list(set(lst1) & set(lst2) & set(lst3))"
+    },
+    {
+        "input": "binary search python function",
+        "output": "def binary_search(arr, x): left, right = 0, len(arr)-1; return any(arr[mid] == x or (arr[mid] < x and (left := mid+1)) or (right := mid-1) for mid in range(len(arr)))"
+    },
+    {
+        "input": "bubble sort python",
+        "output": "def bubble_sort(arr): n = len(arr); return [arr := [arr[j-1] if arr[j-1] > arr[j] else (arr[j-1], arr[j] := arr[j-1]) for j in range(n-i)] for i in range(n)]"
+    },
+    {
+        "input": "anagram check python",
+        "output": "def is_anagram(s1, s2): return sorted(s1.lower().replace(' ', '')) == sorted(s2.lower().replace(' ', ''))"
+    },
+    {
+        "input": "transpose matrix python",
+        "output": "def transpose(matrix): return list(zip(*matrix))"
+    },
+    {
+        "input": "split list into chunks python",
+        "output": "def chunk_list(lst, size): return [lst[i:i+size] for i in range(0, len(lst), size)]"
+    },
+    {
+        "input": "get unique characters from string python",
+        "output": "def unique_chars(s): return ''.join(sorted(set(s)))"
+    },
+    {
+        "input": "reverse words in sentence python",
+        "output": "def reverse_words(sentence): return ' '.join(sentence.split()[::-1])"
+    },
+    {
+        "input": "check leap year python",
+        "output": "def is_leap_year(year): return year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)"
+    },
+    {
+        "input": "gcd of two numbers python",
+        "output": "def gcd(a, b): import math; return math.gcd(a, b)"
+    },
+    {
+        "input": "lcm of two numbers python",
+        "output": "def lcm(a, b): import math; return abs(a*b) // math.gcd(a, b)"
+    },
+    {
+        "input": "power of two check python",
+        "output": "def is_power_of_two(n): return n > 0 and (n & (n-1)) == 0"
+    },
+    {
+        "input": "rotate list left by k python",
+        "output": "def rotate_left(lst, k): k = k % len(lst); return lst[k:] + lst[:k]"
+    },
+    {
+        "input": "password generator python",
+        "output": "def gen_password(length=8): import random, string; return ''.join(random.choices(string.ascii_letters + string.digits, k=length))"
+    },
+    {
+        "input": "email validator python regex",
+        "output": "def is_valid_email(email): import re; return bool(re.match(r'^[\\w\\.-]+@[\\w\\.-]+\\.\\w+$', email))"
+    }
+]

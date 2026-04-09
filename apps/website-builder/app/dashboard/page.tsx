@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { useEffect, useState } from "react"
+import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -11,7 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { createStarterWebsitePayload } from "@/lib/builder-types"
+import { createWebsitePayloadFromTemplate } from "@/lib/template-library"
 import { authApi } from "@/lib/auth-api"
 import { websiteApi, type WebsiteRecord } from "@/lib/website-api"
 import { Globe, PlusCircle, Settings, Trash2 } from "lucide-react"
@@ -26,7 +27,9 @@ function getRelativeDate(value: string) {
 }
 
 export default function DashboardPage() {
+  const searchParams = useSearchParams()
   const [websites, setWebsites] = useState<WebsiteRecord[]>([])
+  const [shops, setShops] = useState<Array<{ id: string; name: string }>>([])
   const [activeShopId, setActiveShopId] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isCreating, setIsCreating] = useState(false)
@@ -50,6 +53,10 @@ export default function DashboardPage() {
       try {
         const sellerResponse = await authApi.getLoggedInSeller()
         const seller = sellerResponse.seller
+        setShops((seller.shops || []).filter((shop) => !shop.isDeleted).map((shop) => ({
+          id: shop.id,
+          name: shop.name,
+        })))
         setActiveShopId(seller.activeShopId ?? null)
         await loadWebsites(seller.activeShopId ?? null)
       } catch (loadError) {
@@ -64,8 +71,12 @@ export default function DashboardPage() {
   const handleCreateWebsite = async () => {
     try {
       setIsCreating(true)
+      const templateKey = searchParams.get("template") || undefined
       const response = await websiteApi.create(
-        createStarterWebsitePayload(),
+        createWebsitePayloadFromTemplate(
+          shops.find((shop) => shop.id === activeShopId)?.name || "Your Shop",
+          templateKey
+        ),
         activeShopId ?? undefined
       )
       window.location.href = `/dashboard/builder/${response.website.id}`
@@ -78,10 +89,21 @@ export default function DashboardPage() {
 
   const handleDeleteWebsite = async (websiteId: string) => {
     try {
-      await websiteApi.remove(websiteId)
+      await websiteApi.remove(websiteId, undefined, activeShopId ?? undefined)
       setWebsites((current) => current.filter((website) => website.id !== websiteId))
     } catch (deleteError) {
       setError(deleteError instanceof Error ? deleteError.message : "Failed to archive website")
+    }
+  }
+
+  const handleSwitchShop = async (shopId: string) => {
+    try {
+      setError(null)
+      setActiveShopId(shopId)
+      await authApi.switchActiveShop(shopId)
+      await loadWebsites(shopId)
+    } catch (switchError) {
+      setError(switchError instanceof Error ? switchError.message : "Failed to switch shop")
     }
   }
 
@@ -117,10 +139,26 @@ export default function DashboardPage() {
               Build and publish custom ecommerce storefronts for your active shop.
             </p>
           </div>
-          <Button onClick={handleCreateWebsite} disabled={isCreating}>
-            <PlusCircle className="mr-2 h-4 w-4" />
-            {isCreating ? "Creating..." : "New Website"}
-          </Button>
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex min-w-[220px] items-center gap-2 rounded-lg border bg-background px-3 py-2">
+              <span className="text-xs font-medium text-muted-foreground">Shop</span>
+              <select
+                value={activeShopId ?? ""}
+                onChange={(event) => handleSwitchShop(event.target.value)}
+                className="min-w-0 flex-1 bg-transparent text-sm outline-none"
+              >
+                {shops.map((shop) => (
+                  <option key={shop.id} value={shop.id}>
+                    {shop.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <Button onClick={handleCreateWebsite} disabled={isCreating || !activeShopId}>
+              <PlusCircle className="mr-2 h-4 w-4" />
+              {isCreating ? "Creating..." : "New Website"}
+            </Button>
+          </div>
         </div>
 
         {error ? (

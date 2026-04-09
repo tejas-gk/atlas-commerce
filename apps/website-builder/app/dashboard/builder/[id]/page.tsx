@@ -2,12 +2,14 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import type { BuilderElement, BuilderSection, BuilderPage as PageType } from "@/lib/builder-types"
-import { createDefaultPage, createStarterWebsitePayload } from "@/lib/builder-types"
+import { createDefaultPage } from "@/lib/builder-types"
 import { BuilderCanvas } from "@/components/builder/builder-canvas"
 import { BuilderSidebar, PropertiesPanel } from "@/components/builder/builder-sidebar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { authApi } from "@/lib/auth-api"
+import { productApi, type ProductRecord } from "@/lib/product-api"
+import { createWebsitePayloadFromTemplate } from "@/lib/template-library"
 import { websiteApi, type WebsiteDomainRecord, type WebsiteRecord } from "@/lib/website-api"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import {
@@ -62,6 +64,8 @@ export default function BuilderPageComponent({
   const [pages, setPages] = useState<PageType[]>(getDefaultPages)
   const [activePageId, setActivePageId] = useState<string>(() => getDefaultPages()[0].id)
   const [website, setWebsite] = useState<WebsiteRecord | null>(null)
+  const [shops, setShops] = useState<Array<{ id: string; name: string }>>([])
+  const [shopProducts, setShopProducts] = useState<ProductRecord[]>([])
   const [activeShopId, setActiveShopId] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -98,13 +102,20 @@ export default function BuilderPageComponent({
   const [, setRenderKey] = useState(0)
 
   useEffect(() => {
+    if (!activeShopId && params.id !== "new") {
+      return
+    }
+
     const loadWebsite = async () => {
       try {
         setIsLoading(true)
         setError(null)
 
         if (params.id === "new") {
-          const starter = createStarterWebsitePayload()
+          const starter = createWebsitePayloadFromTemplate(
+            shops.find((shop) => shop.id === activeShopId)?.name || "Your Shop",
+            website?.templateKey
+          )
           const starterPages = starter.pages as PageType[]
           setPages(starterPages)
           setActivePageId(starterPages[0]?.id || "")
@@ -113,7 +124,7 @@ export default function BuilderPageComponent({
           return
         }
 
-        const response = await websiteApi.get(params.id)
+        const response = await websiteApi.get(params.id, activeShopId ?? undefined)
         setWebsite(response.website)
         const nextPages = Array.isArray(response.website.pages)
           ? (response.website.pages as PageType[])
@@ -132,7 +143,7 @@ export default function BuilderPageComponent({
     }
 
     loadWebsite()
-  }, [params.id])
+  }, [activeShopId, params.id, shops])
 
   // ─── Update pages with debounced history + auto-save indicator ───
   const updatePages = useCallback((updater: (prev: PageType[]) => PageType[]) => {
@@ -173,7 +184,11 @@ export default function BuilderPageComponent({
     const loadSeller = async () => {
       try {
         const response = await authApi.getLoggedInSeller()
-        setActiveShopId(response.seller.activeShopId ?? null)
+        const nextShops = (response.seller.shops || [])
+          .filter((shop) => !shop.isDeleted)
+          .map((shop) => ({ id: shop.id, name: shop.name }))
+        setShops(nextShops)
+        setActiveShopId(response.seller.activeShopId ?? response.seller.shop?.id ?? null)
       } catch (loadError) {
         setError(loadError instanceof Error ? loadError.message : "Failed to load seller session")
       }
@@ -181,6 +196,24 @@ export default function BuilderPageComponent({
 
     loadSeller()
   }, [])
+
+  useEffect(() => {
+    if (!activeShopId) {
+      setShopProducts([])
+      return
+    }
+
+    const loadProducts = async () => {
+      try {
+        const response = await productApi.listShopProducts(activeShopId)
+        setShopProducts((response.products || []).filter((product) => !product.isDeleted))
+      } catch (loadError) {
+        setError(loadError instanceof Error ? loadError.message : "Failed to load shop products")
+      }
+    }
+
+    loadProducts()
+  }, [activeShopId])
 
   // ─── Undo / Redo ───
   const undo = useCallback(() => {
@@ -477,7 +510,10 @@ export default function BuilderPageComponent({
   }, [pages, activePage])
 
   const getWebsitePayload = useCallback(() => {
-    const starter = createStarterWebsitePayload()
+    const starter = createWebsitePayloadFromTemplate(
+      shops.find((shop) => shop.id === activeShopId)?.name || "Your Shop",
+      website?.templateKey
+    )
 
     return {
       name: website?.name || starter.name,
@@ -492,7 +528,7 @@ export default function BuilderPageComponent({
       status: website?.isPublished ? "published" : "draft",
       isPublished: Boolean(website?.isPublished),
     }
-  }, [pages, website])
+  }, [activeShopId, pages, shops, website])
 
   const handleSaveWebsite = useCallback(async () => {
     try {
@@ -502,7 +538,7 @@ export default function BuilderPageComponent({
       const response =
         params.id === "new" && !website
           ? await websiteApi.create(payload, activeShopId ?? undefined)
-          : await websiteApi.update(params.id, payload)
+          : await websiteApi.update(params.id, payload, activeShopId ?? undefined)
       setWebsite(response.website)
       if (params.id === "new") {
         window.history.replaceState({}, "", `/dashboard/builder/${response.website.id}`)
@@ -521,8 +557,8 @@ export default function BuilderPageComponent({
       const currentWebsite =
         params.id === "new" && !website
           ? (await websiteApi.create(payload, activeShopId ?? undefined)).website
-          : (await websiteApi.update(params.id, payload)).website
-      const response = await websiteApi.publish(currentWebsite.id, {})
+          : (await websiteApi.update(params.id, payload, activeShopId ?? undefined)).website
+      const response = await websiteApi.publish(currentWebsite.id, {}, activeShopId ?? undefined)
       setWebsite(response.website)
       setSaveStatus("saved")
       if (params.id === "new") {
@@ -543,7 +579,11 @@ export default function BuilderPageComponent({
     try {
       setError(null)
       setIsDomainPending(true)
-      const response = await websiteApi.addDomain(website.id, { domain: domainName })
+      const response = await websiteApi.addDomain(
+        website.id,
+        { domain: domainName },
+        activeShopId ?? undefined
+      )
       setWebsite((current) =>
         current
           ? { ...current, domains: [...current.domains, response.domain] }
@@ -562,9 +602,14 @@ export default function BuilderPageComponent({
       if (!website?.id) return
 
       try {
-        const response = await websiteApi.connectDomain(website.id, domainId, {
-          isPrimary: true,
-        })
+        const response = await websiteApi.connectDomain(
+          website.id,
+          domainId,
+          {
+            isPrimary: true,
+          },
+          activeShopId ?? undefined
+        )
         setWebsite((current) =>
           current
             ? {
@@ -591,7 +636,7 @@ export default function BuilderPageComponent({
       if (!website?.id) return
 
       try {
-        await websiteApi.deleteDomain(website.id, domainId)
+        await websiteApi.deleteDomain(website.id, domainId, undefined, activeShopId ?? undefined)
         setWebsite((current) =>
           current
             ? {
@@ -606,7 +651,27 @@ export default function BuilderPageComponent({
         )
       }
     },
-    [website]
+    [activeShopId, website]
+  )
+
+  const handleSwitchShop = useCallback(
+    async (shopId: string) => {
+      try {
+        setError(null)
+        const response = await authApi.switchActiveShop(shopId)
+        const nextShops = (response.seller.shops || [])
+          .filter((shop) => !shop.isDeleted)
+          .map((shop) => ({ id: shop.id, name: shop.name }))
+        setShops(nextShops)
+        setActiveShopId(response.seller.activeShopId ?? response.seller.shop?.id ?? shopId)
+        setSelectedElementId(null)
+        setSelectedSectionId(null)
+        setEditingElementId(null)
+      } catch (switchError) {
+        setError(switchError instanceof Error ? switchError.message : "Failed to switch shop")
+      }
+    },
+    []
   )
 
   if (isLoading) {
@@ -623,6 +688,23 @@ export default function BuilderPageComponent({
             <h1 className="text-sm font-bold tracking-tight">
               {website?.name || "Untitled Website"}
             </h1>
+            <div className="h-4 w-px bg-border" />
+
+            <div className="flex items-center gap-2 rounded-md border bg-muted/20 px-2 py-1">
+              <span className="text-[11px] text-muted-foreground">Shop</span>
+              <select
+                value={activeShopId ?? ""}
+                onChange={(event) => handleSwitchShop(event.target.value)}
+                className="bg-transparent text-xs font-medium outline-none"
+              >
+                {shops.map((shop) => (
+                  <option key={shop.id} value={shop.id}>
+                    {shop.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             <div className="h-4 w-px bg-border" />
 
             {/* Active page indicator */}
@@ -843,9 +925,10 @@ export default function BuilderPageComponent({
           )}
 
           {/* Canvas */}
-          <BuilderCanvas
-            sections={sections}
-            setSections={(updater) => {
+            <BuilderCanvas
+              sections={sections}
+              shopProducts={shopProducts}
+              setSections={(updater) => {
               if (typeof updater === "function") {
                 updateSections(updater)
               } else {
@@ -868,6 +951,7 @@ export default function BuilderPageComponent({
           {!showPreview && (
             <PropertiesPanel
               element={selectedElement}
+              products={shopProducts}
               onUpdate={handleUpdateElement}
               onDelete={handleDeleteElement}
               onDuplicate={handleDuplicateElement}

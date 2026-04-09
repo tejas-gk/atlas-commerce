@@ -8,6 +8,7 @@ import type {
     ElementType,
     DragData,
 } from "../../lib/builder-types"
+import type { ProductRecord } from "../../lib/product-api"
 import { ELEMENT_CATALOG, DRAG_TYPE_KEY } from "../../lib/builder-types"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
@@ -51,6 +52,8 @@ import {
     Tag,
     Star,
     Share2,
+    Images,
+    LogIn,
     TextCursorInput,
     Mail,
     ChevronsUpDown,
@@ -60,6 +63,9 @@ import {
     LayoutGrid,
     MapPin,
     ExternalLink,
+    Store,
+    Sparkles,
+    SlidersHorizontal,
 } from "lucide-react"
 
 // ───── Icon map for catalog items ─────
@@ -79,6 +85,9 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
     Tag,
     Star,
     Share2,
+    Search,
+    Images,
+    LogIn,
     TextCursorInput,
     AlignLeft,
     Mail,
@@ -89,6 +98,9 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
     LayoutGrid,
     MapPin,
     ExternalLink,
+    Store,
+    Sparkles,
+    SlidersHorizontal,
 }
 
 // ───── Draggable Sidebar Element Card ─────
@@ -362,11 +374,13 @@ function PagesPanel({
 // ───── Properties Panel (right sidebar) ─────
 export function PropertiesPanel({
     element,
+    products,
     onUpdate,
     onDelete,
     onDuplicate,
 }: {
     element: BuilderElement | null
+    products: ProductRecord[]
     onUpdate: (id: string, updates: Partial<BuilderElement>) => void
     onDelete: (id: string) => void
     onDuplicate: (id: string) => void
@@ -467,17 +481,126 @@ export function PropertiesPanel({
                             </>
                         )}
 
-                        {/* Button link */}
-                        {element.type === "button" && (
+                        {(
+                            element.type === "product-card" ||
+                            element.type === "product-grid" ||
+                            element.type === "recommended-products" ||
+                            element.type === "product-filters"
+                        ) && (
+                            <>
+                                <div className="space-y-1.5">
+                                    <Label className="text-xs">Product Source</Label>
+                                    <select
+                                        value={element.dataSource || "shop-products"}
+                                        onChange={(e) =>
+                                            onUpdate(element.id, {
+                                                dataSource: e.target.value as "manual" | "shop-products",
+                                            })
+                                        }
+                                        className="h-8 w-full rounded-md border border-input bg-background px-2 text-xs"
+                                    >
+                                        <option value="shop-products">Sync from active shop</option>
+                                        <option value="manual">Manual content</option>
+                                    </select>
+                                </div>
+
+                                {element.type === "product-card" && (
+                                    <div className="space-y-1.5">
+                                        <Label className="text-xs">Linked Product</Label>
+                                        <select
+                                            value={element.productId || ""}
+                                            onChange={(e) =>
+                                                onUpdate(element.id, {
+                                                    productId: e.target.value || null,
+                                                })
+                                            }
+                                            className="h-8 w-full rounded-md border border-input bg-background px-2 text-xs"
+                                        >
+                                            <option value="">Auto pick first product</option>
+                                            {products.map((product) => (
+                                                <option key={product.id} value={product.id}>
+                                                    {product.title}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                )}
+
+                                {(element.type === "product-grid" ||
+                                    element.type === "recommended-products" ||
+                                    element.type === "product-filters") && (
+                                    <div className="space-y-1.5">
+                                        <Label className="text-xs">Products to Show</Label>
+                                        <Input
+                                            type="number"
+                                            min={1}
+                                            max={24}
+                                            value={String(element.productLimit || 4)}
+                                            onChange={(e) =>
+                                                onUpdate(element.id, {
+                                                    productLimit: Math.max(1, Number(e.target.value) || 4),
+                                                })
+                                            }
+                                            className="h-7 text-xs"
+                                        />
+                                    </div>
+                                )}
+                            </>
+                        )}
+
+                        {/* Action links */}
+                        {["button", "search-bar", "product-card", "oauth-login", "image"].includes(element.type) && (
+                            <>
+                                <div className="space-y-1.5">
+                                    <Label className="text-xs">Link URL</Label>
+                                    <Input
+                                        value={element.href || "#"}
+                                        onChange={(e) =>
+                                            onUpdate(element.id, { href: e.target.value })
+                                        }
+                                        className="h-7 text-xs"
+                                        placeholder={
+                                            element.type === "search-bar"
+                                                ? "/products?query={query}"
+                                                : element.type === "product-card"
+                                                    ? "/product/{slug}"
+                                                    : "https://..."
+                                        }
+                                    />
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <Label className="text-xs">Open in new tab</Label>
+                                    <Switch
+                                        checked={Boolean(element.openInNewTab)}
+                                        onCheckedChange={(checked) =>
+                                            onUpdate(element.id, { openInNewTab: checked })
+                                        }
+                                    />
+                                </div>
+                            </>
+                        )}
+
+                        {["product-card", "hero-slider", "gallery", "image"].includes(element.type) && (
                             <div className="space-y-1.5">
-                                <Label className="text-xs">Link URL</Label>
-                                <Input
-                                    value={element.href || "#"}
+                                <Label className="text-xs">
+                                    {element.type === "hero-slider"
+                                        ? "Slide Media URLs"
+                                        : element.type === "gallery"
+                                            ? "Gallery Media URLs"
+                                            : "Media URLs"}
+                                </Label>
+                                <Textarea
+                                    value={(element.mediaItems || []).join("\n")}
                                     onChange={(e) =>
-                                        onUpdate(element.id, { href: e.target.value })
+                                        onUpdate(element.id, {
+                                            mediaItems: e.target.value
+                                                .split("\n")
+                                                .map((item) => item.trim())
+                                                .filter(Boolean),
+                                        })
                                     }
-                                    className="h-7 text-xs"
-                                    placeholder="https://..."
+                                    className="text-xs min-h-[72px]"
+                                    placeholder="One image URL per line"
                                 />
                             </div>
                         )}

@@ -1,12 +1,13 @@
 "use client"
 
-import { useCallback, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import type {
     BuilderElement,
     BuilderSection,
     DragData,
-    ElementType,
 } from "../../lib/builder-types"
+import type { ProductRecord } from "../../lib/product-api"
+import { productApi } from "../../lib/product-api"
 import { DRAG_TYPE_KEY, createNewElement } from "../../lib/builder-types"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -19,6 +20,10 @@ import {
     Copy,
     Columns3,
     MousePointerClick,
+    Search,
+    SlidersHorizontal,
+    Sparkles,
+    LogIn,
 } from "lucide-react"
 
 // ───── Drop Indicator Line ─────
@@ -32,14 +37,361 @@ function DropLine() {
     )
 }
 
+function getProductImage(product?: ProductRecord | null) {
+    return product?.images?.[0]?.url || "/placeholder.svg?height=240&width=320"
+}
+
+function getElementMedia(element: BuilderElement, fallback?: string) {
+    return element.mediaItems?.filter(Boolean) || (fallback ? [fallback] : [])
+}
+
+function formatPrice(product?: ProductRecord | null, fallback?: string) {
+    if (typeof product?.sale_price === "number") return `$${product.sale_price.toFixed(2)}`
+    if (typeof product?.regular_price === "number") return `$${product.regular_price.toFixed(2)}`
+    if (fallback) return `$${fallback}`
+    return "Add pricing"
+}
+
+function getLinkedProduct(element: BuilderElement, shopProducts: ProductRecord[]) {
+    if (!shopProducts.length) return null
+    if (element.productId) {
+        return shopProducts.find((product) => product.id === element.productId) || null
+    }
+    return shopProducts[0] || null
+}
+
+function SearchBarPreview({
+    element,
+    baseStyles,
+}: {
+    element: BuilderElement
+    baseStyles: React.CSSProperties
+}) {
+    const [query, setQuery] = useState("")
+    const [results, setResults] = useState<ProductRecord[]>([])
+    const [isSearching, setIsSearching] = useState(false)
+
+    useEffect(() => {
+        const trimmed = query.trim()
+        if (trimmed.length < 2) {
+            setResults([])
+            return
+        }
+
+        const timer = setTimeout(async () => {
+            try {
+                setIsSearching(true)
+                const response = await productApi.searchProducts(trimmed)
+                setResults(response.products || [])
+            } catch {
+                setResults([])
+            } finally {
+                setIsSearching(false)
+            }
+        }, 250)
+
+        return () => clearTimeout(timer)
+    }, [query])
+
+    return (
+        <div className="space-y-3">
+            <div
+                id={element.htmlId || undefined}
+                className={`${element.cssClasses} flex items-center gap-3 rounded-full`}
+                style={baseStyles}
+            >
+                <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
+                <input
+                    value={query}
+                    onChange={(event) => setQuery(event.target.value)}
+                    placeholder={element.content || "Search products"}
+                    className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+                />
+                <span className="ml-auto rounded-full bg-foreground px-3 py-1 text-xs text-background">
+                    Search
+                </span>
+            </div>
+            <div className="text-[11px] text-muted-foreground">
+                Route: <span className="font-medium text-foreground">{element.href || "/products?query={query}"}</span>
+            </div>
+            {(query.trim().length >= 2 || results.length > 0) && (
+                <div className="rounded-2xl border bg-background p-3 shadow-sm">
+                    <div className="mb-2 text-xs font-medium text-muted-foreground">
+                        {isSearching ? "Searching..." : `${results.length} result${results.length === 1 ? "" : "s"}`}
+                    </div>
+                    <div className="space-y-2">
+                        {results.map((product) => (
+                            <div key={product.id} className="flex items-center gap-3 rounded-xl border p-2">
+                                <img
+                                    src={getProductImage(product)}
+                                    alt={product.title}
+                                    className="h-12 w-12 rounded-lg object-cover"
+                                    crossOrigin="anonymous"
+                                />
+                                <div className="min-w-0 flex-1">
+                                    <div className="truncate text-sm font-medium text-foreground">
+                                        {product.title}
+                                    </div>
+                                    <div className="text-xs text-muted-foreground">
+                                        {formatPrice(product)}
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                        {!isSearching && results.length === 0 && (
+                            <div className="text-sm text-muted-foreground">
+                                No products matched your search.
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
+        </div>
+    )
+}
+
+function RecommendationsPreview({
+    element,
+    baseStyles,
+    shopProducts,
+}: {
+    element: BuilderElement
+    baseStyles: React.CSSProperties
+    shopProducts: ProductRecord[]
+}) {
+    const [products, setProducts] = useState<ProductRecord[]>(shopProducts.slice(0, Math.max(1, element.productLimit || 4)))
+
+    useEffect(() => {
+        let isMounted = true
+
+        const loadRecommendations = async () => {
+            try {
+                const response = await productApi.getRecommendedProducts()
+                if (isMounted && response.recommendations?.length) {
+                    setProducts(response.recommendations.slice(0, Math.max(1, element.productLimit || 4)))
+                    return
+                }
+            } catch {
+                // Fall back to shop products for unauthenticated preview states.
+            }
+
+            if (isMounted) {
+                setProducts(shopProducts.slice(0, Math.max(1, element.productLimit || 4)))
+            }
+        }
+
+        loadRecommendations()
+
+        return () => {
+            isMounted = false
+        }
+    }, [element.productLimit, shopProducts])
+
+    return (
+        <div id={element.htmlId || undefined} className={`${element.cssClasses} space-y-4`} style={baseStyles}>
+            <div className="flex items-center justify-between gap-3">
+                <div>
+                    <h3 className="text-2xl font-semibold text-foreground">
+                        {element.content || "Recommended for you"}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                        Personalized picks from the recommendation service, with a shop-product fallback.
+                    </p>
+                </div>
+                <span className="inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs text-muted-foreground">
+                    <Sparkles className="h-3.5 w-3.5" />
+                    Smart shelf
+                </span>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                {(products.length ? products : shopProducts.slice(0, 4)).map((product) => (
+                    <div key={product.id} className="overflow-hidden rounded-2xl border bg-background shadow-sm">
+                        <img
+                            src={getProductImage(product)}
+                            alt={product.title}
+                            className="h-48 w-full object-cover"
+                            crossOrigin="anonymous"
+                        />
+                        <div className="space-y-2 p-4">
+                            <h4 className="text-base font-semibold text-foreground">{product.title}</h4>
+                            <p className="line-clamp-2 text-sm text-muted-foreground">
+                                {product.short_description || "Recommendations appear here for returning shoppers."}
+                            </p>
+                            <span className="text-sm font-semibold text-foreground">{formatPrice(product)}</span>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    )
+}
+
+function ProductFiltersPreview({
+    element,
+    baseStyles,
+    shopProducts,
+}: {
+    element: BuilderElement
+    baseStyles: React.CSSProperties
+    shopProducts: ProductRecord[]
+}) {
+    const [categories, setCategories] = useState<string[]>([])
+    const [selectedCategory, setSelectedCategory] = useState<string>("all")
+    const [priceCap, setPriceCap] = useState<number>(999999)
+
+    useEffect(() => {
+        let isMounted = true
+        productApi
+            .getCategories()
+            .then((response) => {
+                if (isMounted) setCategories(response.categories || [])
+            })
+            .catch(() => {
+                if (isMounted) {
+                    setCategories(
+                        Array.from(new Set(shopProducts.map((product) => product.category).filter(Boolean) as string[]))
+                    )
+                }
+            })
+        return () => {
+            isMounted = false
+        }
+    }, [shopProducts])
+
+    const filteredProducts = shopProducts
+        .filter((product) => selectedCategory === "all" || product.category === selectedCategory)
+        .filter((product) => {
+            const price = typeof product.sale_price === "number" ? product.sale_price : product.regular_price || 0
+            return price <= priceCap
+        })
+        .slice(0, Math.max(1, element.productLimit || 8))
+
+    return (
+        <div id={element.htmlId || undefined} className={`${element.cssClasses} space-y-4`} style={baseStyles}>
+            <div className="flex items-center justify-between gap-3">
+                <div>
+                    <h3 className="text-2xl font-semibold text-foreground">
+                        {element.content || "Browse Products"}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                        Interactive category and price filters, similar to the main `web` storefront flow.
+                    </p>
+                </div>
+                <span className="inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs text-muted-foreground">
+                    <SlidersHorizontal className="h-3.5 w-3.5" />
+                    Filters live
+                </span>
+            </div>
+
+            <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
+                <div className="space-y-4 rounded-2xl border bg-background p-4 shadow-sm">
+                    <div>
+                        <div className="mb-2 text-sm font-semibold text-foreground">Category</div>
+                        <div className="flex flex-wrap gap-2">
+                            <button
+                                onClick={() => setSelectedCategory("all")}
+                                className={`rounded-full px-3 py-1 text-xs ${selectedCategory === "all" ? "bg-foreground text-background" : "bg-muted text-foreground"}`}
+                            >
+                                All
+                            </button>
+                            {categories.slice(0, 8).map((category) => (
+                                <button
+                                    key={category}
+                                    onClick={() => setSelectedCategory(category)}
+                                    className={`rounded-full px-3 py-1 text-xs ${selectedCategory === category ? "bg-foreground text-background" : "bg-muted text-foreground"}`}
+                                >
+                                    {category}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div>
+                        <div className="mb-2 text-sm font-semibold text-foreground">Max Price</div>
+                        <input
+                            type="range"
+                            min={0}
+                            max={5000}
+                            step={50}
+                            value={Math.min(priceCap, 5000)}
+                            onChange={(event) => setPriceCap(Number(event.target.value))}
+                            className="w-full"
+                        />
+                        <div className="mt-2 text-xs text-muted-foreground">Up to ${Math.min(priceCap, 5000)}</div>
+                    </div>
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                    {(filteredProducts.length ? filteredProducts : shopProducts.slice(0, 6)).map((product) => (
+                        <div key={product.id} className="overflow-hidden rounded-2xl border bg-background shadow-sm">
+                            <img
+                                src={getProductImage(product)}
+                                alt={product.title}
+                                className="h-44 w-full object-cover"
+                                crossOrigin="anonymous"
+                            />
+                            <div className="space-y-2 p-4">
+                                <h4 className="text-base font-semibold text-foreground">{product.title}</h4>
+                                <p className="line-clamp-2 text-sm text-muted-foreground">
+                                    {product.short_description || "Filtered catalog items appear here."}
+                                </p>
+                                <span className="text-sm font-semibold text-foreground">{formatPrice(product)}</span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    )
+}
+
+function OAuthLoginPreview({
+    element,
+    baseStyles,
+}: {
+    element: BuilderElement
+    baseStyles: React.CSSProperties
+}) {
+    return (
+        <div className="inline-flex flex-col gap-2">
+            <button
+                id={element.htmlId || undefined}
+                className={`${element.cssClasses} inline-flex items-center gap-3`}
+                style={baseStyles}
+                onClick={(event) => event.preventDefault()}
+            >
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+                    <path fill="#fbc02d" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12 s5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20 s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z" />
+                    <path fill="#e53935" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039 l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z" />
+                    <path fill="#4caf50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36 c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z" />
+                    <path fill="#1565c0" d="M43.611,20.083L43.595,20L42,20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571 l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z" />
+                </svg>
+                </span>
+                <span className="text-sm font-medium text-foreground">{element.content || "Continue with Google"}</span>
+                <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-1 text-[11px] text-blue-700">
+                    <LogIn className="h-3 w-3" />
+                    OAuth ready
+                </span>
+            </button>
+            <div className="text-[11px] text-muted-foreground">
+                Route: <span className="font-medium text-foreground">{element.href || "/login"}</span>
+            </div>
+        </div>
+    )
+}
+
 // ───── Element Renderer ─────
 function RenderElement({
     element,
     isEditing,
+    shopProducts,
     onInlineEdit,
 }: {
     element: BuilderElement
     isEditing: boolean
+    shopProducts: ProductRecord[]
     onInlineEdit: (id: string, content: string) => void
 }) {
     const baseStyles: React.CSSProperties = {
@@ -139,18 +491,89 @@ function RenderElement({
                     {element.content}
                 </button>
             )
+        case "search-bar":
+            return <SearchBarPreview element={element} baseStyles={baseStyles} />
+        case "oauth-login":
+            return <OAuthLoginPreview element={element} baseStyles={baseStyles} />
         case "image":
+            const imageMedia = getElementMedia(element, element.content || "/placeholder.svg?height=200&width=400")
             return (
-                <img
-                    src={element.content || "/placeholder.svg?height=200&width=400"}
-                    id={element.htmlId || undefined}
-                    className={`${element.cssClasses} max-w-full rounded`}
-                    style={baseStyles}
-                    alt="Builder image"
-                    crossOrigin="anonymous"
-                />
+                <div className="space-y-2">
+                    <img
+                        src={imageMedia[0] || "/placeholder.svg?height=200&width=400"}
+                        id={element.htmlId || undefined}
+                        className={`${element.cssClasses} max-w-full rounded`}
+                        style={baseStyles}
+                        alt="Builder image"
+                        crossOrigin="anonymous"
+                    />
+                    {element.href && (
+                        <div className="text-[11px] text-muted-foreground">
+                            Route: <span className="font-medium text-foreground">{element.href}</span>
+                        </div>
+                    )}
+                </div>
             )
+        case "hero-slider": {
+            const mediaItems = getElementMedia(element)
+            const slides = (element.content || "")
+                .split("\n")
+                .map((line) => line.split("|"))
+                .map(([title, subtitle, image]) => ({
+                    title: title || "Hero headline",
+                    subtitle: subtitle || "Add a compelling message for your storefront.",
+                    image: image || mediaItems[0] || "/placeholder.svg?height=420&width=1200",
+                }))
+                .filter((slide) => slide.title || slide.subtitle)
+            const activeSlide = slides[0] || {
+                title: "Showcase your best-selling products",
+                subtitle: "Use rotating slides for launches, offers, and category highlights.",
+                image: "/placeholder.svg?height=420&width=1200",
+            }
+
+            return (
+                <div
+                    id={element.htmlId || undefined}
+                    className={`${element.cssClasses} relative overflow-hidden`}
+                    style={{
+                        ...baseStyles,
+                        backgroundImage: `linear-gradient(135deg, rgba(15,23,42,0.82), rgba(17,24,39,0.56)), url(${activeSlide.image})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                    }}
+                >
+                    <div className="flex h-full min-h-[320px] flex-col justify-between">
+                        <div className="max-w-2xl space-y-4">
+                            <span className="inline-flex rounded-full bg-white/12 px-3 py-1 text-xs uppercase tracking-[0.2em] text-white/80">
+                                Featured Story
+                            </span>
+                            <h2 className="text-4xl font-semibold leading-tight text-white">
+                                {activeSlide.title}
+                            </h2>
+                            <p className="max-w-xl text-base text-white/78">
+                                {activeSlide.subtitle}
+                            </p>
+                        </div>
+                        <div className="flex items-center justify-between pt-8">
+                            <div className="flex gap-2">
+                                {slides.slice(0, 4).map((slide, index) => (
+                                    <span
+                                        key={`${slide.title}-${index}`}
+                                        className={`h-2.5 rounded-full ${index === 0 ? "w-8 bg-white" : "w-2.5 bg-white/35"}`}
+                                    />
+                                ))}
+                            </div>
+                            <span className="text-sm text-white/75">
+                                {Math.max(slides.length, mediaItems.length || slides.length)} slide{Math.max(slides.length, mediaItems.length || slides.length) === 1 ? "" : "s"}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            )
+        }
         case "product-card":
+            const linkedProduct = element.dataSource !== "manual" ? getLinkedProduct(element, shopProducts) : null
+            const productMedia = getElementMedia(element, element.styles.backgroundImage || "/placeholder.svg?height=200&width=400")
             return (
                 <div
                     id={element.htmlId || undefined}
@@ -158,17 +581,105 @@ function RenderElement({
                     style={baseStyles}
                 >
                     <img
-                        src={element.styles.backgroundImage || "/placeholder.svg?height=200&width=400"}
+                        src={linkedProduct ? getProductImage(linkedProduct) : productMedia[0]}
                         className="w-full h-40 object-cover rounded-tl-lg rounded-tr-lg"
-                        alt="Product"
+                        alt={linkedProduct?.title || "Product"}
                         crossOrigin="anonymous"
                     />
                     <div className="p-4">
-                        <h3 className="text-lg font-semibold">{element.content || "Product Name"}</h3>
-                        <p className="text-sm text-muted-foreground mt-1">{element.styles.price ? `$${element.styles.price}` : "Product description goes here."}</p>
+                        <h3 className="text-lg font-semibold">
+                            {linkedProduct?.title || element.content || "Product Name"}
+                        </h3>
+                        <p className="text-sm text-muted-foreground mt-1">
+                            {linkedProduct?.short_description || formatPrice(linkedProduct, element.styles.price)}
+                        </p>
+                        {productMedia.length > 1 && !linkedProduct && (
+                            <p className="mt-2 text-[11px] text-muted-foreground">
+                                Carousel media: {productMedia.length} images
+                            </p>
+                        )}
+                        {element.href && (
+                            <p className="mt-2 text-[11px] text-muted-foreground">
+                                Route: <span className="font-medium text-foreground">{element.href}</span>
+                            </p>
+                        )}
                         <button className="mt-4 px-4 py-2 bg-foreground text-background rounded-md text-sm font-medium cursor-default">Add to Cart</button>
                     </div>
                 </div>
+            )
+        case "product-grid": {
+            const products =
+                element.dataSource === "manual"
+                    ? []
+                    : shopProducts.slice(0, Math.max(1, element.productLimit || 4))
+
+            return (
+                <div id={element.htmlId || undefined} className={`${element.cssClasses} space-y-4`} style={baseStyles}>
+                    <div className="flex items-center justify-between gap-3">
+                        <div>
+                            <h3 className="text-2xl font-semibold text-foreground">
+                                {element.content || "Featured Products"}
+                            </h3>
+                            <p className="text-sm text-muted-foreground">
+                                {products.length
+                                    ? `Showing ${products.length} product${products.length === 1 ? "" : "s"} from the active shop`
+                                    : "Add products in the seller dashboard to populate this grid automatically."}
+                            </p>
+                        </div>
+                        <span className="rounded-full border px-3 py-1 text-xs text-muted-foreground">
+                            Auto sync
+                        </span>
+                    </div>
+
+                    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                        {(products.length ? products : Array.from({ length: 4 }).map((_, index) => ({
+                            id: `placeholder-${index}`,
+                            title: `Product ${index + 1}`,
+                            short_description: "Product details will appear here once your catalog is connected.",
+                            images: [{ url: "/placeholder.svg?height=240&width=320" }],
+                        } as ProductRecord))).map((product) => (
+                            <div key={product.id} className="overflow-hidden rounded-2xl border bg-background shadow-sm">
+                                <img
+                                    src={getProductImage(product)}
+                                    alt={product.title}
+                                    className="h-48 w-full object-cover"
+                                    crossOrigin="anonymous"
+                                />
+                                <div className="space-y-2 p-4">
+                                    <h4 className="text-base font-semibold text-foreground">{product.title}</h4>
+                                    <p className="line-clamp-2 text-sm text-muted-foreground">
+                                        {product.short_description || "Describe the product, materials, or key benefits."}
+                                    </p>
+                                    <div className="flex items-center justify-between pt-1">
+                                        <span className="text-sm font-semibold text-foreground">
+                                            {formatPrice(product)}
+                                        </span>
+                                        <button className="rounded-full bg-foreground px-3 py-1.5 text-xs text-background">
+                                            View
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )
+        }
+        case "recommended-products":
+            return (
+                <RecommendationsPreview
+                    element={element}
+                    baseStyles={baseStyles}
+                    shopProducts={shopProducts}
+                />
+            )
+        case "product-filters":
+            return (
+                <ProductFiltersPreview
+                    element={element}
+                    baseStyles={baseStyles}
+                    shopProducts={shopProducts}
+                />
             )
         case "video":
             return (
@@ -442,6 +953,7 @@ function RenderElement({
 // ───── Column Element (with nested drop zones) ─────
 function ColumnElement({
     element,
+    shopProducts,
     selectedElementId,
     hoveredElementId,
     editingElementId,
@@ -451,11 +963,13 @@ function ColumnElement({
     onDoubleClick,
     onDropInColumn,
     onDragStartInColumn,
+    onDragEndElement,
     onDeleteElement,
     onDuplicateElement,
     onChangeColumnCount,
 }: {
     element: BuilderElement
+    shopProducts: ProductRecord[]
     selectedElementId: string | null
     hoveredElementId: string | null
     editingElementId: string | null
@@ -477,6 +991,7 @@ function ColumnElement({
         colIndex: number,
         index: number
     ) => void
+    onDragEndElement: () => void
     onDeleteElement: (id: string) => void
     onDuplicateElement: (id: string) => void
     onChangeColumnCount: (elementId: string, count: number) => void
@@ -584,6 +1099,7 @@ function ColumnElement({
                                         dropTarget.insertIndex === idx && <DropLine />}
                                     <CanvasElement
                                         element={child}
+                                        shopProducts={shopProducts}
                                         sectionId=""
                                         index={idx}
                                         selectedElementId={selectedElementId}
@@ -602,6 +1118,7 @@ function ColumnElement({
                                                 idx
                                             )
                                         }
+                                        onDragEnd={onDragEndElement}
                                         onDeleteElement={onDeleteElement}
                                         onDuplicateElement={onDuplicateElement}
                                     />
@@ -620,6 +1137,7 @@ function ColumnElement({
 // ───── Single Canvas Element (with selection, hover, drag handle) ─────
 function CanvasElement({
     element,
+    shopProducts,
     sectionId,
     index,
     selectedElementId,
@@ -630,10 +1148,12 @@ function CanvasElement({
     onInlineEdit,
     onDoubleClick,
     onDragStart,
+    onDragEnd,
     onDeleteElement,
     onDuplicateElement,
 }: {
     element: BuilderElement
+    shopProducts: ProductRecord[]
     sectionId: string
     index: number
     selectedElementId: string | null
@@ -644,6 +1164,7 @@ function CanvasElement({
     onInlineEdit: (id: string, content: string) => void
     onDoubleClick: (id: string) => void
     onDragStart: (e: React.DragEvent) => void
+    onDragEnd: () => void
     onDeleteElement: (id: string) => void
     onDuplicateElement: (id: string) => void
 }) {
@@ -660,6 +1181,7 @@ function CanvasElement({
                 }`}
             draggable={element.type !== "columns"}
             onDragStart={onDragStart}
+            onDragEnd={onDragEnd}
             onMouseEnter={() => onHover(element.id)}
             onMouseLeave={() => onHover(null)}
             onClick={(e) => {
@@ -726,6 +1248,7 @@ function CanvasElement({
             <RenderElement
                 element={element}
                 isEditing={editingElementId === element.id}
+                shopProducts={shopProducts}
                 onInlineEdit={onInlineEdit}
             />
         </div>
@@ -735,6 +1258,7 @@ function CanvasElement({
 // ───── Droppable Section ─────
 function DroppableSection({
     section,
+    shopProducts,
     selectedElementId,
     hoveredElementId,
     editingElementId,
@@ -745,6 +1269,7 @@ function DroppableSection({
     onInlineEdit,
     onDoubleClick,
     onDragStartElement,
+    onDragEndElement,
     onDragOverSection,
     onDropSection,
     onDeleteElement,
@@ -757,6 +1282,7 @@ function DroppableSection({
     onChangeColumnCount,
 }: {
     section: BuilderSection
+    shopProducts: ProductRecord[]
     selectedElementId: string | null
     hoveredElementId: string | null
     editingElementId: string | null
@@ -772,6 +1298,7 @@ function DroppableSection({
         sectionId: string,
         index: number
     ) => void
+    onDragEndElement: () => void
     onDragOverSection: (
         e: React.DragEvent,
         sectionId: string,
@@ -945,6 +1472,7 @@ function DroppableSection({
                                             )}
                                             <ColumnElement
                                                 element={element}
+                                                shopProducts={shopProducts}
                                                 selectedElementId={selectedElementId}
                                                 hoveredElementId={hoveredElementId}
                                                 editingElementId={editingElementId}
@@ -962,6 +1490,7 @@ function DroppableSection({
                                                     )
                                                 }
                                                 onDragStartInColumn={onDragStartInColumn}
+                                                onDragEndElement={onDragEndElement}
                                                 onDeleteElement={onDeleteElement}
                                                 onDuplicateElement={onDuplicateElement}
                                                 onChangeColumnCount={onChangeColumnCount}
@@ -970,6 +1499,7 @@ function DroppableSection({
                                     ) : (
                                         <CanvasElement
                                             element={element}
+                                            shopProducts={shopProducts}
                                             sectionId={section.id}
                                             index={index}
                                             selectedElementId={selectedElementId}
@@ -980,18 +1510,9 @@ function DroppableSection({
                                             onInlineEdit={onInlineEdit}
                                             onDoubleClick={onDoubleClick}
                                             onDragStart={(e) => {
-                                                const dragData: DragData = {
-                                                    sourceType: "canvas",
-                                                    elementId: element.id,
-                                                    sectionId: section.id,
-                                                    index,
-                                                }
-                                                e.dataTransfer.setData(
-                                                    DRAG_TYPE_KEY,
-                                                    JSON.stringify(dragData)
-                                                )
-                                                e.dataTransfer.effectAllowed = "move"
+                                                onDragStartElement(e, element.id, section.id, index)
                                             }}
+                                            onDragEnd={onDragEndElement}
                                             onDeleteElement={onDeleteElement}
                                             onDuplicateElement={onDuplicateElement}
                                         />
@@ -1010,6 +1531,7 @@ function DroppableSection({
 // ───── Main Canvas ─────
 export function BuilderCanvas({
     sections,
+    shopProducts,
     setSections,
     selectedElementId,
     setSelectedElementId,
@@ -1023,6 +1545,7 @@ export function BuilderCanvas({
     showPreview,
 }: {
     sections: BuilderSection[]
+    shopProducts: ProductRecord[]
     setSections: (updater: BuilderSection[] | ((prev: BuilderSection[]) => BuilderSection[])) => void
     selectedElementId: string | null
     setSelectedElementId: (id: string | null) => void
@@ -1041,6 +1564,13 @@ export function BuilderCanvas({
     } | null>(null)
     const [isDragActive, setIsDragActive] = useState(false)
     const canvasRef = useRef<HTMLDivElement>(null)
+    const dragSourceRef = useRef<DragData | null>(null)
+
+    const resetDragState = useCallback(() => {
+        setIsDragActive(false)
+        setDropIndicator(null)
+        dragSourceRef.current = null
+    }, [])
 
     // ── Select handler ──
     const handleSelect = useCallback(
@@ -1118,6 +1648,7 @@ export function BuilderCanvas({
     const handleDragOverSection = useCallback(
         (e: React.DragEvent, sectionId: string, index: number) => {
             e.preventDefault()
+            setIsDragActive(true)
             const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
             const midY = rect.top + rect.height / 2
             const adjustedIndex = e.clientY < midY ? index : index + 1
@@ -1126,11 +1657,26 @@ export function BuilderCanvas({
         []
     )
 
+    const handleDragStartElement = useCallback(
+        (e: React.DragEvent, elementId: string, sectionId: string, index: number) => {
+            const dragData: DragData = {
+                sourceType: "canvas",
+                elementId,
+                sectionId,
+                index,
+            }
+            dragSourceRef.current = dragData
+            setIsDragActive(true)
+            e.dataTransfer.setData(DRAG_TYPE_KEY, JSON.stringify(dragData))
+            e.dataTransfer.effectAllowed = "move"
+        },
+        []
+    )
+
     // ── Drop on section ──
     const handleDropSection = useCallback(
         (e: React.DragEvent, sectionId: string) => {
             e.preventDefault()
-            setIsDragActive(false)
             const indicator = dropIndicator
             try {
                 const raw = e.dataTransfer.getData(DRAG_TYPE_KEY)
@@ -1200,10 +1746,11 @@ export function BuilderCanvas({
             } catch {
                 // ignore
             }
-            setDropIndicator(null)
+            resetDragState()
         },
         [
             dropIndicator,
+            resetDragState,
             setSections,
             setSelectedElementId,
             setSelectedSectionId,
@@ -1294,14 +1841,18 @@ export function BuilderCanvas({
         (
             e: React.DragEvent,
             elementId: string,
-            _parentId: string,
-            _colIndex: number,
-            _index: number
+            parentId: string,
+            colIndex: number,
+            index: number
         ) => {
             const dragData: DragData = {
                 sourceType: "canvas",
                 elementId,
+                sectionId: parentId,
+                index,
             }
+            dragSourceRef.current = dragData
+            setIsDragActive(true)
             e.dataTransfer.setData(DRAG_TYPE_KEY, JSON.stringify(dragData))
             e.dataTransfer.effectAllowed = "move"
         },
@@ -1439,15 +1990,13 @@ export function BuilderCanvas({
 
     const handleCanvasDragLeave = useCallback((e: React.DragEvent) => {
         if (!canvasRef.current?.contains(e.relatedTarget as Node)) {
-            setIsDragActive(false)
-            setDropIndicator(null)
+            resetDragState()
         }
-    }, [])
+    }, [resetDragState])
 
     const handleCanvasDrop = useCallback(() => {
-        setIsDragActive(false)
-        setDropIndicator(null)
-    }, [])
+        resetDragState()
+    }, [resetDragState])
 
     const deviceMaxWidth =
         activeDevice === "mobile"
@@ -1482,6 +2031,7 @@ export function BuilderCanvas({
                                                                 key={child.id}
                                                                 element={child}
                                                                 isEditing={false}
+                                                                shopProducts={shopProducts}
                                                                 onInlineEdit={() => { }}
                                                             />
                                                         ))}
@@ -1492,6 +2042,7 @@ export function BuilderCanvas({
                                             <RenderElement
                                                 element={el}
                                                 isEditing={false}
+                                                shopProducts={shopProducts}
                                                 onInlineEdit={() => { }}
                                             />
                                         )}
@@ -1534,6 +2085,7 @@ export function BuilderCanvas({
                         <DroppableSection
                             key={section.id}
                             section={section}
+                            shopProducts={shopProducts}
                             selectedElementId={selectedElementId}
                             hoveredElementId={hoveredElementId}
                             editingElementId={editingElementId}
@@ -1543,7 +2095,8 @@ export function BuilderCanvas({
                             onHover={setHoveredElementId}
                             onInlineEdit={handleInlineEdit}
                             onDoubleClick={handleDoubleClick}
-                            onDragStartElement={() => { }}
+                            onDragStartElement={handleDragStartElement}
+                            onDragEndElement={resetDragState}
                             onDragOverSection={handleDragOverSection}
                             onDropSection={handleDropSection}
                             onDeleteElement={handleDeleteElement}

@@ -1,0 +1,11 @@
+def add(a, b):
+    return a + b
+
+def reverse(s):
+    return s[::-1]
+
+def is_even(n):
+    return n % 2 == 0
+
+def sum_list(lst):
+    return sum(lst)
