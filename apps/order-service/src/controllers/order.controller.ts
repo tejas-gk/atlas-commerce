@@ -70,7 +70,7 @@ export const createPaymentSession = async (
           shopId: item.shopId,
           selectedOptions: item.selectedOptions || {},
         }))
-        .sort((a, b) => a.id.localCompare(b.id))
+        .sort((a, b) => String(a.id).localeCompare(String(b.id)))
     );
 
     const keys = await redis.keys("payment-session:*");
@@ -88,7 +88,9 @@ export const createPaymentSession = async (
                 shopId: item.shopId,
                 selectedOptions: item.selectedOptions || {},
               }))
-              .sort((a: any, b: any) => a.id.localeCompare(b.id))
+              .sort((a: any, b: any) =>
+                String(a.id).localeCompare(String(b.id))
+              )
           );
 
           if (existingCart === normalizedCart) {
@@ -101,8 +103,8 @@ export const createPaymentSession = async (
     }
 
     // fetch sellers and their stripe accounts
-    const uniqueShopIds = [...new Set(cart.map((item: any) => item.shopId))];
-
+    const uniqueShopIds = [...new Set(cart.map((item: any) => item.Shop))];
+    console.log(uniqueShopIds);
     const shops = await prisma.shops.findMany({
       where: {
         id: { in: uniqueShopIds },

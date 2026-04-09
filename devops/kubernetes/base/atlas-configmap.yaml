@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: atlas-platform-config
+data:
+  NODE_ENV: "production"
+  KAFKA_BROKERS: "kafka:9092"
+  DB_HOST: "postgres"
+  DB_PORT: "5432"
+  DB_NAME: "atlas"
+  REDIS_HOST: "redis"
+  REDIS_PORT: "6379"
+  NEXT_PUBLIC_SERVER_URI: "https://app.atlas.local"
+  NEXT_PUBLIC_SELLER_SERVER_URI: "https://seller.atlas.local"
+  NEXT_PUBLIC_ADMIN_SERVER_URI: "https://admin.atlas.local"
+  NEXT_PUBLIC_CHAT_API_URL: "https://chat.atlas.local"
+  NEXT_PUBLIC_CHATTING_WEBSOCKET_URI: "wss://api.atlas.local/ws-chatting"

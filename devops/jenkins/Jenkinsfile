@@ -1,0 +1,124 @@
+pipeline {
+  agent any
+
+  parameters {
+    booleanParam(name: 'FORCE_REBUILD', defaultValue: false, description: 'Build every Dockerized service')
+    booleanParam(name: 'RUN_K6_SMOKE', defaultValue: false, description: 'Run the k6 smoke test against BASE_URL')
+    booleanParam(name: 'APPLY_TERRAFORM', defaultValue: false, description: 'Apply Terraform for the dev environment')
+    booleanParam(name: 'DEPLOY_TO_K8S', defaultValue: false, description: 'Apply Kubernetes manifests to the target cluster')
+    string(name: 'BASE_URL', defaultValue: 'http://localhost:8080', description: 'Base URL used by k6 smoke tests')
+    string(name: 'DOCKERHUB_NAMESPACE', defaultValue: 'replace-me', description: 'Docker Hub namespace for pushed images')
+  }
+
+  environment {
+    AWS_REGION = 'ap-south-1'
+  }
+
+  options {
+    timestamps()
+    ansiColor('xterm')
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
+    }
+
+    stage('Detect Changes') {
+      steps {
+        script {
+          def changeSet = sh(
+            script: "bash devops/scripts/detect-changed-services.sh ${params.FORCE_REBUILD ? 'true' : 'false'}",
+            returnStdout: true
+          ).trim().split('\n')
+
+          changeSet.each { line ->
+            def parts = line.tokenize('=')
+            if (parts.size() >= 2) {
+              env[parts[0]] = parts[1]
+            }
+          }
+        }
+      }
+    }
+
+    stage('Install Dependencies') {
+      steps {
+        sh 'corepack enable'
+        sh 'pnpm install --frozen-lockfile'
+        sh 'pnpm prisma generate --schema packages/db/prisma/schema.prisma'
+      }
+    }
+
+    stage('Build Images') {
+      when {
+        expression { return env.ALL_SERVICES?.trim() }
+      }
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_TOKEN')]) {
+          sh '''
+            echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+            IFS=',' read -ra SERVICES <<< "$ALL_SERVICES"
+            for service in "${SERVICES[@]}"; do
+              [ -z "$service" ] && continue
+              if [ -f "apps/$service/package.json" ]; then
+                pnpm --filter "./apps/$service" build
+              fi
+              docker build -f "apps/$service/Dockerfile" -t "$DOCKERHUB_NAMESPACE/$service:${BUILD_NUMBER}" .
+              docker tag "$DOCKERHUB_NAMESPACE/$service:${BUILD_NUMBER}" "$DOCKERHUB_NAMESPACE/$service:latest"
+              docker push "$DOCKERHUB_NAMESPACE/$service:${BUILD_NUMBER}"
+              docker push "$DOCKERHUB_NAMESPACE/$service:latest"
+            done
+          '''
+        }
+      }
+    }
+
+    stage('k6 Smoke') {
+      when {
+        expression { return params.RUN_K6_SMOKE }
+      }
+      steps {
+        sh 'docker run --rm -e BASE_URL="${BASE_URL}" -v "$PWD:/work" -w /work grafana/k6:latest run devops/k6/smoke.js'
+      }
+    }
+
+    stage('Terraform Apply') {
+      when {
+        expression { return params.APPLY_TERRAFORM }
+      }
+      steps {
+        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-devops-creds']]) {
+          sh '''
+            terraform -chdir=devops/terraform/environments/dev init
+            terraform -chdir=devops/terraform/environments/dev apply -auto-approve -var="aws_region=${AWS_REGION}"
+          '''
+        }
+      }
+    }
+
+    stage('Deploy to Kubernetes') {
+      when {
+        expression { return params.DEPLOY_TO_K8S }
+      }
+      steps {
+        withCredentials([file(credentialsId: 'kubeconfig-atlas-dev', variable: 'KUBECONFIG_FILE')]) {
+          sh '''
+            export KUBECONFIG="$KUBECONFIG_FILE"
+            kubectl apply -k devops/kubernetes/base
+          '''
+        }
+      }
+    }
+  }
+
+  post {
+    always {
+      echo "Changed backend services: ${env.BACKEND_SERVICES}"
+      echo "Changed frontend services: ${env.FRONTEND_SERVICES}"
+      echo "All services: ${env.ALL_SERVICES}"
+    }
+  }
+}

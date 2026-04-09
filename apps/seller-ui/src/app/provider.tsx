@@ -22,8 +22,7 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
-
+      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
         <ProvidersWithWebSocket>
           {children}
         </ProvidersWithWebSocket>
@@ -44,11 +43,11 @@ const ProvidersWithWebSocket = ({
 
   return (
     <>
-      {children}
-      {/* {seller && (
+      {seller && (
         <WebSocketProvider seller={seller}>
+          {children}
         </WebSocketProvider>
-      )} */}
+      )}
       {!seller && children}
     </>
   );

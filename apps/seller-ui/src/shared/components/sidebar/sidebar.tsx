@@ -170,16 +170,6 @@ const SellerSidebar = () => {
   return (
     <Sidebar className="border-r border-[#d8dbbb]">
       <SidebarHeader className="flex h-auto flex-col gap-3 border-b border-[#dde0be] px-3 py-4">
-        <div className="seller-panel flex items-center gap-3 rounded-[28px] px-3 py-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-[20px] bg-[#1f3b16] text-white shadow-[0_10px_24px_rgba(31,59,22,0.18)]">
-            <Sparkles size={18} />
-          </div>
-          <div>
-            <p className="text-sm font-extrabold tracking-[-0.02em] text-[#17320f]">Atlas Seller</p>
-            <p className="text-[11px] text-[#566146]">Quick commerce command center</p>
-          </div>
-        </div>
-
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
@@ -207,7 +197,7 @@ const SellerSidebar = () => {
                 align="start"
                 side="bottom"
                 sideOffset={6}
-                className="w-72 rounded-[26px] border border-[#d9ddb8] bg-[#fffdf4] p-2.5 shadow-[0_24px_60px_rgba(103,97,40,0.16)]"
+                className="w-72 rounded-[26px] border border-[#d9ddb8] bg-[#17320f] p-2.5 shadow-[0_24px_60px_rgba(103,97,40,0.16)]"
               >
                 <div className="mb-2 flex items-center justify-between px-1">
                   <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7b7f59]">
@@ -218,9 +208,10 @@ const SellerSidebar = () => {
                   </span>
                 </div>
 
-                <div className="mb-1.5 rounded-[22px] border border-[#d9ddb8] bg-[#f7fbdf] p-3">
+                <div className="mb-1.5 rounded-[22px] border border-[#d9ddb8] bg-[#f7fbdf] p-3 text-black ">
                   <div className="flex items-center gap-2.5">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[18px] bg-lime-500 text-white text-sm font-bold">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[18px]
+                     bg-lime-500 text-black text-sm font-bold">
                       {shopInitial}
                     </div>
                     <div className="min-w-0 flex-1">

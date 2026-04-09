@@ -4,6 +4,8 @@ import React from "react";
 import { Banknote, Link, CheckCircle, Globe } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/utils/axiosInstance";
+import useSeller from "@/hooks/useSeller";
+import axios from "axios";
 
 // Fetch Stripe account details
 const fetchStripeAccount = async () => {
@@ -11,7 +13,28 @@ const fetchStripeAccount = async () => {
   return res?.data?.stripeAccount || null;
 };
 
+const connectStripe = async (sellerId?: string) => {
+  try {
+    const response = await axios.post(
+      `${process.env.NEXT_PUBLIC_SERVER_URI}/auth/api/create-stripe-link`,
+      { sellerId },
+      { withCredentials: true }
+    );
+
+    if (response.data.url) {
+      window.location.href = response.data.url;
+      return;
+    }
+  } catch (error) {
+    console.error("Stripe Connection Error:", error);
+  }
+
+  window.location.href = "/product/api/connect-stripe";
+};
+
 const WithdrawMethod = () => {
+  const { seller } = useSeller();
+
   // Fetch connected Stripe account
   const { data: stripeAccount, isLoading } = useQuery({
     queryKey: ["stripe-account"],
@@ -110,12 +133,13 @@ const WithdrawMethod = () => {
         ) : (
           <div className="flex flex-col items-center space-y-4 border border-gray-700 p-4 rounded-md">
             <p className="text-gray-400">No Stripe account connected.</p>
-            <a
-              href="/product/api/connect-stripe"
+            <button
+              type="button"
+              onClick={() => connectStripe(seller?.id)}
               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center gap-2"
             >
               <Link size={18} /> Connect Stripe
-            </a>
+            </button>
           </div>
         )}
       </div>

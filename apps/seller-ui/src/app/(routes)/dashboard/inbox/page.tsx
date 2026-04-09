@@ -194,7 +194,7 @@ const ChatPage = () => {
                       }`}
                   >
                     <div className="flex items-center gap-3">
-                      <Image
+                      <img
                         src={
                           chat.user?.avatar ||
                           "https://ik.imagekit.io/shahriarbecodemy/avatar/6_t8b5y8t3U.png"
@@ -238,7 +238,7 @@ const ChatPage = () => {
             <>
               {/* Header */}
               <div className="p-4 border-b border-gray-800 bg-gray-900 flex items-center gap-3">
-                <Image
+                <img
                   src={
                     selectedChat.user?.avatar ||
                     "https://ik.imagekit.io/shahriarbecodemy/avatar/6_t8b5y8t3U.png"

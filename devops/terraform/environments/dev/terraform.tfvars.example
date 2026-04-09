@@ -1,0 +1,16 @@
+aws_region         = "ap-south-1"
+cluster_name       = "atlas-commerce-dev"
+environment        = "dev"
+vpc_cidr           = "10.42.0.0/16"
+availability_zones = ["ap-south-1a", "ap-south-1b"]
+private_subnets    = ["10.42.1.0/24", "10.42.2.0/24"]
+public_subnets     = ["10.42.101.0/24", "10.42.102.0/24"]
+
+node_instance_types = ["t3.large"]
+node_desired_size   = 3
+node_min_size       = 2
+node_max_size       = 6
+
+common_tags = {
+  Owner = "platform-team"
+}
