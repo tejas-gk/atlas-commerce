@@ -79,6 +79,7 @@ const navData: NavSection[] = [
     items: [
       { title: "Inbox", href: "/dashboard/inbox", icon: Inbox },
       { title: "Notifications", href: "/dashboard/notifications", icon: Bell },
+      { title: "App Platform", href: "/dashboard/app-platform", icon: SlidersHorizontal },
       { title: "Settings", href: "/dashboard/settings", icon: Settings },
       { title: "Discount Codes", href: "/dashboard/discount-codes", icon: Tag },
     ],
