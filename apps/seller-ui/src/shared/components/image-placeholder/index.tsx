@@ -46,7 +46,7 @@ const ImagePlaceHolder = ({
     <div
       className={`relative ${
         small ? "h-[180px]" : "h-[450px]"
-      } w-full cursor-pointer bg-[#1e1e1e] border border-gray-600 rounded-lg flex flex-col justify-center items-center`}
+      } w-full cursor-pointer bg-[#f7f8ea] border border-[#dde1bc] rounded-lg flex flex-col justify-center items-center`}
     >
       <label
         htmlFor={`image-upload-${index}`}
@@ -61,14 +61,14 @@ const ImagePlaceHolder = ({
         ) : (
           <>
             <p
-              className={`text-gray-400 ${
+              className={`text-[#556244] ${
                 small ? "text-xl" : "text-4xl"
               } font-semibold`}
             >
               {size}
             </p>
             <p
-              className={`text-gray-500 ${
+              className={`text-[#687259] ${
                 small ? "text-sm" : "text-lg"
               } pt-2 text-center`}
             >

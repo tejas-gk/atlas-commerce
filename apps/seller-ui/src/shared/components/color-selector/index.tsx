@@ -19,7 +19,7 @@ const ColorSelector = ({ control, errors }: any) => {
 
   return (
     <div className="mt-2">
-      <label className="block font-semibold text-gray-300 mb-1">Colors</label>
+      <label className="block font-semibold text-[#17320f] mb-1">Colors</label>
       <Controller
         name="colors"
         control={control}
@@ -42,7 +42,7 @@ const ColorSelector = ({ control, errors }: any) => {
                   }
                   className={`w-7 h-7 p-2 rounded-md my-1 flex items-center justify-center border-2 transition ${
                     isSelected ? "scale-110 border-white" : "border-transparent"
-                  } ${isLightColor ? "border-gray-600" : ""}`}
+                  } ${isLightColor ? "border-[#dde1bc]" : ""}`}
                   style={{ backgroundColor: color }}
                 />
               );
@@ -51,10 +51,10 @@ const ColorSelector = ({ control, errors }: any) => {
             {/* Add new color */}
             <button
               type="button"
-              className="w-8 h-8 flex items-center justify-center rounded-full border-2 border-gray-500 bg-gray-800 hover:bg-gray-700 transition"
+              className="w-8 h-8 flex items-center justify-center rounded-full border-2 border-[#dde1bc] bg-[#f7f8ea] hover:bg-[#eef0d5] transition"
               onClick={() => setShowColorPicker(!showColorPicker)}
             >
-              <Plus size={16} color="white" />
+              <Plus size={16} color="#17320f" />
             </button>
 
             {/* Color picker */}
@@ -72,7 +72,7 @@ const ColorSelector = ({ control, errors }: any) => {
                     setCustomColors([...customColors, newColor]);
                     setShowColorPicker(false);
                   }}
-                  className="px-3 py-1 bg-gray-700 text-white rounded-md text-sm"
+                  className="px-3 py-1 bg-[#86b81d] text-white rounded-md text-sm"
                 >
                   Add
                 </button>

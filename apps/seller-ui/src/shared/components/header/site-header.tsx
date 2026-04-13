@@ -134,7 +134,7 @@ export function SellerSiteHeader() {
             : "Dashboard";
 
     return (
-        <header className="sticky top-0 z-10 mx-auto mt-4 flex h-auto max-w-[1480px] items-center gap-3 rounded-[28px] border border-[#dde0be] bg-[rgba(255,252,239,0.86)] px-4 py-3 shadow-[0_18px_44px_rgba(108,101,46,0.08)] backdrop-blur-xl">
+        <header className="sticky top-0 z-10 mx-auto flex h-auto max-w-[1480px] items-center gap-3 rounded-b-[28px] border border-t-0 border-[#dde0be] bg-[rgba(255,252,239,0.92)] px-4 py-3 shadow-[0_18px_44px_rgba(108,101,46,0.08)] backdrop-blur-xl">
             <SidebarTrigger className="-ml-1 rounded-2xl text-[#6b7450] hover:text-[#17320f]" />
             <Button
                 variant="ghost"

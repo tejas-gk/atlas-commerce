@@ -9,7 +9,6 @@ import {
 } from "@tanstack/react-table";
 import {
   Search, Trash, Eye, Plus, BarChart, CalendarDays,
-  ArrowUpRight, ArrowDownRight, Zap, Clock, Tag, TrendingUp,
 } from "lucide-react";
 import Link from "next/link";
 import axiosInstance from "@/utils/axiosInstance";
@@ -22,11 +21,30 @@ import { Card } from "@workspace/ui/components/card";
 import useSeller from "@/hooks/useSeller";
 
 const KPI_CARDS = [
-  { label: "Active Events", value: "8", sub: "running right now", trend: "up" as const, Icon: Zap, iconCls: "bg-emerald-500/15 text-emerald-400" },
-  { label: "Ending Soon", value: "3", sub: "within 48 hours", trend: "down" as const, Icon: Clock, iconCls: "bg-amber-500/15 text-amber-400" },
-  { label: "Event Revenue", value: "$12,840", sub: "+14.2% this week", trend: "up" as const, Icon: TrendingUp, iconCls: "bg-emerald-500/15 text-emerald-400" },
-  { label: "Avg Discount", value: "32%", sub: "across all events", trend: "up" as const, Icon: Tag, iconCls: "bg-violet-500/15 text-violet-400" },
+  { label: "Active Events", value: "8", badge: "running right now", positive: true, spark: [3, 4, 5, 4, 6, 5, 7, 6, 8, 8] },
+  { label: "Ending Soon", value: "3", badge: "within 48 hours", positive: false, spark: [8, 7, 6, 7, 5, 6, 4, 5, 3, 3] },
+  { label: "Event Revenue", value: "$12,840", badge: "+14.2% this week", positive: true, spark: [30, 42, 38, 55, 50, 65, 72, 80, 88, 100] },
+  { label: "Avg Discount", value: "32%", badge: "across all events", positive: true, spark: [25, 27, 26, 28, 29, 28, 30, 31, 31, 32] },
 ];
+
+function Sparkline({ data, positive }: { data: number[]; positive: boolean }) {
+  const W = 80, H = 36;
+  const min = Math.min(...data), max = Math.max(...data);
+  const range = max - min || 1;
+  const pts = data
+    .map((v, i) => {
+      const x = (i / (data.length - 1)) * W;
+      const y = H - ((v - min) / range) * H;
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    })
+    .join(" ");
+  const color = positive ? "#22c55e" : "#f97316";
+  return (
+    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} fill="none">
+      <polyline points={pts} stroke={color} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+    </svg>
+  );
+}
 
 const FILTER_TABS = ["All", "Active", "Upcoming", "Ended"];
 
@@ -101,7 +119,7 @@ export default function AllEventsPage() {
           <div className="min-w-0">
             <Link
               href={`${process.env.NEXT_PUBLIC_USER_UI_LINK}/product/${row.original.slug}`}
-              className="text-foreground/90 hover:text-emerald-400 transition-colors text-sm font-medium truncate block max-w-[180px]"
+              className="text-foreground/90 hover:text-emerald-600 transition-colors text-sm font-medium truncate block max-w-[180px]"
             >
               {row.original.title?.length > 28 ? `${row.original.title.substring(0, 28)}…` : row.original.title}
             </Link>
@@ -120,7 +138,7 @@ export default function AllEventsPage() {
         return (
           <div>
             <p className="text-foreground font-semibold text-sm">${row.original.sale_price}</p>
-            {discount > 0 && <span className="text-[10px] text-emerald-400 font-medium">{discount}% off</span>}
+            {discount > 0 && <span className="text-[10px] text-emerald-600 font-medium">{discount}% off</span>}
           </div>
         );
       },
@@ -131,7 +149,7 @@ export default function AllEventsPage() {
       cell: ({ row }: any) => {
         const stock = row.original.stock ?? 0;
         return (
-          <span className={`text-sm tabular-nums ${stock < 10 ? "text-red-400" : "text-muted-foreground"}`}>
+            <span className={`text-sm tabular-nums ${stock < 10 ? "text-red-600" : "text-muted-foreground"}`}>
             {stock} left
           </span>
         );
@@ -171,11 +189,11 @@ export default function AllEventsPage() {
           <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" asChild>
             <Link href={`${process.env.NEXT_PUBLIC_USER_UI_LINK}/product/${row.original.slug}`}><Eye size={14} /></Link>
           </Button>
-          <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-emerald-400"
+          <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-emerald-600"
             onClick={() => { setAnalyticsData(row.original); setShowAnalytics(true); }}>
             <BarChart size={14} />
           </Button>
-          <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-red-400"
+          <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-red-500"
             onClick={() => { setSelectedProduct(row.original); setShowDeleteModal(true); }}>
             <Trash size={14} />
           </Button>
@@ -209,19 +227,25 @@ export default function AllEventsPage() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {KPI_CARDS.map(({ label, value, sub, trend, Icon, iconCls }) => (
-          <Card key={label} className="seller-kpi-card rounded-[28px] border-0 p-5">
-            <div className="flex items-start justify-between mb-3">
-              <div className={`seller-metric-icon flex h-10 w-10 items-center justify-center rounded-[18px] shrink-0 ${iconCls}`}>
-                <Icon size={16} />
+        {KPI_CARDS.map(({ label, value, badge, positive, spark }) => (
+          <Card
+            key={label}
+            className="rounded-[12px] border border-[#e8ebd4] bg-white p-5 shadow-[0_2px_8px_rgba(0,0,0,0.07)]"
+          >
+            <p className="text-[13px] font-medium text-[#888]">{label}</p>
+            <div className="mt-1.5 flex items-end justify-between gap-2">
+              <p className="text-[2rem] font-bold leading-none tracking-tight text-[#111]">{value}</p>
+              <div className="shrink-0 pb-0.5">
+                <Sparkline data={spark} positive={positive} />
               </div>
-              {trend === "up"
-                ? <ArrowUpRight size={14} className="text-lime-600 mt-0.5" />
-                : <ArrowDownRight size={14} className="text-red-500 mt-0.5" />}
             </div>
-            <p className="text-[24px] font-extrabold tracking-[-0.05em] text-[#17320f] tabular-nums leading-tight">{value}</p>
-            <p className="text-[11px] text-muted-foreground/70 mt-1">{sub}</p>
-            <p className="text-[11px] text-muted-foreground/50 mt-0.5">{label}</p>
+            <div className="mt-2.5">
+              <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                positive ? "bg-[#e6f9f0] text-[#16a34a]" : "bg-orange-50 text-orange-600"
+              }`}>
+                {positive ? "↗" : "↘"} {badge}
+              </span>
+            </div>
           </Card>
         ))}
       </div>

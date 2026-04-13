@@ -36,14 +36,14 @@ const SidebarItem = ({ icon, title, isActive, href }: Props) => {
   return (
     <Link href={href} onClick={handleClick} className="my-2 block">
       <div
-        className={`flex gap-2 w-full min-h-12 h-full items-center px-[13px] rounded-lg cursor-pointer transition hover:bg-[#2b2f31] ${
+        className={`flex gap-2 w-full min-h-12 h-full items-center px-[13px] rounded-2xl cursor-pointer transition hover:bg-[#f7f8ea] ${
           isActive
-            ? "scale-[.98] bg-[#0f3158] fill-blue-200 hover:!bg-[#0f3158d6]"
+            ? "scale-[.98] bg-white border border-lime-300/70 shadow-[0_12px_28px_rgba(132,178,31,0.12)] hover:!bg-white"
             : ""
         }`}
       >
         {icon}
-        <h5 className="text-slate-200 text-lg">{title}</h5>
+        <h5 className="text-[#17320f] text-lg">{title}</h5>
       </div>
     </Link>
   );

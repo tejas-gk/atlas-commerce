@@ -15,12 +15,6 @@ import {
   Download,
   ChevronLeft,
   ChevronRight,
-  DollarSign,
-  TrendingUp,
-  Clock,
-  CheckCircle,
-  ArrowUpRight,
-  ArrowDownRight,
   CreditCard,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
@@ -54,6 +48,25 @@ interface PaymentSummary {
 }
 
 const FILTER_TABS = ["All", "Paid", "Pending", "Failed", "Refunded"];
+
+function Sparkline({ data, positive }: { data: number[]; positive: boolean }) {
+  const W = 80, H = 36;
+  const min = Math.min(...data), max = Math.max(...data);
+  const range = max - min || 1;
+  const pts = data
+    .map((v, i) => {
+      const x = (i / (data.length - 1)) * W;
+      const y = H - ((v - min) / range) * H;
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    })
+    .join(" ");
+  const color = positive ? "#22c55e" : "#f97316";
+  return (
+    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} fill="none">
+      <polyline points={pts} stroke={color} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+    </svg>
+  );
+}
 
 const fetchOrders = async (shopId: string): Promise<Order[]> => {
   const res = await axiosInstance.get("/order/api/get-seller-orders", {
@@ -179,7 +192,7 @@ const SellerPayments = () => {
         const sellerShare = row.original.total * 0.9;
         return (
           <div>
-            <p className="text-emerald-400 font-semibold text-sm">
+            <p className="text-emerald-700 font-semibold text-sm">
               ${sellerShare.toFixed(2)}
             </p>
             <p className="text-[10px] text-muted-foreground/40 mt-0.5">
@@ -196,7 +209,7 @@ const SellerPayments = () => {
         const adminFee = row.original.total * 0.1;
         return (
           <div>
-            <p className="text-amber-400/80 text-sm">
+            <p className="text-amber-600 text-sm">
               ${adminFee.toFixed(2)}
             </p>
             <p className="text-[10px] text-muted-foreground/40 mt-0.5">
@@ -300,34 +313,30 @@ const SellerPayments = () => {
     {
       label: "Total Earnings",
       value: `$${displaySummary.totalEarnings.toFixed(2)}`,
-      sub: "From completed orders",
-      trend: "up" as const,
-      Icon: DollarSign,
-      iconCls: "bg-emerald-500/15 text-emerald-400"
+      badge: "From completed orders",
+      positive: true,
+      spark: [30, 42, 38, 55, 50, 65, 60, 78, 72, 90],
     },
     {
       label: "Platform Fees",
       value: `$${displaySummary.totalAdminFees.toFixed(2)}`,
-      sub: "10% platform fee",
-      trend: "down" as const,
-      Icon: CreditCard,
-      iconCls: "bg-amber-500/15 text-amber-400"
+      badge: "10% platform fee",
+      positive: false,
+      spark: [20, 28, 24, 32, 40, 35, 42, 38, 44, 50],
     },
     {
       label: "Pending Payments",
       value: `$${displaySummary.pendingPayments.toFixed(2)}`,
-      sub: "Awaiting settlement",
-      trend: "down" as const,
-      Icon: Clock,
-      iconCls: "bg-emerald-500/15 text-emerald-400"
+      badge: "Awaiting settlement",
+      positive: false,
+      spark: [18, 22, 30, 26, 20, 15, 18, 12, 10, 8],
     },
     {
       label: "Completed Orders",
       value: displaySummary.completedPayments.toString(),
-      sub: "Successfully paid",
-      trend: "up" as const,
-      Icon: CheckCircle,
-      iconCls: "bg-violet-500/15 text-violet-400"
+      badge: "Successfully paid",
+      positive: true,
+      spark: [50, 58, 55, 65, 62, 70, 68, 80, 78, 90],
     },
   ];
 
@@ -344,19 +353,25 @@ const SellerPayments = () => {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {KPI_CARDS.map(({ label, value, sub, trend, Icon, iconCls }) => (
-          <Card key={label} className="seller-kpi-card rounded-[28px] border-0 p-5">
-            <div className="flex items-start justify-between mb-3">
-              <div className={`seller-metric-icon flex h-10 w-10 items-center justify-center rounded-[18px] shrink-0 ${iconCls}`}>
-                <Icon size={16} />
+        {KPI_CARDS.map(({ label, value, badge, positive, spark }) => (
+          <Card
+            key={label}
+            className="rounded-[12px] border border-[#e8ebd4] bg-white p-5 shadow-[0_2px_8px_rgba(0,0,0,0.07)]"
+          >
+            <p className="text-[13px] font-medium text-[#888]">{label}</p>
+            <div className="mt-1.5 flex items-end justify-between gap-2">
+              <p className="text-[2rem] font-bold leading-none tracking-tight text-[#111]">{value}</p>
+              <div className="shrink-0 pb-0.5">
+                <Sparkline data={spark} positive={positive} />
               </div>
-              {trend === "up"
-                ? <ArrowUpRight size={14} className="text-lime-600 mt-0.5" />
-                : <ArrowDownRight size={14} className="text-red-500 mt-0.5" />}
             </div>
-            <p className="text-[24px] font-extrabold tracking-[-0.05em] text-[#17320f] tabular-nums leading-tight">{value}</p>
-            <p className="text-[11px] text-muted-foreground/70 mt-1">{sub}</p>
-            <p className="text-[11px] text-muted-foreground/50 mt-0.5">{label}</p>
+            <div className="mt-2.5">
+              <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                positive ? "bg-[#e6f9f0] text-[#16a34a]" : "bg-orange-50 text-orange-600"
+              }`}>
+                {positive ? "↗" : "↘"} {badge}
+              </span>
+            </div>
           </Card>
         ))}
       </div>

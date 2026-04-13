@@ -95,10 +95,10 @@ const CustomDomains = () => {
       {domains.length === 0 && (
         <div className="px-4 rounded-lg">
           <div className="flex items-center gap-3">
-            <PlusCircle size={22} className="text-blue-400" />
+            <PlusCircle size={22} className="text-[#86b81d]" />
             <div>
-              <h3 className="text-white font-semibold">Add Custom Domain</h3>
-              <p className="text-gray-400 text-sm">
+              <h3 className="text-[#17320f] font-semibold">Add Custom Domain</h3>
+              <p className="text-[#687259] text-sm">
                 Connect your own domain to this store.
               </p>
             </div>
@@ -106,9 +106,9 @@ const CustomDomains = () => {
 
           <form
             onSubmit={handleSubmit((data) => addDomainMutation.mutate(data))}
-            className="mt-4 border-t border-gray-700 pt-4"
+            className="mt-4 border-t border-[#dde1bc] pt-4"
           >
-            <label className="block text-sm font-medium text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-[#556244] mb-1">
               Domain Name
             </label>
             <Input
@@ -122,7 +122,7 @@ const CustomDomains = () => {
             )}
             <button
               type="submit"
-              className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center gap-2"
+              className="mt-4 bg-[#86b81d] hover:bg-[#6a9317] text-white px-4 py-2 rounded-md flex items-center gap-2"
               disabled={addDomainMutation.isPending}
             >
               {addDomainMutation.isPending ? (
@@ -139,36 +139,36 @@ const CustomDomains = () => {
 
       {/* Connected Domains */}
       <div className="px-4 rounded-lg">
-        <h3 className="text-white font-semibold flex items-center gap-2">
-          <Globe size={22} className="text-green-400" /> Connected Domain
+        <h3 className="text-[#17320f] font-semibold flex items-center gap-2">
+          <Globe size={22} className="text-green-500" /> Connected Domain
         </h3>
-        <p className="text-gray-400 text-sm mt-1 mb-3">
+        <p className="text-[#687259] text-sm mt-1 mb-3">
           Manage your custom domain.
         </p>
 
         <div className="mt-4 space-y-4">
           {isLoading ? (
-            <p className="text-gray-400">Loading...</p>
+            <p className="text-[#687259]">Loading...</p>
           ) : domains.length === 0 ? (
-            <p className="text-gray-400">No domain connected yet.</p>
+            <p className="text-[#687259]">No domain connected yet.</p>
           ) : (
             domains.map((domain: any) => (
               <div
                 key={domain.id}
-                className="flex justify-between items-center p-3 border border-gray-700 rounded-md"
+                className="flex justify-between items-center p-3 border border-[#dde1bc] rounded-md"
               >
                 <div className="flex items-center gap-3">
                   {domain.status === "VERIFIED" ? (
-                    <CheckCircle size={22} className="text-green-400" />
+                    <CheckCircle size={22} className="text-green-500" />
                   ) : (
-                    <XCircle size={22} className="text-yellow-400" />
+                    <XCircle size={22} className="text-amber-500" />
                   )}
                   <div>
-                    <p className="text-white font-semibold">{domain.domain}</p>
+                    <p className="text-[#17320f] font-semibold">{domain.domain}</p>
                     <p
                       className={`text-sm ${domain.status === "VERIFIED"
-                        ? "text-green-400"
-                        : "text-yellow-400"
+                        ? "text-green-600"
+                        : "text-amber-600"
                         }`}
                     >
                       {domain.status}
@@ -180,14 +180,14 @@ const CustomDomains = () => {
                   {domain.status !== "Verified" && (
                     <button
                       onClick={() => verifyDomainMutation.mutate(domain.domain)}
-                      className="text-blue-400 hover:text-blue-300 transition"
+                      className="text-blue-500 hover:text-blue-600 transition"
                     >
                       <RefreshCcw size={20} />
                     </button>
                   )}
                   <button
                     onClick={() => removeDomainMutation.mutate(domain.id)}
-                    className="text-red-400 hover:text-red-300 transition"
+                    className="text-red-500 hover:text-red-600 transition"
                   >
                     <Trash2 size={20} />
                   </button>
@@ -207,26 +207,26 @@ const CustomDomains = () => {
       {/* DNS Configuration */}
       <div className="px-4 rounded-lg">
         <div className="flex items-center gap-3">
-          <Globe size={22} className="text-yellow-400" />
+          <Globe size={22} className="text-amber-500" />
           <div>
-            <h3 className="text-white font-semibold">DNS Configuration</h3>
-            <p className="text-gray-400 text-sm">
+            <h3 className="text-[#17320f] font-semibold">DNS Configuration</h3>
+            <p className="text-[#687259] text-sm">
               Set up your DNS records for verification.
             </p>
           </div>
         </div>
 
-        <div className="mt-4 border-t border-gray-700 pt-4 text-gray-300">
+        <div className="mt-4 border-t border-[#dde1bc] pt-4 text-[#556244]">
           <p>To verify your domain, add the following DNS records:</p>
           <ul className="mt-2 space-y-2 text-sm">
             <li>
               <strong>CNAME:</strong> Set{" "}
-              <span className="text-green-400">www</span> to point to{" "}
-              <span className="text-blue-400">seller.penderghast.com</span>
+              <span className="text-green-600">www</span> to point to{" "}
+              <span className="text-blue-600">seller.penderghast.com</span>
             </li>
             <li>
               <strong>A Record:</strong> Point your root domain to{" "}
-              <span className="text-blue-400">YOUR_SERVER_IP</span>
+              <span className="text-blue-600">YOUR_SERVER_IP</span>
             </li>
           </ul>
         </div>

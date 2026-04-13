@@ -33,19 +33,17 @@ const ChatInput = ({
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      console.log("Uploading image:", file.name);
-    }
+    if (!file) return;
   };
 
   return (
     <form
       onSubmit={onSendMessage}
-      className="border-t border-t-slate-700 bg-slate-950 px-4 py-3 flex items-center gap-2 relative"
+      className="border-t border-t-[#dde1bc] bg-[#fffdf4] px-4 py-3 flex items-center gap-2 relative"
     >
       {/* Upload Icon */}
-      <label className="cursor-pointer p-2 hover:bg-slate-800 rounded-md">
-        <ImageIcon className="w-5 h-5 text-gray-300" />
+      <label className="cursor-pointer p-2 hover:bg-[#f7f8ea] rounded-md">
+        <ImageIcon className="w-5 h-5 text-[#556244]" />
         <input
           type="file"
           accept="image/*"
@@ -59,9 +57,9 @@ const ChatInput = ({
         <button
           type="button"
           onClick={() => setShowEmoji((prev) => !prev)}
-          className="p-2 hover:bg-slate-800 rounded-md"
+          className="p-2 hover:bg-[#f7f8ea] rounded-md"
         >
-          <Smile className="w-5 h-5 text-gray-300" />
+          <Smile className="w-5 h-5 text-[#556244]" />
         </button>
         {showEmoji && (
           <div className="absolute bottom-12 left-0 z-50">
@@ -76,13 +74,13 @@ const ChatInput = ({
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         placeholder="Type your message..."
-        className="flex-1 px-4 py-2 bg-transparent text-sm border outline-none border-slate-700 rounded-md"
+        className="flex-1 px-4 py-2 bg-white text-sm border outline-none border-[#dde1bc] rounded-md text-[#17320f]"
       />
 
       {/* Send Button */}
       <button
         type="submit"
-        className="bg-blue-600 hover:bg-blue-700 transition text-white p-2 rounded-md"
+        className="bg-[#86b81d] hover:bg-[#6a9317] transition text-white p-2 rounded-md"
       >
         <Send className="w-4 h-4" />
       </button>

@@ -3,7 +3,7 @@ import * as path from "path"
 import cors from "cors"
 import proxy from "express-http-proxy"
 import morgan from "morgan"
-import rateLimit from "express-rate-limit"
+import rateLimit, { ipKeyGenerator } from "express-rate-limit"
 import cookieParser from "cookie-parser"
 import initializeSiteConfig from "./libs/initializeSiteConfig";
 
@@ -62,7 +62,7 @@ const limiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     validate: { ip: false },
-    keyGenerator: (req: any) => req.ip
+    keyGenerator: (req: any) => ipKeyGenerator(req),
 })
 
 app.use(limiter)

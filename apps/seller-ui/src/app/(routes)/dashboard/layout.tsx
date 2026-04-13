@@ -5,9 +5,9 @@ import { SidebarProvider, SidebarInset } from "@workspace/ui/components/sidebar"
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <SidebarProvider>
+    <SidebarProvider className="h-svh overflow-hidden">
       <SellerSidebar />
-      <SidebarInset className="seller-app-shell">
+      <SidebarInset className="seller-app-shell overflow-y-auto">
         <SellerSiteHeader />
         <main className="flex flex-1 flex-col px-4 pb-8 pt-5 md:px-6 md:pb-10">
           <div className="mx-auto w-full max-w-[1480px]">

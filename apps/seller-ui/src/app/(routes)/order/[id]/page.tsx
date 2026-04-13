@@ -73,7 +73,7 @@ const Page = () => {
     <div className="max-w-5xl mx-auto px-4 py-10">
       <div className="my-4">
         <span
-          className="text-white flex items-center gap-2 font-semibold cursor-pointer"
+          className="text-[#17320f] flex items-center gap-2 font-semibold cursor-pointer hover:text-[#86b81d] transition-colors"
           onClick={() => router.push("/dashboard/orders")}
         >
           <ArrowLeft />
@@ -81,20 +81,20 @@ const Page = () => {
         </span>
       </div>
 
-      <h1 className="text-2xl font-bold text-gray-200 mb-4">
+      <h1 className="text-2xl font-bold text-[#17320f] mb-4">
         Order #{order.id.slice(-6)}
       </h1>
 
       {/* Status Selector */}
       <div className="mb-6">
-        <label className="text-sm font-medium text-gray-300 mr-3">
+        <label className="text-sm font-medium text-[#556244] mr-3">
           Update Delivery Status:
         </label>
         <select
           value={order.deliveryStatus}
           onChange={handleStatusChange}
           disabled={updating}
-          className="border bg-transparent text-gray-200 border-gray-300 rounded-md px-3 py-1 text-sm"
+          className="border bg-white text-[#17320f] border-[#dde1bc] rounded-xl px-3 py-1 text-sm outline-none"
         >
           {statuses.map((status) => {
             const currentIndex = statuses.indexOf(order.deliveryStatus);
@@ -123,10 +123,10 @@ const Page = () => {
               <div
                 key={step}
                 className={`flex-1 text-left ${current
-                    ? "text-blue-600"
+                    ? "text-lime-700"
                     : passed
-                      ? "text-green-600"
-                      : "text-gray-400"
+                      ? "text-[#76a611]"
+                      : "text-[#8b916a]"
                   }`}
               >
                 {step}
@@ -140,12 +140,12 @@ const Page = () => {
             return (
               <div key={step} className="flex-1 flex items-center">
                 <div
-                  className={`w-4 h-4 rounded-full ${reached ? "bg-blue-600" : "bg-gray-300"
+                  className={`w-4 h-4 rounded-full ${reached ? "bg-lime-600" : "bg-[#dde1bc]"
                     }`}
                 />
                 {idx !== statuses.length - 1 && (
                   <div
-                    className={`flex-1 h-1 ${reached ? "bg-blue-500" : "bg-gray-200"
+                    className={`flex-1 h-1 ${reached ? "bg-lime-500" : "bg-[#e0e4be]"
                       }`}
                   />
                 )}
@@ -156,10 +156,10 @@ const Page = () => {
       </div>
 
       {/* Summary Info */}
-      <div className="mb-6 space-y-1 text-sm text-gray-200">
+      <div className="seller-panel mb-6 space-y-1 rounded-[24px] p-5 text-sm text-[#17320f]">
         <p>
           <span className="font-semibold">Payment Status:</span>{" "}
-          <span className="text-green-600 font-medium">{order.status}</span>
+          <span className="text-[#76a611] font-medium">{order.status}</span>
         </p>
         <p>
           <span className="font-semibold">Total Paid:</span>{" "}
@@ -169,7 +169,7 @@ const Page = () => {
         {order.discountAmount > 0 && (
           <p>
             <span className="font-semibold">Discount Applied:</span>{" "}
-            <span className="text-green-400">
+            <span className="text-[#76a611]">
               -${order.discountAmount.toFixed(2)} (
               {order.couponCode?.discountType === "percentage"
                 ? `${order.couponCode.discountValue}%`
@@ -182,7 +182,7 @@ const Page = () => {
         {order.couponCode && (
           <p>
             <span className="font-semibold">Coupon Used:</span>{" "}
-            <span className="text-blue-400">
+            <span className="text-[#496115] font-medium">
               {order.couponCode.public_name}
             </span>
           </p>
@@ -196,8 +196,8 @@ const Page = () => {
 
       {/* Shipping Address */}
       {order.shippingAddress && (
-        <div className="mb-6 text-sm text-gray-300">
-          <h2 className="text-md font-semibold mb-2">Shipping Address</h2>
+        <div className="mb-6 text-sm text-[#556244]">
+          <h2 className="text-md font-semibold text-[#17320f] mb-2">Shipping Address</h2>
           <p>{order.shippingAddress.name}</p>
           <p>
             {order.shippingAddress.street}, {order.shippingAddress.city},{" "}
@@ -209,30 +209,30 @@ const Page = () => {
 
       {/* Order Items */}
       <div>
-        <h2 className="text-lg font-semibold text-gray-300 mb-4">
+        <h2 className="text-lg font-semibold text-[#17320f] mb-4">
           Order Items
         </h2>
         <div className="space-y-4">
           {order.items.map((item: any) => (
             <div
               key={item.productId}
-              className="border border-gray-200 rounded-md p-4 flex items-center gap-4"
+              className="seller-soft-panel rounded-2xl p-4 flex items-center gap-4"
             >
               <img
                 src={item.product?.images[0]?.url || "/placeholder.png"}
                 alt={item.product?.title || "Product image"}
-                className="w-16 h-16 object-cover rounded-md border border-gray-200"
+                className="w-16 h-16 object-cover rounded-xl border border-[#dde1bc]"
               />
               <div className="flex-1">
-                <p className="font-medium text-gray-200">
+                <p className="font-medium text-[#17320f]">
                   {item.product?.title || "Unnamed Product"}
                 </p>
-                <p className="text-sm text-gray-300">
+                <p className="text-sm text-[#556244]">
                   Quantity: {item.quantity}
                 </p>
                 {item.selectedOptions &&
                   Object.keys(item.selectedOptions).length > 0 && (
-                    <div className="text-xs text-gray-400 mt-1">
+                    <div className="text-xs text-[#687257] mt-1">
                       {Object.entries(item.selectedOptions).map(
                         ([key, value]: [string, any]) =>
                           value && (
@@ -247,7 +247,7 @@ const Page = () => {
                     </div>
                   )}
               </div>
-              <p className="text-sm font-semibold text-gray-200">
+              <p className="text-sm font-semibold text-[#17320f]">
                 ${item.price.toFixed(2)}
               </p>
             </div>

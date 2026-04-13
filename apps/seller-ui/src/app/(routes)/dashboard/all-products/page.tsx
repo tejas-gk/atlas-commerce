@@ -8,8 +8,7 @@ import {
   type ColumnDef,
 } from "@tanstack/react-table";
 import {
-  Search, Trash, Eye, Plus, BarChart, Star, Boxes,
-  ArrowUpRight, ArrowDownRight, Package, TrendingUp, AlertTriangle,
+  Search, Trash, Eye, Plus, BarChart, Package, Star, Boxes,
 } from "lucide-react";
 import Link from "next/link";
 import axiosInstance from "@/utils/axiosInstance";
@@ -22,11 +21,30 @@ import { Card } from "@workspace/ui/components/card";
 import useSeller from "@/hooks/useSeller";
 
 const KPI_CARDS = [
-  { label: "Total Products", value: "128", sub: "+12 this month", trend: "up" as const, Icon: Package, iconCls: "bg-emerald-500/15 text-emerald-400" },
-  { label: "Total Revenue", value: "$48,290", sub: "+8.3% vs last month", trend: "up" as const, Icon: TrendingUp, iconCls: "bg-emerald-500/15 text-emerald-400" },
-  { label: "Low Stock", value: "7", sub: "items below threshold", trend: "down" as const, Icon: AlertTriangle, iconCls: "bg-amber-500/15 text-amber-400" },
-  { label: "Avg Rating", value: "4.7 / 5", sub: "across all products", trend: "up" as const, Icon: Star, iconCls: "bg-violet-500/15 text-violet-400" },
+  { label: "Total Products", value: "128", badge: "+12 this month", positive: true, spark: [60, 72, 68, 80, 75, 88, 84, 95, 92, 105] },
+  { label: "Total Revenue", value: "$48,290", badge: "+8.3% vs last month", positive: true, spark: [30, 42, 38, 55, 50, 65, 60, 78, 72, 90] },
+  { label: "Low Stock", value: "7", badge: "items below threshold", positive: false, spark: [4, 6, 5, 8, 10, 9, 12, 10, 8, 7] },
+  { label: "Avg Rating", value: "4.7 / 5", badge: "across all products", positive: true, spark: [40, 42, 44, 43, 45, 44, 46, 46, 47, 47] },
 ];
+
+function Sparkline({ data, positive }: { data: number[]; positive: boolean }) {
+  const W = 80, H = 36;
+  const min = Math.min(...data), max = Math.max(...data);
+  const range = max - min || 1;
+  const pts = data
+    .map((v, i) => {
+      const x = (i / (data.length - 1)) * W;
+      const y = H - ((v - min) / range) * H;
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    })
+    .join(" ");
+  const color = positive ? "#22c55e" : "#f97316";
+  return (
+    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} fill="none">
+      <polyline points={pts} stroke={color} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+    </svg>
+  );
+}
 
 const FILTER_TABS = ["All", "Active", "Low Stock", "Deleted"];
 
@@ -88,7 +106,7 @@ export default function AllProductsPage() {
           <div className="min-w-0">
             <Link
               href={`${process.env.NEXT_PUBLIC_USER_UI_LINK}/product/${row.original.slug}`}
-              className="text-foreground/90 hover:text-emerald-400 transition-colors text-sm font-medium truncate block max-w-[200px]"
+              className="text-foreground/90 hover:text-emerald-600 transition-colors text-sm font-medium truncate block max-w-[200px]"
             >
               {row.original.title?.length > 32 ? `${row.original.title.substring(0, 32)}...` : row.original.title}
             </Link>
@@ -123,7 +141,7 @@ export default function AllProductsPage() {
                 style={{ width: `${Math.min(100, (stock / 100) * 100)}%` }}
               />
             </div>
-            <span className={`text-xs tabular-nums ${isLow ? "text-red-400" : "text-muted-foreground"}`}>{stock}</span>
+            <span className={`text-xs tabular-nums ${isLow ? "text-red-600" : "text-muted-foreground"}`}>{stock}</span>
           </div>
         );
       },
@@ -133,7 +151,7 @@ export default function AllProductsPage() {
       header: "Rating",
       cell: ({ row }: any) => (
         <div className="flex items-center gap-1.5">
-          <Star size={12} fill="currentColor" className="text-amber-400/80" />
+          <Star size={12} fill="currentColor" className="text-amber-500" />
           <span className="text-foreground/80 text-sm tabular-nums">{row.original.ratings || "5.0"}</span>
         </div>
       ),
@@ -157,11 +175,11 @@ export default function AllProductsPage() {
           <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" asChild>
             <Link href={`${process.env.NEXT_PUBLIC_USER_UI_LINK}/product/${row.original.slug}`}><Eye size={14} /></Link>
           </Button>
-          <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-emerald-400"
+          <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-emerald-600"
             onClick={() => { setAnalyticsData(row.original); setShowAnalytics(true); }}>
             <BarChart size={14} />
           </Button>
-          <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-red-400"
+          <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-red-500"
             onClick={() => { setSelectedProduct(row.original); setShowDeleteModal(true); }}>
             <Trash size={14} />
           </Button>
@@ -193,19 +211,25 @@ export default function AllProductsPage() {
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {KPI_CARDS.map(({ label, value, sub, trend, Icon, iconCls }) => (
-          <Card key={label} className="seller-kpi-card rounded-[28px] border-0 p-5">
-            <div className="flex items-start justify-between mb-3">
-              <div className={`seller-metric-icon flex h-10 w-10 items-center justify-center rounded-[18px] shrink-0 ${iconCls}`}>
-                <Icon size={16} />
+        {KPI_CARDS.map(({ label, value, badge, positive, spark }) => (
+          <Card
+            key={label}
+            className="rounded-[12px] border border-[#e8ebd4] bg-white p-5 shadow-[0_2px_8px_rgba(0,0,0,0.07)]"
+          >
+            <p className="text-[13px] font-medium text-[#888]">{label}</p>
+            <div className="mt-1.5 flex items-end justify-between gap-2">
+              <p className="text-[2rem] font-bold leading-none tracking-tight text-[#111]">{value}</p>
+              <div className="shrink-0 pb-0.5">
+                <Sparkline data={spark} positive={positive} />
               </div>
-              {trend === "up"
-                ? <ArrowUpRight size={14} className="mt-0.5 text-lime-600" />
-                : <ArrowDownRight size={14} className="mt-0.5 text-red-500" />}
             </div>
-            <p className="text-[24px] font-extrabold tracking-[-0.05em] text-[#17320f] tabular-nums leading-tight">{value}</p>
-            <p className="mt-1 text-[11px] text-muted-foreground/70">{sub}</p>
-            <p className="mt-0.5 text-[11px] text-muted-foreground/50">{label}</p>
+            <div className="mt-2.5">
+              <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                positive ? "bg-[#e6f9f0] text-[#16a34a]" : "bg-orange-50 text-orange-600"
+              }`}>
+                {positive ? "↗" : "↘"} {badge}
+              </span>
+            </div>
           </Card>
         ))}
       </div>

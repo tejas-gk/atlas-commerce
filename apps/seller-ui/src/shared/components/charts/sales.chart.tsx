@@ -25,13 +25,26 @@ export const SalesChart = ({
       type: "area",
       animations: {
         // @ts-ignore
-        easing: "linear",
-        speed: 300,
+        easing: "easeinout",
+        speed: 500,
       },
       fontFamily: "Inter, sans-serif",
-      foreColor: "#ECEDEE",
+      foreColor: "#6b7c52",
       toolbar: { show: false },
       zoom: { enabled: false },
+      background: "transparent",
+    },
+    colors: ["#86b81d"],
+    fill: {
+      type: "gradient",
+      gradient: {
+        shadeIntensity: 1,
+        type: "vertical",
+        colorStops: [
+          { offset: 0, color: "#86b81d", opacity: 0.25 },
+          { offset: 100, color: "#86b81d", opacity: 0.01 },
+        ],
+      },
     },
     xaxis: {
       categories: ordersData?.map((data) =>
@@ -42,43 +55,54 @@ export const SalesChart = ({
       labels: {
         show: true,
         style: {
-          colors: "#9ba1a6",
+          colors: "#8a9a6a",
+          fontSize: "11px",
           fontFamily: "Inter, sans-serif",
+          fontWeight: 500,
         },
       },
-      axisBorder: {
-        show: true,
-        color: "#ffffff26",
-      },
-      axisTicks: {
-        show: false,
-      },
+      axisBorder: { show: false },
+      axisTicks: { show: false },
       tooltip: { enabled: false },
     },
     yaxis: {
-      labels: { show: false },
+      labels: {
+        show: true,
+        style: {
+          colors: "#8a9a6a",
+          fontSize: "11px",
+          fontFamily: "Inter, sans-serif",
+        },
+        formatter: (v: number) => (v >= 1000 ? `${(v / 1000).toFixed(0)}k` : `${v}`),
+      },
       axisBorder: { show: false },
       axisTicks: { show: false },
     },
     grid: {
-      show: false,
+      show: true,
+      borderColor: "#f0f2e0",
+      strokeDashArray: 4,
+      xaxis: { lines: { show: false } },
+      yaxis: { lines: { show: true } },
+      padding: { left: 0, right: 0, top: -10, bottom: 0 },
     },
     tooltip: {
       enabled: true,
-      x: { show: false },
+      theme: "light",
+      style: { fontSize: "12px", fontFamily: "Inter, sans-serif" },
+      x: { show: true },
       y: {
-        formatter: (value: number) => `${value}`,
-        title: {
-          formatter: () => "",
-        },
+        formatter: (value: number) => `${value.toLocaleString()} orders`,
+        title: { formatter: () => "" },
       },
     },
     stroke: {
       curve: "smooth",
-      width: 3,
+      width: 2.5,
     },
     markers: {
       size: 0,
+      hover: { size: 5, sizeOffset: 2 },
     },
     dataLabels: {
       enabled: false,

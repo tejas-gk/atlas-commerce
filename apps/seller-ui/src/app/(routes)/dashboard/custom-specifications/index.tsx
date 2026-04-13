@@ -12,7 +12,7 @@ const CustomSpecifications = ({ control, errors }: any) => {
 
   return (
     <div>
-      <label className="block font-semibold text-gray-300 mb-1">
+      <label className="block font-semibold text-[#17320f] mb-1">
         Custom Specifications
       </label>
       <div className="flex flex-col gap-3">
