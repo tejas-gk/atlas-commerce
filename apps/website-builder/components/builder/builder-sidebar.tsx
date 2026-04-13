@@ -426,7 +426,7 @@ export function PropertiesPanel({
 }) {
     if (!element) {
         return (
-            <div className="w-72 border-l bg-muted/20 flex flex-col items-center justify-center h-full text-center px-6">
+            <div className="flex h-full flex-col items-center justify-center bg-muted/20 px-6 text-center">
                 <MousePointerClick className="h-8 w-8 text-muted-foreground/30 mb-3" />
                 <p className="text-sm text-muted-foreground font-medium">
                     Select an element
@@ -439,7 +439,7 @@ export function PropertiesPanel({
     }
 
     return (
-        <div className="w-72 border-l bg-muted/20 shrink-0 overflow-auto">
+        <div className="h-full overflow-auto bg-muted/20">
             {/* Header */}
             <div className="p-3 border-b bg-background flex items-center justify-between sticky top-0 z-10">
                 <div>

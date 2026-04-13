@@ -4,9 +4,11 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import type { BuilderElement, BuilderSection, BuilderPage as PageType } from "@/lib/builder-types"
 import { createDefaultPage } from "@/lib/builder-types"
 import { BuilderCanvas } from "@/components/builder/builder-canvas"
+import { AgenticBuilderPanel } from "@/components/builder/agentic-builder-panel"
 import { BuilderSidebar, PropertiesPanel } from "@/components/builder/builder-sidebar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { authApi } from "@/lib/auth-api"
 import { productApi, type ProductRecord } from "@/lib/product-api"
 import { createWebsitePayloadFromTemplate } from "@/lib/template-library"
@@ -87,6 +89,7 @@ export default function BuilderPageComponent({
   const [activeDevice, setActiveDevice] = useState("desktop")
   const [showPreview, setShowPreview] = useState(false)
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">("idle")
+  const [rightPanelTab, setRightPanelTab] = useState("assistant")
 
   // ─── History (refs only, no useEffect) ───
   const historyRef = useRef<string[]>([JSON.stringify(getDefaultPages())])
@@ -949,13 +952,53 @@ export default function BuilderPageComponent({
 
           {/* Right properties panel */}
           {!showPreview && (
-            <PropertiesPanel
-              element={selectedElement}
-              products={shopProducts}
-              onUpdate={handleUpdateElement}
-              onDelete={handleDeleteElement}
-              onDuplicate={handleDuplicateElement}
-            />
+            <div className="w-[360px] shrink-0 border-l bg-muted/20">
+              <Tabs
+                value={rightPanelTab}
+                onValueChange={setRightPanelTab}
+                className="flex h-full min-h-0 flex-col"
+              >
+                <TabsList className="grid h-10 w-full grid-cols-2 rounded-none border-b bg-transparent">
+                  <TabsTrigger
+                    value="assistant"
+                    className="rounded-none text-xs data-[state=active]:bg-background"
+                  >
+                    AI Builder
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="properties"
+                    className="rounded-none text-xs data-[state=active]:bg-background"
+                  >
+                    Properties
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="assistant" className="mt-0 min-h-0 flex-1">
+                  <AgenticBuilderPanel
+                    pages={pages}
+                    activePageId={activePageId}
+                    selectedElementId={selectedElementId}
+                    onApplyResult={(result) => {
+                      updatePages(() => result.pages)
+                      setActivePageId(result.activePageId)
+                      setSelectedElementId(result.selectedElementId)
+                      setSelectedSectionId(null)
+                      setRightPanelTab("properties")
+                    }}
+                  />
+                </TabsContent>
+
+                <TabsContent value="properties" className="mt-0 min-h-0 flex-1">
+                  <PropertiesPanel
+                    element={selectedElement}
+                    products={shopProducts}
+                    onUpdate={handleUpdateElement}
+                    onDelete={handleDeleteElement}
+                    onDuplicate={handleDuplicateElement}
+                  />
+                </TabsContent>
+              </Tabs>
+            </div>
           )}
         </div>
       </div>
