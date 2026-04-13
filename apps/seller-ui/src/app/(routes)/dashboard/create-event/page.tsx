@@ -34,7 +34,7 @@ const Page = () => {
     getValues,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm<any>({ defaultValues: { slug: "" } });
   const [images, setImages] = useState<(UploadedImage | null)[]>([null]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -87,12 +87,8 @@ const Page = () => {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
-      try {
-        const res = await axiosInstance.get("/product/api/get-categories");
-        return res.data;
-      } catch (error) {
-        console.log(error);
-      }
+      const res = await axiosInstance.get("/product/api/get-categories");
+      return res.data;
     },
     staleTime: 1000 * 60 * 5,
     retry: 2,
@@ -165,7 +161,7 @@ const Page = () => {
                 size="765 x 850"
                 images={images}
                 setImages={setImages}
-                key={index}
+                key={`slot-${index + 1}`}
                 small
                 setValue={setValue}
                 index={index + 1}
@@ -184,6 +180,7 @@ const Page = () => {
               </label>
               <Input
                 placeholder="Enter product title"
+                className="rounded-2xl border-[#dde1bc] bg-white"
                 {...register("title", { required: "Title is required" })}
               />
               {errors.title && (
@@ -224,6 +221,7 @@ const Page = () => {
                 </label>
                 <Input
                   placeholder="apple,flagship"
+                  className="rounded-2xl border-[#dde1bc] bg-white"
                   {...register("tags", {
                     required: "Seperate related products tags with a coma,",
                   })}
@@ -255,6 +253,7 @@ const Page = () => {
                 </label>
                 <Input
                   placeholder="1 Year / No Warranty"
+                  className="rounded-2xl border-[#dde1bc] bg-white"
                   {...register("warranty", {
                     required: "Warranty is required!",
                   })}
@@ -273,13 +272,13 @@ const Page = () => {
                   </label>
                   <Input
                     placeholder="product_slug"
+                    className="rounded-2xl border-[#dde1bc] bg-white pr-10"
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       setSlugValue(e.target.value);
                       setValue("slug", e.target.value);
                       formOnChange(e);
                     }}
                     value={watch("slug")}
-                    className="pr-10"
                     {...restSlugProps}
                   />
 
@@ -345,6 +344,7 @@ const Page = () => {
                 </label>
                 <Input
                   placeholder="Apple"
+                  className="rounded-2xl border-[#dde1bc] bg-white"
                   {...register("brand")}
                 />
                 {errors.tags && (
@@ -510,6 +510,7 @@ const Page = () => {
                 </label>
                 <Input
                   placeholder="https://www.youtube.com/embed/xyz123"
+                  className="rounded-2xl border-[#dde1bc] bg-white"
                   {...register("video_url", {
                     pattern: {
                       value:
@@ -532,6 +533,7 @@ const Page = () => {
                 </label>
                 <Input
                   placeholder="20$"
+                  className="rounded-2xl border-[#dde1bc] bg-white"
                   {...register("regular_price", {
                     valueAsNumber: true,
                     min: { value: 1, message: "Price must be at least 1" },
@@ -552,6 +554,7 @@ const Page = () => {
                 </label>
                 <Input
                   placeholder="15$"
+                  className="rounded-2xl border-[#dde1bc] bg-white"
                   {...register("sale_price", {
                     required: "Sale Price is required",
                     valueAsNumber: true,
@@ -578,6 +581,7 @@ const Page = () => {
                 </label>
                 <Input
                   placeholder="100"
+                  className="rounded-2xl border-[#dde1bc] bg-white"
                   {...register("stock", {
                     required: "Stock is required!",
                     valueAsNumber: true,

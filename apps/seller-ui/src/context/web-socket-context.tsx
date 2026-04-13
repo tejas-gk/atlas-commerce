@@ -23,7 +23,8 @@ export const WebSocketProvider = ({
   useEffect(() => {
     if (!seller?.id) return;
 
-    const ws = new WebSocket("ws://localhost:6006");
+    const wsUri = process.env.NEXT_PUBLIC_WS_URI ?? "ws://localhost:6006";
+    const ws = new WebSocket(wsUri);
     wsRef.current = ws;
 
     ws.onopen = () => {
@@ -45,10 +46,8 @@ export const WebSocketProvider = ({
     };
   }, [seller?.id]);
 
-  if (!wsReady) return null;
-
   return (
-    <WebSocketContext.Provider value={{ ws: wsRef.current, unreadCounts }}>
+    <WebSocketContext.Provider value={{ ws: wsReady ? wsRef.current : null, unreadCounts }}>
       {children}
     </WebSocketContext.Provider>
   );

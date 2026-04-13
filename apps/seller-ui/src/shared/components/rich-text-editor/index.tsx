@@ -58,7 +58,7 @@ const RichTextEditor = ({
           ],
         }}
         placeholder="Write a detailed product description here..."
-        className="bg-transparent border border-gray-700 text-white rounded-md"
+        className="bg-white border border-[#dde1bc] text-[#17320f] rounded-md"
         style={{
           minHeight: "250px",
         }}
@@ -67,35 +67,35 @@ const RichTextEditor = ({
       <style>
         {`
           .ql-toolbar {
-            background: transparent; /* Dark toolbar */
-            border-color: #444;
+            background: #f7f8ea;
+            border-color: #dde1bc;
           }
           .ql-container {
-            background: transparent !important;
-            border-color: #444;
-            color: white; /* Text color inside editor */
+            background: white !important;
+            border-color: #dde1bc;
+            color: #17320f;
           }
           .ql-picker {
-            color: white!important;
+            color: #17320f!important;
           }
           .ql-editor {
-            min-height: 200px; /* Adjust editor height */
+            min-height: 200px;
           }
           .ql-snow {
-            border-color: #444!important;
+            border-color: #dde1bc!important;
           }
           .ql-editor.ql-blank::before {
-            color: #aaa !important; /* Placeholder color */
+            color: #8b916a !important;
           }
           .ql-picker-options {
-            background: #333 !important; /* Fix dropdown color */
-            color: white !important;
+            background: white !important;
+            color: #17320f !important;
           }
           .ql-picker-item {
-            color: white !important;
+            color: #17320f !important;
           }
           .ql-stroke {
-            stroke: white!important;
+            stroke: #17320f!important;
           }
         `}
       </style>
