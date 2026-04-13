@@ -137,14 +137,14 @@ const EditProfile = () => {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Basic Information */}
-          <Card className="border border-white/[0.06] bg-card/50 p-6">
+          <Card className="seller-panel rounded-[28px] border-0 p-6">
             <div className="flex items-center gap-3 mb-5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500/15">
-                <Store size={16} className="text-emerald-400" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-lime-100">
+                <Store size={16} className="text-[#86b81d]" />
               </div>
               <div>
-                <h3 className="text-foreground font-medium">Basic Information</h3>
-                <p className="text-xs text-muted-foreground/60">Your shop's core details</p>
+                <h3 className="text-[#17320f] font-medium">Basic Information</h3>
+                <p className="text-xs text-[#687259]">Your shop's core details</p>
               </div>
             </div>
 
@@ -154,7 +154,7 @@ const EditProfile = () => {
                 <label className="text-xs text-muted-foreground mb-2 block">Shop Name</label>
                 <Input
                   {...register("name", { required: "Shop name is required" })}
-                  className="border-white/[0.08] bg-white/[0.03]"
+                  className="rounded-2xl border-[#dde1bc] bg-white"
                   placeholder="Enter your shop name"
                 />
                 {errors.name && (
@@ -176,7 +176,7 @@ const EditProfile = () => {
                       countWords(value || "") <= 100 || "Bio can't exceed 100 words",
                   })}
                   rows={4}
-                  className="w-full px-3 py-2 text-sm border border-white/[0.08] bg-white/[0.03] rounded-md text-foreground placeholder:text-muted-foreground/40 outline-none focus:border-emerald-500/50 transition-colors resize-none"
+                  className="w-full px-3 py-2 text-sm border border-[#dde1bc] bg-white rounded-2xl text-[#17320f] placeholder:text-[#8f9670] outline-none focus:border-lime-400 transition-colors resize-none"
                   placeholder="Tell customers about your shop..."
                 />
                 {errors.bio && (
@@ -187,14 +187,14 @@ const EditProfile = () => {
           </Card>
 
           {/* Contact & Location */}
-          <Card className="border border-white/[0.06] bg-card/50 p-6">
+          <Card className="seller-panel rounded-[28px] border-0 p-6">
             <div className="flex items-center gap-3 mb-5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500/15">
-                <MapPin size={16} className="text-emerald-400" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-lime-100">
+                <MapPin size={16} className="text-[#86b81d]" />
               </div>
               <div>
-                <h3 className="text-foreground font-medium">Contact & Location</h3>
-                <p className="text-xs text-muted-foreground/60">Where customers can find you</p>
+                <h3 className="text-[#17320f] font-medium">Contact & Location</h3>
+                <p className="text-xs text-[#687259]">Where customers can find you</p>
               </div>
             </div>
 
@@ -203,10 +203,10 @@ const EditProfile = () => {
               <div>
                 <label className="text-xs text-muted-foreground mb-2 block">Opening Hours</label>
                 <div className="relative">
-                  <Clock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/40" />
+                  <Clock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8b916a]" />
                   <Input
                     {...register("opening_hours")}
-                    className="pl-9 border-white/[0.08] bg-white/[0.03]"
+                    className="pl-9 rounded-2xl border-[#dde1bc] bg-white"
                     placeholder="e.g., Mon - Sat: 9 AM - 6 PM"
                   />
                 </div>
@@ -216,10 +216,10 @@ const EditProfile = () => {
               <div>
                 <label className="text-xs text-muted-foreground mb-2 block">Shop Address</label>
                 <div className="relative">
-                  <MapPin size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/40" />
+                  <MapPin size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8b916a]" />
                   <Input
                     {...register("address")}
-                    className="pl-9 border-white/[0.08] bg-white/[0.03]"
+                    className="pl-9 rounded-2xl border-[#dde1bc] bg-white"
                     placeholder="Enter your shop address"
                   />
                 </div>
@@ -228,14 +228,14 @@ const EditProfile = () => {
           </Card>
 
           {/* Online Presence */}
-          <Card className="border border-white/[0.06] bg-card/50 p-6">
+          <Card className="seller-panel rounded-[28px] border-0 p-6">
             <div className="flex items-center gap-3 mb-5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-violet-500/15">
-                <Globe size={16} className="text-violet-400" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-violet-100">
+                <Globe size={16} className="text-violet-500" />
               </div>
               <div>
-                <h3 className="text-foreground font-medium">Online Presence</h3>
-                <p className="text-xs text-muted-foreground/60">Website and social media links</p>
+                <h3 className="text-[#17320f] font-medium">Online Presence</h3>
+                <p className="text-xs text-[#687259]">Website and social media links</p>
               </div>
             </div>
 
@@ -244,7 +244,7 @@ const EditProfile = () => {
               <div>
                 <label className="text-xs text-muted-foreground mb-2 block">Website</label>
                 <div className="relative">
-                  <Link2 size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/40" />
+                  <Link2 size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8b916a]" />
                   <Input
                     {...register("website", {
                       pattern: {
@@ -253,7 +253,7 @@ const EditProfile = () => {
                         message: "Enter a valid URL",
                       },
                     })}
-                    className="pl-9 border-white/[0.08] bg-white/[0.03]"
+                    className="pl-9 rounded-2xl border-[#dde1bc] bg-white"
                     placeholder="https://your-shop.com"
                   />
                 </div>
@@ -267,14 +267,14 @@ const EditProfile = () => {
                 <label className="text-xs text-muted-foreground mb-3 block">Social Links</label>
                 <div className="space-y-3">
                   {socialLinks.map((link, index) => (
-                    <div key={index} className="flex gap-2">
+                    <div key={`social-${index}`} className="flex gap-2">
                       <Controller
                         control={control}
                         name={`socialLinks.${index}.type`}
                         render={({ field }) => (
                           <select
                             {...field}
-                            className="w-32 h-9 px-3 text-sm border border-white/[0.08] bg-white/[0.03] rounded-md text-foreground outline-none focus:border-emerald-500/50 transition-colors"
+                            className="w-32 h-9 px-3 text-sm border border-[#dde1bc] bg-white rounded-xl text-[#17320f] outline-none focus:border-lime-400 transition-colors"
                           >
                             {socialMediaOptions.map((option) => (
                               <option key={option.value} value={option.value} className="bg-card">
@@ -299,7 +299,7 @@ const EditProfile = () => {
                           render={({ field }) => (
                             <Input
                               {...field}
-                              className="border-white/[0.08] bg-white/[0.03]"
+                              className="rounded-2xl border-[#dde1bc] bg-white"
                               placeholder={`Enter ${socialLinks[index]?.type} URL`}
                             />
                           )}
@@ -329,7 +329,7 @@ const EditProfile = () => {
                   variant="outline"
                   size="sm"
                   onClick={addSocialLink}
-                  className="mt-3 gap-2 border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06]"
+                  className="mt-3 gap-2 rounded-2xl border-[#dde1bc] bg-white hover:bg-[#f6f8ea]"
                 >
                   <Plus size={14} />
                   Add Social Link
@@ -344,14 +344,14 @@ const EditProfile = () => {
               type="button"
               variant="outline"
               onClick={() => router.push("/")}
-              className="border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06]"
+              className="rounded-2xl border-[#dde1bc] bg-white hover:bg-[#f6f8ea]"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={isPending}
-              className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white border-0"
+              className="gap-2 bg-[#86b81d] hover:bg-[#77a51b] text-white border-0 rounded-2xl"
             >
               {isPending ? (
                 <>

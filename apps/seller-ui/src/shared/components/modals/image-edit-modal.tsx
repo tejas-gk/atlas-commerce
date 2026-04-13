@@ -125,7 +125,7 @@ const ImageEditModal = ({ editType, onClose }: ImageEditModalProps) => {
 
   return (
     <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-60 z-50">
-      <div className="bg-gray-800 p-6 rounded-lg w-[450px] text-white">
+      <div className="bg-white p-6 rounded-lg w-[450px] text-[#17320f] shadow-lg">
         {/* Modal Header */}
         <div className="flex justify-between items-center pb-3 mb-4">
           <h2 className="text-lg font-semibold">
@@ -136,13 +136,13 @@ const ImageEditModal = ({ editType, onClose }: ImageEditModalProps) => {
 
         {/* Upload Section */}
         {!previewUrl ? (
-          <label className="flex flex-col items-center gap-2 p-6 border border-gray-600 rounded-md cursor-pointer hover:bg-gray-700 h-[220px] justify-center">
+          <label className="flex flex-col items-center gap-2 p-6 border border-[#dde1bc] rounded-md cursor-pointer hover:bg-[#f7f8ea] h-[220px] justify-center">
             {uploading ? (
-              <Loader size={30} className="animate-spin text-gray-400" />
+              <Loader size={30} className="animate-spin text-[#687259]" />
             ) : (
               <>
                 <UploadCloud size={30} />
-                <p className="text-gray-400">Click to upload</p>
+                <p className="text-[#687259]">Click to upload</p>
               </>
             )}
             <input
@@ -153,10 +153,10 @@ const ImageEditModal = ({ editType, onClose }: ImageEditModalProps) => {
             />
           </label>
         ) : (
-          <div className="relative w-full h-[250px] rounded-md overflow-hidden border border-gray-600">
+          <div className="relative w-full h-[250px] rounded-md overflow-hidden border border-[#dde1bc]">
             {uploading ? (
               <div className="flex items-center justify-center h-full">
-                <Loader size={30} className="animate-spin text-gray-400" />
+                <Loader size={30} className="animate-spin text-[#687259]" />
               </div>
             ) : (
               <Image
@@ -172,7 +172,7 @@ const ImageEditModal = ({ editType, onClose }: ImageEditModalProps) => {
         {/* Editing Options */}
         {imageUrl && (
           <div className="mt-4 space-y-2">
-            <h3 className="text-white text-sm font-semibold">
+            <h3 className="text-[#17320f] text-sm font-semibold">
               AI Enhancements
             </h3>
             <div className="grid grid-cols-2 gap-3 max-h-[250px] overflow-y-auto">
@@ -180,8 +180,8 @@ const ImageEditModal = ({ editType, onClose }: ImageEditModalProps) => {
                 <button
                   key={effect}
                   className={`p-2 rounded-md flex items-center gap-2 ${activeEffect === effect
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-700 hover:bg-gray-600"
+                    ? "bg-[#86b81d] text-white"
+                    : "bg-[#f7f8ea] hover:bg-[#eef0d5] text-[#17320f]"
                     }`}
                   onClick={() => applyTransformation(effect)}
                   disabled={processing}
@@ -213,7 +213,7 @@ const ImageEditModal = ({ editType, onClose }: ImageEditModalProps) => {
           </button>
 
           <button
-            className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-[#86b81d] hover:bg-[#6a9317] px-4 py-2 rounded-md text-white disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={handleUpdate}
             disabled={!imageUrl || processing}
           >

@@ -22,49 +22,49 @@ const AnalyticsModal = ({ product, onClose }: any) => {
 
   return (
     <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
-      <div className="bg-gray-800 p-6 rounded-lg w-[400px]">
+      <div className="bg-white p-6 rounded-lg w-[400px] shadow-lg">
         {/* Title */}
         <div className="flex justify-between items-center">
-          <h3 className="text-xl text-white">{product.title} Analytics</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-white">
+          <h3 className="text-xl text-[#17320f]">{product.title} Analytics</h3>
+          <button onClick={onClose} className="text-[#687259] hover:text-[#17320f]">
             <X size={22} />
           </button>
         </div>
 
         {/* Analytics Metrics */}
         <div className="mt-4 space-y-3">
-          <div className="flex justify-between items-center text-gray-300">
+          <div className="flex justify-between items-center text-[#556244]">
             <span className="flex items-center gap-2">
-              <Eye size={18} className="text-blue-400" /> Views
+              <Eye size={18} className="text-blue-500" /> Views
             </span>
-            <span className="text-white font-semibold">
+            <span className="text-[#17320f] font-semibold">
               {analytics?.views || 0}
             </span>
           </div>
 
-          <div className="flex justify-between items-center text-gray-300">
+          <div className="flex justify-between items-center text-[#556244]">
             <span className="flex items-center gap-2">
-              <ShoppingCart size={18} className="text-yellow-400" /> Cart Adds
+              <ShoppingCart size={18} className="text-amber-500" /> Cart Adds
             </span>
-            <span className="text-white font-semibold">
+            <span className="text-[#17320f] font-semibold">
               {analytics?.cartAdds || 0}
             </span>
           </div>
 
-          <div className="flex justify-between items-center text-gray-300">
+          <div className="flex justify-between items-center text-[#556244]">
             <span className="flex items-center gap-2">
-              <Heart size={18} className="text-pink-400" /> Wishlist Adds
+              <Heart size={18} className="text-pink-500" /> Wishlist Adds
             </span>
-            <span className="text-white font-semibold">
+            <span className="text-[#17320f] font-semibold">
               {analytics?.wishListAdds || 0}
             </span>
           </div>
 
-          <div className="flex justify-between items-center text-gray-300">
+          <div className="flex justify-between items-center text-[#556244]">
             <span className="flex items-center gap-2">
-              <CheckCircle size={18} className="text-green-400" /> Purchases
+              <CheckCircle size={18} className="text-green-500" /> Purchases
             </span>
-            <span className="text-white font-semibold">
+            <span className="text-[#17320f] font-semibold">
               {analytics?.purchases || 0}
             </span>
           </div>

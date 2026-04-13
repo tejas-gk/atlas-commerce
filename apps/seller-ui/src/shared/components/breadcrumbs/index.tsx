@@ -4,8 +4,8 @@ import React from "react";
 
 const BreadCrumbs = ({ title }: { title: string }) => {
   return (
-    <div className="w-full text-white flex items-center">
-      <Link href="/dashboard" className="text-blue-400 cursor-pointer">
+    <div className="w-full text-[#17320f] flex items-center">
+      <Link href="/dashboard" className="text-[#86b81d] hover:text-[#6a9317] cursor-pointer">
         Dashboard
       </Link>
       <ChevronRight size={20} className="opacity-[.8]" />

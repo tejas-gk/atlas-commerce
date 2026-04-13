@@ -2,8 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import Image from "next/image";
-
+import { Search, MessageSquare } from "lucide-react";
 import useSeller from "@/hooks/useSeller";
 import { useWebSocket } from "@/context/web-socket-context";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -23,6 +22,7 @@ const ChatPage = () => {
   const [selectedChat, setSelectedChat] = useState<any | null>(null);
   const [message, setMessage] = useState("");
   const [hasFetchedOnce, setHasFetchedOnce] = useState(false);
+  const [search, setSearch] = useState("");
 
   const { data: messages = [] } = useQuery({
     queryKey: ["messages", conversationId],
@@ -166,63 +166,81 @@ const ChatPage = () => {
     scrollToBottom();
   };
 
-  return (
-    <div className="w-full">
-      <div className="flex h-screen shadow-inner overflow-hidden bg-gray-950 text-gray-200">
-        {/* Sidebar */}
-        <div className="w-[320px] border-r border-gray-800 bg-gray-950">
-          <div className="p-4 border-b border-gray-800 text-lg font-semibold">
-            Messages
-          </div>
-          <div className="divide-y divide-gray-900">
-            {isLoading ? (
-              <div className="text-center py-5 text-sm">Loading...</div>
-            ) : chats.length === 0 ? (
-              <p className="text-center py-5 text-sm">
-                No conversation available yet!
-              </p>
-            ) : (
-              chats.map((chat) => {
-                const isActive =
-                  selectedChat?.conversationId === chat.conversationId;
+  const filteredChats = chats.filter(
+    (c) => !search || c.user?.name?.toLowerCase().includes(search.toLowerCase())
+  );
 
+  return (
+    <div className="space-y-6 pb-8">
+      {/* Page header */}
+      <div>
+        <h1 className="text-3xl font-extrabold tracking-[-0.05em] text-[#17320f]">Inbox</h1>
+        <p className="text-sm text-muted-foreground mt-0.5">Chat with your customers in real-time</p>
+      </div>
+
+      {/* Chat container */}
+      <div className="flex h-[calc(100vh-210px)] overflow-hidden rounded-[16px] border border-[#e8ebd4] bg-white shadow-sm">
+
+        {/* Sidebar ── conversation list */}
+        <div className="w-[270px] shrink-0 border-r border-[#f0f2e0] flex flex-col">
+          {/* Search */}
+          <div className="p-3 border-b border-[#f0f2e0]">
+            <div className="relative">
+              <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/40" />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search conversations…"
+                className="w-full h-9 pl-8 pr-3 rounded-xl border border-[#e8ebd4] bg-[#fafbf5] text-sm outline-none focus:border-lime-400 placeholder:text-muted-foreground/40"
+              />
+            </div>
+          </div>
+
+          {/* List */}
+          <div className="flex-1 overflow-y-auto divide-y divide-[#f5f6ee]">
+            {isLoading ? (
+              <div className="flex justify-center py-12">
+                <div className="w-6 h-6 rounded-full border-2 border-[#86b81d]/30 border-t-[#86b81d] animate-spin" />
+              </div>
+            ) : filteredChats.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+                <MessageSquare size={28} className="text-muted-foreground/25 mb-3" />
+                <p className="text-sm text-muted-foreground">No conversations yet</p>
+              </div>
+            ) : (
+              filteredChats.map((chat) => {
+                const isActive = selectedChat?.conversationId === chat.conversationId;
                 return (
                   <button
                     key={chat.conversationId}
                     onClick={() => handleChatSelect(chat)}
-                    className={`w-full text-left px-4 py-3 transition ${isActive ? "bg-blue-950" : "hover:bg-gray-800"
-                      }`}
+                    className={`w-full text-left px-4 py-3 transition-colors ${
+                      isActive ? "bg-[#f8fbe8] border-l-2 border-l-[#86b81d]" : "hover:bg-[#fafbf5]"
+                    }`}
                   >
                     <div className="flex items-center gap-3">
-                      <img
-                        src={
-                          chat.user?.avatar ||
-                          "https://ik.imagekit.io/shahriarbecodemy/avatar/6_t8b5y8t3U.png"
-                        }
-                        alt={chat.user?.name}
-                        width={36}
-                        height={36}
-                        className="rounded-full border w-[40px] h-[40px] object-cover"
-                      />
-                      <div className="flex-1">
+                      <div className="relative shrink-0">
+                        <img
+                          src={chat.user?.avatar || "https://ik.imagekit.io/shahriarbecodemy/avatar/6_t8b5y8t3U.png"}
+                          alt={chat.user?.name}
+                          className="rounded-full w-9 h-9 object-cover border border-[#e8ebd4]"
+                        />
+                        {chat.user?.isOnline && (
+                          <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-white" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
-                          <span className="text-sm font-semibold text-white">
-                            {chat.user?.name}
-                          </span>
-                          {chat.user?.isOnline && (
-                            <span className="w-2 h-2 rounded-full bg-green-500" />
-                          )}
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <p className="text-xs text-gray-400 truncate max-w-[170px]">
-                            {chat.lastMessage || ""}{" "}
-                          </p>
+                          <span className="text-sm font-semibold text-[#17320f] truncate">{chat.user?.name}</span>
                           {chat?.unreadCount > 0 && (
-                            <span className="ml-2 text-[10px] bg-blue-600 text-white rounded-full px-1.5 py-0.5">
-                              {chat?.unreadCount}
+                            <span className="ml-1 shrink-0 text-[10px] bg-[#86b81d] text-white rounded-full px-1.5 py-0.5">
+                              {chat.unreadCount}
                             </span>
                           )}
                         </div>
+                        <p className="text-xs text-muted-foreground/60 truncate mt-0.5">
+                          {chat.lastMessage || ""}
+                        </p>
                       </div>
                     </div>
                   </button>
@@ -232,27 +250,25 @@ const ChatPage = () => {
           </div>
         </div>
 
-        {/* Chat Content */}
-        <div className="flex flex-col flex-1 bg-gray-950">
+        {/* Chat pane */}
+        <div className="flex flex-col flex-1 min-w-0 bg-[#fafbf5]">
           {selectedChat ? (
             <>
-              {/* Header */}
-              <div className="p-4 border-b border-gray-800 bg-gray-900 flex items-center gap-3">
-                <img
-                  src={
-                    selectedChat.user?.avatar ||
-                    "https://ik.imagekit.io/shahriarbecodemy/avatar/6_t8b5y8t3U.png"
-                  }
-                  alt={selectedChat.user.name}
-                  width={40}
-                  height={40}
-                  className="rounded-full border w-[40px] h-[40px] object-cover border-gray-700"
-                />
+              {/* Chat header */}
+              <div className="flex items-center gap-3 px-5 py-3.5 border-b border-[#f0f2e0] bg-white shrink-0">
+                <div className="relative shrink-0">
+                  <img
+                    src={selectedChat.user?.avatar || "https://ik.imagekit.io/shahriarbecodemy/avatar/6_t8b5y8t3U.png"}
+                    alt={selectedChat.user.name}
+                    className="rounded-full w-9 h-9 object-cover border border-[#e8ebd4]"
+                  />
+                  {selectedChat.user?.isOnline && (
+                    <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-white" />
+                  )}
+                </div>
                 <div>
-                  <h2 className="text-white font-semibold text-base">
-                    {selectedChat.user?.name}{" "}
-                  </h2>
-                  <p className="text-xs text-gray-400">
+                  <h2 className="text-sm font-semibold text-[#17320f]">{selectedChat.user?.name}</h2>
+                  <p className="text-[11px] text-muted-foreground">
                     {selectedChat.user?.isOnline ? "Online" : "Offline"}
                   </p>
                 </div>
@@ -260,35 +276,25 @@ const ChatPage = () => {
 
               {/* Messages */}
               <div
-                className="flex-1 overflow-y-auto px-6 py-6 space-y-4 text-sm"
+                className="flex-1 overflow-y-auto px-5 py-5 space-y-3"
                 ref={messageContainerRef}
               >
                 {messages.map((msg: any, idx: number) => (
                   <div
                     key={idx}
-                    className={`flex flex-col ${msg.senderType === "seller"
-                        ? "items-end ml-auto"
-                        : "items-start"
-                      } max-w-[80%]`}
+                    className={`flex ${msg.senderType === "seller" ? "justify-end" : "justify-start"}`}
                   >
                     <div
-                      className={`${msg.senderType === "seller"
-                          ? "bg-blue-600 text-white"
-                          : "bg-gray-800 text-gray-200"
-                        } px-4 py-2 rounded-lg shadow-sm w-fit`}
+                      className={`max-w-[72%] px-4 py-2 rounded-2xl text-sm shadow-sm ${
+                        msg.senderType === "seller"
+                          ? "bg-[#86b81d] text-white rounded-br-sm"
+                          : "bg-white text-[#17320f] border border-[#e8ebd4] rounded-bl-sm"
+                      }`}
                     >
-                      {msg.content}
-                    </div>
-                    <div
-                      className={`text-[11px] text-gray-400 mt-1 flex items-center gap-1 ${msg.senderType === "seller"
-                          ? "mr-1 justify-end"
-                          : "ml-1"
-                        }`}
-                    >
-                      {new Date(msg.createdAt).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                      <p>{msg.content}</p>
+                      <p className={`text-[10px] mt-1 text-right ${msg.senderType === "seller" ? "text-white/70" : "text-muted-foreground/50"}`}>
+                        {new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -302,8 +308,14 @@ const ChatPage = () => {
               />
             </>
           ) : (
-            <div className="flex-1 flex items-center justify-center text-gray-500 text-sm">
-              Select a conversation to start chatting
+            <div className="flex-1 flex flex-col items-center justify-center gap-3 text-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#f0f4d8]">
+                <MessageSquare size={26} className="text-muted-foreground/30" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-foreground/70">Select a conversation</p>
+                <p className="text-xs text-muted-foreground/50 mt-0.5">Choose from the left to start chatting</p>
+              </div>
             </div>
           )}
         </div>

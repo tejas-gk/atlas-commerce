@@ -95,7 +95,7 @@ const Page = () => {
         );
         return res.data;
       } catch (error) {
-        console.log(error);
+        console.error(error);
         return { categories: [], subCategories: {} };
       }
     },
@@ -173,7 +173,7 @@ const Page = () => {
                   size="765 x 850"
                   images={images}
                   setImages={setImages}
-                  key={index}
+                  key={`slot-${index + 1}`}
                   small
                   setValue={setValue}
                   index={index + 1}
@@ -194,7 +194,7 @@ const Page = () => {
                   className="h-10 rounded-2xl border-[#dde1bc] bg-white focus-visible:border-lime-400"
                   {...register("title", { required: "Title is required" })}
                 />
-                {errors.title && <p className="text-red-400 text-xs">{errors.title.message as string}</p>}
+                {errors.title && <p className="text-red-600 text-xs">{errors.title.message as string}</p>}
               </div>
 
               <div className="space-y-1.5">
@@ -219,7 +219,7 @@ const Page = () => {
                     )}
                   />
                 )}
-                {errors.category && <p className="text-red-400 text-xs">{errors.category.message as string}</p>}
+                {errors.category && <p className="text-red-600 text-xs">{errors.category.message as string}</p>}
               </div>
 
               <div className="space-y-1.5">
@@ -236,7 +236,7 @@ const Page = () => {
                     },
                   })}
                 />
-                {errors.short_description && <p className="text-red-400 text-xs">{errors.short_description.message as string}</p>}
+                {errors.short_description && <p className="text-red-600 text-xs">{errors.short_description.message as string}</p>}
               </div>
 
               <div className="space-y-1.5">
@@ -257,7 +257,7 @@ const Page = () => {
                     </select>
                   )}
                 />
-                {errors.subCategory && <p className="text-red-400 text-xs">{errors.subCategory.message as string}</p>}
+                {errors.subCategory && <p className="text-red-600 text-xs">{errors.subCategory.message as string}</p>}
               </div>
 
               <div className="space-y-1.5">
@@ -267,7 +267,7 @@ const Page = () => {
                   className="h-10 rounded-2xl border-[#dde1bc] bg-white focus-visible:border-lime-400"
                   {...register("tags", { required: "Separate tags with a comma" })}
                 />
-                {errors.tags && <p className="text-red-400 text-xs">{errors.tags.message as string}</p>}
+                {errors.tags && <p className="text-red-600 text-xs">{errors.tags.message as string}</p>}
               </div>
 
               <div className="space-y-1.5">
@@ -312,7 +312,7 @@ const Page = () => {
                     <Wand2 size={12} />
                   </button>
                 </div>
-                {errors.slug && <p className="text-red-400 text-xs">{errors.slug.message as string}</p>}
+                {errors.slug && <p className="text-red-600 text-xs">{errors.slug.message as string}</p>}
               </div>
 
               <div className="space-y-1.5">
@@ -342,7 +342,7 @@ const Page = () => {
                 )}
               />
               {errors.detailed_description && (
-                <p className="text-red-400 text-xs">{errors.detailed_description.message as string}</p>
+                <p className="text-red-600 text-xs">{errors.detailed_description.message as string}</p>
               )}
             </div>
           </div>
@@ -376,7 +376,7 @@ const Page = () => {
                     validate: (v) => !isNaN(v) || "Numbers only",
                   })}
                 />
-                {errors.regular_price && <p className="text-red-400 text-xs">{errors.regular_price.message as string}</p>}
+                {errors.regular_price && <p className="text-red-600 text-xs">{errors.regular_price.message as string}</p>}
               </div>
 
               <div className="space-y-1.5">
@@ -396,7 +396,7 @@ const Page = () => {
                     },
                   })}
                 />
-                {errors.sale_price && <p className="text-red-400 text-xs">{errors.sale_price.message as string}</p>}
+                {errors.sale_price && <p className="text-red-600 text-xs">{errors.sale_price.message as string}</p>}
               </div>
 
               <div className="space-y-1.5">
@@ -417,7 +417,7 @@ const Page = () => {
                     },
                   })}
                 />
-                {errors.stock && <p className="text-red-400 text-xs">{errors.stock.message as string}</p>}
+                {errors.stock && <p className="text-red-600 text-xs">{errors.stock.message as string}</p>}
               </div>
 
               <div className="col-span-2 space-y-1.5">
@@ -432,7 +432,7 @@ const Page = () => {
                     },
                   })}
                 />
-                {errors.video_url && <p className="text-red-400 text-xs">{errors.video_url.message as string}</p>}
+                {errors.video_url && <p className="text-red-600 text-xs">{errors.video_url.message as string}</p>}
               </div>
 
               <div className="space-y-1.5">

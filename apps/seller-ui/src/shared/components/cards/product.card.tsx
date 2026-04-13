@@ -22,7 +22,7 @@ const ProductCard = ({ product }: { product: any }) => {
     : null;
 
   return (
-    <div className="w-full min-h-[350px] p-3 bg-slate-700 rounded-lg shadow-md hover:shadow-lg transition duration-300">
+    <div className="w-full min-h-[350px] p-3 seller-panel rounded-[24px] hover:shadow-lg transition duration-300">
       {/* Product Image */}
       <Link
         href={`${process.env.NEXT_PUBLIC_USER_UI_LINK}/product/${product?.slug}`}
@@ -50,7 +50,7 @@ const ProductCard = ({ product }: { product: any }) => {
           href={`${process.env.NEXT_PUBLIC_USER_UI_LINK}/product/${product?.slug}`}
           className="block mt-1"
         >
-          <h3 className="text-md font-semibold text-white truncate">
+          <h3 className="text-md font-semibold text-[#17320f] truncate">
             {product?.title}
           </h3>
         </Link>
@@ -66,10 +66,10 @@ const ProductCard = ({ product }: { product: any }) => {
         {/* Pricing Section */}
         <div className="flex items-center justify-between mt-2">
           <div className="flex items-center gap-2">
-            <span className="text-lg font-bold text-white">
+            <span className="text-lg font-bold text-[#17320f]">
               ${product?.sale_price}
             </span>
-            <span className="text-sm text-gray-400 line-through">
+            <span className="text-sm text-[#8b916a] line-through">
               ${product?.regular_price}
             </span>
             {/* Discount Badge (only if discount > 0) */}
@@ -83,7 +83,7 @@ const ProductCard = ({ product }: { product: any }) => {
 
         {/* Event Dates */}
         {startingDate && endingDate && (
-          <div className="text-sm text-gray-300 mt-2">
+          <div className="text-sm text-[#556244] mt-2">
             <p>
               Offer Running: {startingDate} - {endingDate}
             </p>
@@ -91,14 +91,14 @@ const ProductCard = ({ product }: { product: any }) => {
         )}
 
         {/* Sold Count */}
-        <div className="text-sm text-green-400 mt-1">
+        <div className="text-sm text-[#76a611] mt-1">
           {product?.sold > 0 ? `${product?.sold} Sold` : "Not Sold Yet"}
         </div>
 
         {/* View Details Button */}
         <Link
           href={`${process.env.NEXT_PUBLIC_USER_UI_LINK}/product/${product?.slug}`}
-          className="mt-3 block bg-blue-600 text-center text-white py-2 rounded-md hover:bg-blue-700 transition"
+          className="mt-3 block bg-[#86b81d] text-center text-white py-2 rounded-xl hover:bg-[#77a51b] transition"
         >
           View Details
         </Link>
