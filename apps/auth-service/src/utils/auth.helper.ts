@@ -165,3 +165,13 @@ export const verifyForgotPasswordOtp = async (
         next(error);
     }
 };
+
+export const authHelper = {
+    validateRegistrationData,
+    trackOtpRequests,
+    checkOtpRestrictions,
+    sendOtp,
+    verifyOtp,
+    handleForgotPassword,
+    verifyForgotPasswordOtp,
+};

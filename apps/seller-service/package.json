@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "dotenv -e ../../.env -- tsx watch src/main.ts",
     "build": "tsc",
+    "test": "set NODE_ENV=test && tsc -p tsconfig.app.json && node --test --test-isolation=none --test-concurrency=1 dist/apps/seller-service/src/services/*.test.js",
     "start": "node dist/main.js"
   },
   "dependencies": {

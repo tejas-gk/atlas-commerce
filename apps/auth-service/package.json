@@ -4,6 +4,7 @@
     "scripts": {
         "dev": "dotenv -e ../../.env -- tsx watch src/index.ts",
         "build": "tsc",
+        "test": "set NODE_ENV=test && pnpm run build && node --test --test-isolation=none --test-concurrency=1 dist/apps/auth-service/src/**/*.test.js",
         "start": "node dist/index.js"
     },
     "dependencies": {

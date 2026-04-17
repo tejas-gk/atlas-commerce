@@ -169,3 +169,7 @@ export const recommendProducts = async (
 
   return recommendProducts.map((p) => p.productId);
 };
+
+export const recommendationEngine = {
+  recommendProducts,
+};
