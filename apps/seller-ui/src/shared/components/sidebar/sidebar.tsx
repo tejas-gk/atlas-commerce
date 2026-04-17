@@ -19,6 +19,7 @@ import {
   Tag,
   Check,
   SlidersHorizontal,
+  Pencil,
   PlusCircle,
   ExternalLink,
   Sparkles,
@@ -64,6 +65,7 @@ const navData: NavSection[] = [
     label: "Products",
     items: [
       { title: "Create Product", href: "/dashboard/create-product", icon: PackagePlus },
+      { title: "Edit Product", href: "/dashboard/edit-product", icon: Pencil },
       { title: "All Products", href: "/dashboard/all-products", icon: Boxes },
     ],
   },
@@ -71,6 +73,7 @@ const navData: NavSection[] = [
     label: "Events",
     items: [
       { title: "Create Event", href: "/dashboard/create-event", icon: CalendarPlus },
+      { title: "Edit Event", href: "/dashboard/edit-event", icon: Pencil },
       { title: "All Events", href: "/dashboard/all-events", icon: CalendarDays },
     ],
   },

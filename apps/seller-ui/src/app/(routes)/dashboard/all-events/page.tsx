@@ -185,7 +185,15 @@ export default function AllEventsPage() {
       id: "actions",
       header: "",
       cell: ({ row }: any) => (
-        <div className="flex gap-0.5 justify-end">
+        <div className="flex items-center gap-1 justify-end">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-7 rounded-lg border-[#dfe3bc] bg-white px-2 text-[11px] font-semibold text-[#556244] hover:bg-[#f5f8e5] hover:text-[#17320f]"
+            asChild
+          >
+            <Link href={`/dashboard/edit-event?productId=${row.original.id}`}>Edit Event</Link>
+          </Button>
           <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" asChild>
             <Link href={`${process.env.NEXT_PUBLIC_USER_UI_LINK}/product/${row.original.slug}`}><Eye size={14} /></Link>
           </Button>
@@ -220,7 +228,7 @@ export default function AllEventsPage() {
           <h1 className="text-3xl font-extrabold tracking-[-0.05em] text-[#17320f]">All Events</h1>
           <p className="text-sm text-muted-foreground mt-0.5">Manage time-limited deals and flash events</p>
         </div>
-        <Button asChild size="sm" className="h-10 gap-1.5 rounded-2xl border-0 bg-[#86b81d] px-4 font-semibold text-white hover:bg-[#77a51b]">
+        <Button asChild size="sm" className="h-10 gap-1.5 rounded-2xl border-0 bg-[#86b81d] px-4 font-semibold text-white hover:bg-[#77a51b] hover:text-white">
           <Link href="/dashboard/create-event"><Plus size={14} /> Create Event</Link>
         </Button>
       </div>

@@ -85,7 +85,7 @@ const Signup = () => {
             </p>
             <Link
               href="/login"
-              className="inline-flex items-center justify-center w-full text-lg bg-[#86b81d] hover:bg-[#77a51b] text-white py-2 rounded-xl transition-colors"
+              className="inline-flex items-center justify-center w-full text-lg bg-[#86b81d] hover:bg-[#77a51b] hover:text-white text-white py-2 rounded-xl transition-colors"
             >
               Login with Existing Account
             </Link>
@@ -104,7 +104,7 @@ const Signup = () => {
               between them from the dashboard sidebar.
             </p>
             <button
-              className="w-full m-auto flex items-center justify-center gap-3 text-lg bg-[#86b81d] hover:bg-[#77a51b] text-white py-2 rounded-xl transition-colors"
+              className="w-full m-auto flex items-center justify-center gap-3 text-lg bg-[#86b81d] hover:bg-[#77a51b] hover:text-white text-white py-2 rounded-xl transition-colors"
               onClick={connectStripe}
             >
               Connect Stripe <Home />

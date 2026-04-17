@@ -55,6 +55,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
     }
 
     try {
+      sessionStorage.removeItem("__atlas_dev__");
       await axiosInstance.post("/auth/api/login-seller", data);
       setLoggedIn(true);
       queryClient.invalidateQueries({ queryKey: ["seller"] });

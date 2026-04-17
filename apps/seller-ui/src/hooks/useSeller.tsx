@@ -14,6 +14,11 @@ export const DEV_MOCK_SELLER = {
   shops: [{ id: "dev-shop-001", name: "Demo Store" }],
 };
 
+const isDemoSession = () => {
+  if (typeof window === "undefined") return false;
+  return window.sessionStorage.getItem("__atlas_dev__") === "true";
+};
+
 // fetch seller data from API
 const fetchSeller = async () => {
   const response = await axiosInstance.get(
@@ -26,6 +31,7 @@ const fetchSeller = async () => {
 const useSeller = () => {
   const { setLoggedIn, isLoggedIn } = useAuthStore();
   const queryClient = useQueryClient();
+  const demoSession = isDemoSession();
 
   const {
     data: seller,
@@ -33,7 +39,7 @@ const useSeller = () => {
     isError,
   } = useQuery({
     queryKey: ["seller"],
-    queryFn: fetchSeller,
+    queryFn: demoSession ? async () => DEV_MOCK_SELLER : fetchSeller,
     staleTime: 1000 * 60 * 5,
     retry: false,
     enabled: isLoggedIn, // Only run query if seller should be logged in
@@ -41,6 +47,11 @@ const useSeller = () => {
 
   // Update auth state based on query results
   React.useEffect(() => {
+    if (isDemoSession()) {
+      setLoggedIn(true);
+      return;
+    }
+
     if (seller) {
       setLoggedIn(true);
     } else if (isError) {
