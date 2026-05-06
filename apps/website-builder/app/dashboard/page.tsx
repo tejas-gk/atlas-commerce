@@ -17,6 +17,19 @@ import { authApi } from "@/lib/auth-api"
 import { websiteApi, type WebsiteRecord } from "@/lib/website-api"
 import { Globe, PlusCircle, Settings, Trash2 } from "lucide-react"
 
+const DEV_MOCK_SELLER = {
+  id: "dev-seller-001",
+  name: "Demo Seller",
+  email: "demo@atlas.dev",
+  activeShopId: "dev-shop-001",
+  shops: [{ id: "dev-shop-001", name: "Demo Store", isDeleted: false }],
+}
+
+function isDemoSession() {
+  if (typeof window === "undefined") return false
+  return window.sessionStorage.getItem("__atlas_dev__") === "true"
+}
+
 function getRelativeDate(value: string) {
   const date = new Date(value)
   return new Intl.DateTimeFormat("en", {
@@ -36,6 +49,13 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null)
 
   const loadWebsites = async (shopId?: string | null) => {
+    if (isDemoSession()) {
+      setError(null)
+      setWebsites([])
+      setIsLoading(false)
+      return
+    }
+
     try {
       setIsLoading(true)
       setError(null)
@@ -50,6 +70,15 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const fetchSellerAndWebsites = async () => {
+      if (isDemoSession()) {
+        setError(null)
+        setShops(DEV_MOCK_SELLER.shops.map((shop) => ({ id: shop.id, name: shop.name })))
+        setActiveShopId(DEV_MOCK_SELLER.activeShopId)
+        setWebsites([])
+        setIsLoading(false)
+        return
+      }
+
       try {
         const sellerResponse = await authApi.getLoggedInSeller()
         const seller = sellerResponse.seller
@@ -69,6 +98,15 @@ export default function DashboardPage() {
   }, [])
 
   const handleCreateWebsite = async () => {
+    if (isDemoSession()) {
+      const templateKey = searchParams.get("template")
+      const nextUrl = templateKey
+        ? `/dashboard/builder/new?template=${encodeURIComponent(templateKey)}`
+        : "/dashboard/builder/new"
+      window.location.href = nextUrl
+      return
+    }
+
     try {
       setIsCreating(true)
       const templateKey = searchParams.get("template") || undefined
@@ -88,6 +126,11 @@ export default function DashboardPage() {
   }
 
   const handleDeleteWebsite = async (websiteId: string) => {
+    if (isDemoSession()) {
+      setWebsites((current) => current.filter((website) => website.id !== websiteId))
+      return
+    }
+
     try {
       await websiteApi.remove(websiteId, undefined, activeShopId ?? undefined)
       setWebsites((current) => current.filter((website) => website.id !== websiteId))
@@ -97,6 +140,13 @@ export default function DashboardPage() {
   }
 
   const handleSwitchShop = async (shopId: string) => {
+    if (isDemoSession()) {
+      setError(null)
+      setActiveShopId(shopId)
+      await loadWebsites(shopId)
+      return
+    }
+
     try {
       setError(null)
       setActiveShopId(shopId)

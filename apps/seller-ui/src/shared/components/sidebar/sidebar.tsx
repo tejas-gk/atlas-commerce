@@ -6,24 +6,11 @@ import Link from "next/link";
 import {
   ChevronsUpDown,
   LogOut,
-  LayoutDashboard,
-  ShoppingBag,
-  CreditCard,
-  PackagePlus,
-  Boxes,
-  CalendarPlus,
-  CalendarDays,
-  Inbox,
-  Bell,
-  Settings,
-  Tag,
   Check,
   SlidersHorizontal,
-  Pencil,
   PlusCircle,
   ExternalLink,
   Sparkles,
-  type LucideIcon,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -48,46 +35,7 @@ import { cn } from "@workspace/ui/lib/utils";
 import useRequireAuth from "@/hooks/useRequiredAuth";
 import axiosInstance from "@/utils/axiosInstance";
 import { useQueryClient } from "@tanstack/react-query";
-
-interface NavItem { title: string; href: string; icon: LucideIcon }
-interface NavSection { label: string; items: NavItem[] }
-
-const navData: NavSection[] = [
-  {
-    label: "Main Menu",
-    items: [
-      { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-      { title: "Orders", href: "/dashboard/orders", icon: ShoppingBag },
-      { title: "Payments", href: "/dashboard/payments", icon: CreditCard },
-    ],
-  },
-  {
-    label: "Products",
-    items: [
-      { title: "Create Product", href: "/dashboard/create-product", icon: PackagePlus },
-      { title: "Edit Product", href: "/dashboard/edit-product", icon: Pencil },
-      { title: "All Products", href: "/dashboard/all-products", icon: Boxes },
-    ],
-  },
-  {
-    label: "Events",
-    items: [
-      { title: "Create Event", href: "/dashboard/create-event", icon: CalendarPlus },
-      { title: "Edit Event", href: "/dashboard/edit-event", icon: Pencil },
-      { title: "All Events", href: "/dashboard/all-events", icon: CalendarDays },
-    ],
-  },
-  {
-    label: "Controllers",
-    items: [
-      { title: "Inbox", href: "/dashboard/inbox", icon: Inbox },
-      { title: "Notifications", href: "/dashboard/notifications", icon: Bell },
-      { title: "App Platform", href: "/dashboard/app-platform", icon: SlidersHorizontal },
-      { title: "Settings", href: "/dashboard/settings", icon: Settings },
-      { title: "Discount Codes", href: "/dashboard/discount-codes", icon: Tag },
-    ],
-  },
-];
+import { sellerSidebarMenu } from "./sidebar.menu";
 
 // ── Store card used inside the switcher pop-up ────────────────────────────
 function StoreCard({
@@ -294,7 +242,7 @@ const SellerSidebar = () => {
       </SidebarHeader>
 
       <SidebarContent className="pt-3">
-        {navData.map((section) => (
+        {sellerSidebarMenu.map((section) => (
           <SidebarGroup key={section.label}>
             <SidebarGroupLabel className="mb-2 px-4 text-[10px] uppercase tracking-[0.22em] text-[#8b8e67]">
               {section.label}
@@ -315,11 +263,13 @@ const SellerSidebar = () => {
                             : "mx-2 rounded-[22px] text-[#6e7556] hover:text-[#17320f] hover:bg-white/75 transition-colors duration-150"
                         }
                       >
-                        <Link href={item.href} className="flex items-center gap-2.5">
-                          <Icon
-                            size={15}
-                            className={isActive ? "text-lime-600" : "text-[#8d916f]"}
-                          />
+                        <Link href={item.href} className={`flex items-center ${Icon ? "gap-2.5" : ""}`}>
+                          {Icon && (
+                            <Icon
+                              size={15}
+                              className={isActive ? "text-lime-600" : "text-[#8d916f]"}
+                            />
+                          )}
                           <span className="text-[13px]">{item.title}</span>
                           {isActive && (
                             <span className="ml-auto h-2 w-2 shrink-0 rounded-full bg-lime-500" />
