@@ -62,7 +62,8 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
       return
     }
 
-    try {
+        try {
+      sessionStorage.removeItem("__atlas_dev__")
       await axiosInstance.post("/auth/api/login-seller", data)
       setLoggedIn(true)
       queryClient.invalidateQueries({ queryKey: ["seller"] })
@@ -135,7 +136,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
             <span className="inline-flex items-center rounded-full border border-white/[0.08] bg-white/[0.04] px-3 py-1 text-[11px] font-medium uppercase tracking-widest text-slate-400">
               Seller Platform
             </span>
-            <h1 className="text-5xl font-semibold leading-[1.1] tracking-tight text-white">
+            <h1 className="seller-gradient-title-dark text-5xl font-semibold leading-[1.1] tracking-tight text-white">
               Sell smarter.<br />
               <span className="text-[#fecdd3]" style={{ textShadow: "0 0 40px rgba(244,63,94,0.15)" }}>
                 Scale faster.
@@ -176,7 +177,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
           style={{ background: "radial-gradient(circle, #f43f5e 0%, transparent 70%)", animation: "aurora-drift 28s ease-in-out infinite" }}
         />
 
-        <div className="relative z-10 w-full max-w-sm space-y-6">
+        <div className="seller-auth-glass-dark relative z-10 w-full max-w-sm space-y-6 rounded-[30px] p-6">
 
           {/* Mobile logo */}
           <div className="flex items-center justify-center gap-2 lg:hidden">
@@ -187,7 +188,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
           </div>
 
           <div className="anim-fade-up space-y-1.5 text-center" style={{ animationDelay: "0.15s" }}>
-            <h2 className="text-2xl font-semibold tracking-tight text-white">Welcome back</h2>
+            <h2 className="seller-gradient-title-dark text-2xl font-semibold tracking-tight text-white">Welcome back</h2>
             <p className="text-sm text-slate-500">Sign in to your seller dashboard</p>
           </div>
 
@@ -196,7 +197,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
             <Button
               variant="outline"
               type="button"
-              className="h-11 w-full gap-3 border-white/[0.08] bg-white/[0.04] text-sm text-slate-200 transition-all duration-200 hover:bg-white/[0.07] hover:text-white"
+              className="seller-weight-hover h-11 w-full gap-3 border-white/[0.08] bg-white/[0.04] text-sm text-slate-200 transition-all duration-200 hover:bg-white/[0.07] hover:text-white"
             >
               <GoogleIcon />
               Continue with Google
@@ -228,7 +229,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
             <div className="anim-fade-up space-y-1.5" style={{ animationDelay: "0.4s" }}>
               <div className="flex items-center justify-between">
                 <Label className="text-sm font-medium text-slate-400" htmlFor="password">Password</Label>
-                <a href="/forgot-password" className="text-xs text-slate-500 transition-colors hover:text-slate-300">
+                <a href="/forgot-password" className="seller-weight-hover text-xs text-slate-500 transition-colors hover:text-slate-300">
                   Forgot password?
                 </a>
               </div>
@@ -268,7 +269,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="relative h-11 w-full overflow-hidden border border-rose-500/20 bg-[#1a0f10] text-sm font-semibold text-rose-200 shadow-[inset_0_1px_0_rgba(244,63,94,0.1)] transition-all duration-200 hover:border-rose-500/30 hover:bg-[#1f1214] hover:text-white hover:shadow-[inset_0_1px_0_rgba(244,63,94,0.15),0_0_20px_rgba(244,63,94,0.08)] disabled:opacity-60"
+                className="seller-weight-hover relative h-11 w-full overflow-hidden border border-rose-500/20 bg-[#1a0f10] text-sm font-semibold text-rose-200 shadow-[inset_0_1px_0_rgba(244,63,94,0.1)] transition-all duration-200 hover:border-rose-500/30 hover:bg-[#1f1214] hover:text-white hover:shadow-[inset_0_1px_0_rgba(244,63,94,0.15),0_0_20px_rgba(244,63,94,0.08)] disabled:opacity-60"
               >
                 {isSubmitting ? "Signing in…" : "Sign in"}
               </Button>
@@ -277,7 +278,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
 
           <p className="anim-fade-in text-center text-sm text-slate-500" style={{ animationDelay: "0.55s" }}>
             Don&apos;t have an account?{" "}
-            <a href="/signup" className="font-medium text-slate-300 transition-colors hover:text-white">
+            <a href="/signup" className="seller-weight-hover font-medium text-slate-300 transition-colors hover:text-white">
               Sign up
             </a>
           </p>

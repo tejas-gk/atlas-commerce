@@ -16,6 +16,8 @@ import {
   ChevronLeft,
   ChevronRight,
   CreditCard,
+  Sparkles,
+  Clock3,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/utils/axiosInstance";
@@ -341,22 +343,65 @@ const SellerPayments = () => {
   ];
 
   return (
-    <div className="space-y-6 pb-8">
-      {/* Header */}
+    <div className="seller-page-transition seller-compose-shell space-y-6 pb-8">
       <div className="seller-page-header">
-        <div>
-          <h1 className="text-3xl font-extrabold tracking-[-0.05em] text-[#17320f]">Payments</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Track your earnings and transaction history</p>
+        <div className="space-y-1.5">
+          <p className="seller-section-kicker">Settlement Overview</p>
+          <h1 className="text-4xl font-extrabold tracking-[-0.055em] text-[#17320f]">Payments</h1>
+          <BreadCrumbs title="Payments" />
         </div>
-        <BreadCrumbs title="Payments" />
+
+        <div className="flex flex-wrap items-center justify-end gap-3">
+          <div className="seller-soft-panel rounded-2xl px-4 py-2.5">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#6a7b4d]">
+              Settlement Status
+            </p>
+            <p className="text-xs text-[#55663c]">
+              Earnings, fees, and payouts tracked in one place
+            </p>
+          </div>
+
+          <Button
+            onClick={handleExport}
+            variant="outline"
+            size="sm"
+            className="h-10 gap-1.5 rounded-2xl border-[#dde1bc] bg-white px-4 text-[#556244] hover:bg-[#f7f8ea] hover:text-[#17320f]"
+          >
+            <Download size={14} /> Export CSV
+          </Button>
+        </div>
+      </div>
+
+      <div className="seller-stagger grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="seller-quick-stat">
+          <Sparkles size={16} />
+          <div>
+            <p>Net Earnings</p>
+            <strong>${displaySummary.totalEarnings.toFixed(2)} seller revenue tracked</strong>
+          </div>
+        </div>
+        <div className="seller-quick-stat">
+          <Clock3 size={16} />
+          <div>
+            <p>Pending</p>
+            <strong>${displaySummary.pendingPayments.toFixed(2)} awaiting settlement</strong>
+          </div>
+        </div>
+        <div className="seller-quick-stat">
+          <CreditCard size={16} />
+          <div>
+            <p>Completed</p>
+            <strong>{displaySummary.completedPayments} paid transactions processed</strong>
+          </div>
+        </div>
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="seller-stagger grid grid-cols-2 lg:grid-cols-4 gap-4">
         {KPI_CARDS.map(({ label, value, badge, positive, spark }) => (
           <Card
             key={label}
-            className="rounded-[12px] border border-[#e8ebd4] bg-white p-5 shadow-[0_2px_8px_rgba(0,0,0,0.07)]"
+            className="seller-kpi-card rounded-[12px] p-5"
           >
             <p className="text-[13px] font-medium text-[#888]">{label}</p>
             <div className="mt-1.5 flex items-end justify-between gap-2">
@@ -376,7 +421,19 @@ const SellerPayments = () => {
         ))}
       </div>
 
-      <Card className="seller-panel overflow-hidden rounded-[30px] border-0">
+      <Card className="seller-panel seller-compose-panel overflow-hidden rounded-[30px] border-0">
+        <div className="px-5 pb-2 pt-5">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[#d9deba] bg-white/90 text-[#6c9132] shadow-[0_10px_20px_rgba(128,158,67,0.18)]">
+              <CreditCard size={17} />
+            </div>
+            <div>
+              <h2 className="text-sm font-bold uppercase tracking-[0.18em] text-[#4d5d34]">Payments Ledger</h2>
+              <p className="text-xs text-[#75835f]">Inspect payouts, fees, status transitions, and exports.</p>
+            </div>
+          </div>
+        </div>
+
         <div className="seller-toolbar flex items-center gap-3 px-5 py-4">
           <div className="flex items-center gap-0.5 rounded-2xl border border-[#e0e4be] bg-white/70 p-1">
             {FILTER_TABS.map((tab) => (
@@ -401,16 +458,7 @@ const SellerPayments = () => {
               className="pl-8 h-9 rounded-2xl text-sm border-[#e0e4be] bg-white"
             />
           </div>
-          <Button
-            onClick={handleExport}
-            variant="outline"
-            size="sm"
-            className="ml-auto h-9 gap-1.5 rounded-2xl border-[#dde1bc] bg-white px-3 text-xs hover:bg-[#f6f8ea]"
-          >
-            <Download size={13} />
-            Export CSV
-          </Button>
-          <p className="text-xs text-muted-foreground/50 tabular-nums">{filteredData.length} transactions</p>
+          <p className="ml-auto text-xs text-muted-foreground/50 tabular-nums">{filteredData.length} transactions</p>
         </div>
 
         {isLoading || summaryLoading ? (

@@ -50,7 +50,7 @@ const Signup = () => {
   }
 
   return (
-    <div className="w-full seller-auth-shell text-[#17320f] flex flex-col items-center pt-10 min-h-screen px-4">
+    <div className="seller-page-transition w-full seller-auth-shell text-[#17320f] flex flex-col items-center pt-10 min-h-screen px-4">
       <div className="relative flex items-center justify-between md:w-[50%] mb-8">
         <div className="absolute top-[25%] left-0 w-[80%] md:w-[90%] h-1 bg-[#dde1bc] z-10" />
         {[1, 2, 3].map((step) => (
@@ -75,7 +75,7 @@ const Signup = () => {
       <div className="md:w-[480px] p-8 seller-auth-card rounded-[30px]">
         {!seller?.id || isError ? (
           <div className="text-center">
-            <h3 className="text-2xl font-semibold text-[#17320f] mb-4">
+            <h3 className="seller-gradient-title text-2xl font-semibold text-[#17320f] mb-4">
               Start from your buyer account
             </h3>
             <p className="text-[#556244] mb-6">
@@ -85,7 +85,7 @@ const Signup = () => {
             </p>
             <Link
               href="/login"
-              className="inline-flex items-center justify-center w-full text-lg bg-[#86b81d] hover:bg-[#77a51b] text-white py-2 rounded-xl transition-colors"
+              className="inline-flex items-center justify-center w-full text-lg bg-[#86b81d] hover:bg-[#77a51b] hover:text-white text-white py-2 rounded-xl transition-colors"
             >
               Login with Existing Account
             </Link>
@@ -98,13 +98,13 @@ const Signup = () => {
 
         {seller?.id && hasShop ? (
           <div className="text-center mt-8 pt-8 border-t border-[#dde1bc]">
-            <h3 className="text-2xl font-semibold text-[#17320f]">Withdraw Method</h3>
+            <h3 className="seller-gradient-title text-2xl font-semibold text-[#17320f]">Withdraw Method</h3>
             <p className="text-[#556244] mt-3 mb-6">
               You can keep adding shops under the same seller account and switch
               between them from the dashboard sidebar.
             </p>
             <button
-              className="w-full m-auto flex items-center justify-center gap-3 text-lg bg-[#86b81d] hover:bg-[#77a51b] text-white py-2 rounded-xl transition-colors"
+              className="w-full m-auto flex items-center justify-center gap-3 text-lg bg-[#86b81d] hover:bg-[#77a51b] hover:text-white text-white py-2 rounded-xl transition-colors"
               onClick={connectStripe}
             >
               Connect Stripe <Home />

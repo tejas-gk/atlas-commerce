@@ -6,23 +6,10 @@ import Link from "next/link";
 import {
   ChevronsUpDown,
   LogOut,
-  LayoutDashboard,
-  ShoppingBag,
-  CreditCard,
-  PackagePlus,
-  Boxes,
-  CalendarPlus,
-  CalendarDays,
-  Inbox,
-  Bell,
-  Settings,
-  Tag,
   Check,
   SlidersHorizontal,
   PlusCircle,
   ExternalLink,
-  Sparkles,
-  type LucideIcon,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -47,44 +34,7 @@ import { cn } from "@workspace/ui/lib/utils";
 import useRequireAuth from "@/hooks/useRequiredAuth";
 import axiosInstance from "@/utils/axiosInstance";
 import { useQueryClient } from "@tanstack/react-query";
-
-interface NavItem { title: string; href: string; icon: LucideIcon }
-interface NavSection { label: string; items: NavItem[] }
-
-const navData: NavSection[] = [
-  {
-    label: "Main Menu",
-    items: [
-      { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-      { title: "Orders", href: "/dashboard/orders", icon: ShoppingBag },
-      { title: "Payments", href: "/dashboard/payments", icon: CreditCard },
-    ],
-  },
-  {
-    label: "Products",
-    items: [
-      { title: "Create Product", href: "/dashboard/create-product", icon: PackagePlus },
-      { title: "All Products", href: "/dashboard/all-products", icon: Boxes },
-    ],
-  },
-  {
-    label: "Events",
-    items: [
-      { title: "Create Event", href: "/dashboard/create-event", icon: CalendarPlus },
-      { title: "All Events", href: "/dashboard/all-events", icon: CalendarDays },
-    ],
-  },
-  {
-    label: "Controllers",
-    items: [
-      { title: "Inbox", href: "/dashboard/inbox", icon: Inbox },
-      { title: "Notifications", href: "/dashboard/notifications", icon: Bell },
-      { title: "App Platform", href: "/dashboard/app-platform", icon: SlidersHorizontal },
-      { title: "Settings", href: "/dashboard/settings", icon: Settings },
-      { title: "Discount Codes", href: "/dashboard/discount-codes", icon: Tag },
-    ],
-  },
-];
+import { sellerSidebarMenu } from "./sidebar.menu";
 
 // ── Store card used inside the switcher pop-up ────────────────────────────
 function StoreCard({
@@ -105,15 +55,15 @@ function StoreCard({
       disabled={isSwitching || isActive}
       onClick={onSelect}
       className={cn(
-        "flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-left transition-all duration-150",
+        "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-all duration-150",
         isActive
-          ? "border border-lime-300/70 bg-lime-100/80 shadow-[0_10px_24px_rgba(132,178,31,0.14)]"
-          : "border border-transparent hover:border-lime-200/70 hover:bg-white/80 cursor-pointer"
+          ? "border border-lime-300/70 bg-lime-100/80"
+          : "border border-transparent cursor-pointer hover:border-lime-200/70 hover:bg-white/80"
       )}
     >
       <div
         className={cn(
-          "flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl text-xs font-bold",
+          "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-xs font-bold",
           isActive ? "bg-lime-500 text-white" : "bg-[#1f3b16] text-white"
         )}
       >
@@ -168,17 +118,17 @@ const SellerSidebar = () => {
   const shops: Array<{ id: string; name: string }> = seller?.shops ?? [];
 
   return (
-    <Sidebar className="border-r border-[#d8dbbb]">
-      <SidebarHeader className="flex h-auto flex-col gap-3 border-b border-[#dde0be] px-3 py-4">
+    <Sidebar className="border-r border-[#d8dbbb] bg-[#fffef8]">
+      <SidebarHeader className="flex h-auto flex-col gap-3 border-b border-[#dde0be] px-3 py-3">
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton
                   size="lg"
-                  className="seller-soft-panel h-auto rounded-[24px] px-3 py-3 hover:bg-white/90"
+                  className="h-auto rounded-2xl border border-[#dbe0bf] bg-white px-3 py-3 shadow-none hover:bg-[#fbfcf5]"
                 >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-[18px] bg-lime-500 text-white shrink-0 shadow-[0_10px_24px_rgba(132,178,31,0.22)]">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#eef4d8] text-[#2f4a1a]">
                     <span className="text-sm font-semibold">{shopInitial}</span>
                   </div>
                   <div className="flex flex-col gap-0.5 leading-none">
@@ -186,7 +136,7 @@ const SellerSidebar = () => {
                       {shopName}
                     </span>
                     <span className="text-[11px] text-[#687259]">
-                      Seller dashboard
+                      Workspace
                     </span>
                   </div>
                   <ChevronsUpDown className="ml-auto size-3.5 text-[#7c8669]" />
@@ -197,10 +147,10 @@ const SellerSidebar = () => {
                 align="start"
                 side="bottom"
                 sideOffset={6}
-                className="w-72 rounded-[26px] border border-[#d9ddb8] bg-[#fffdf4] p-2.5 shadow-[0_24px_60px_rgba(103,97,40,0.16)]"
+                className="w-72 rounded-2xl border border-[#d9ddb8] bg-[#fffdf4] p-2.5 shadow-[0_18px_44px_rgba(103,97,40,0.14)]"
               >
                 <div className="mb-2 flex items-center justify-between px-1">
-                  <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7b7f59]">
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#7b7f59]">
                     Your Stores
                   </span>
                   <span className="rounded-full border border-[#dde1b8] bg-white px-1.5 py-0.5 text-[10px] font-medium text-[#697354]">
@@ -208,10 +158,9 @@ const SellerSidebar = () => {
                   </span>
                 </div>
 
-                <div className="mb-1.5 rounded-[22px] border border-[#d9ddb8] bg-[#f7fbdf] p-3 text-black ">
+                <div className="mb-1.5 rounded-xl border border-[#d9ddb8] bg-[#f7fbdf] p-3 text-black">
                   <div className="flex items-center gap-2.5">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[18px]
-                     bg-lime-500 text-white text-sm font-bold">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-lime-500 text-sm font-bold text-white">
                       {shopInitial}
                     </div>
                     <div className="min-w-0 flex-1">
@@ -291,9 +240,9 @@ const SellerSidebar = () => {
       </SidebarHeader>
 
       <SidebarContent className="pt-3">
-        {navData.map((section) => (
+        {sellerSidebarMenu.map((section) => (
           <SidebarGroup key={section.label}>
-            <SidebarGroupLabel className="mb-2 px-4 text-[10px] uppercase tracking-[0.22em] text-[#8b8e67]">
+            <SidebarGroupLabel className="mb-2 px-4 text-[10px] uppercase tracking-[0.16em] text-[#8b8e67]">
               {section.label}
             </SidebarGroupLabel>
             <SidebarGroupContent>
@@ -308,15 +257,17 @@ const SellerSidebar = () => {
                         isActive={isActive}
                         className={
                           isActive
-                            ? "mx-2 rounded-[22px] border border-lime-300/70 bg-white text-[#17320f] shadow-[0_12px_28px_rgba(132,178,31,0.12)] hover:bg-white font-medium transition-colors duration-150"
-                            : "mx-2 rounded-[22px] text-[#6e7556] hover:text-[#17320f] hover:bg-white/75 transition-colors duration-150"
+                            ? "mx-2 rounded-xl border border-[#d5ddb2] bg-[#f4f8e3] text-[#17320f] hover:bg-[#f4f8e3] font-medium transition-colors duration-150"
+                            : "mx-2 rounded-xl text-[#6e7556] transition-colors duration-150 hover:bg-white hover:text-[#17320f]"
                         }
                       >
-                        <Link href={item.href} className="flex items-center gap-2.5">
-                          <Icon
-                            size={15}
-                            className={isActive ? "text-lime-600" : "text-[#8d916f]"}
-                          />
+                        <Link href={item.href} className={`flex items-center ${Icon ? "gap-2.5" : ""}`}>
+                          {Icon && (
+                            <Icon
+                              size={15}
+                              className={isActive ? "text-lime-600" : "text-[#8d916f]"}
+                            />
+                          )}
                           <span className="text-[13px]">{item.title}</span>
                           {isActive && (
                             <span className="ml-auto h-2 w-2 shrink-0 rounded-full bg-lime-500" />
@@ -337,7 +288,7 @@ const SellerSidebar = () => {
           <SidebarMenuItem>
             <SidebarMenuButton
               onClick={handleLogout}
-              className="mx-2 rounded-[22px] text-[#7f8464] hover:bg-red-50 hover:text-red-500 transition-colors duration-150"
+              className="mx-2 rounded-xl text-[#7f8464] transition-colors duration-150 hover:bg-red-50 hover:text-red-500"
             >
               <LogOut size={15} />
               <span className="text-[13px]">Logout</span>
