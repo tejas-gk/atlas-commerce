@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
-import '@/globals.css'
+
+import "@workspace/ui/globals.css"
 
 export const metadata: Metadata = {
     title: 'Ghast Chat',

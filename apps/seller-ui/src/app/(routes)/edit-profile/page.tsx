@@ -117,7 +117,7 @@ const EditProfile = () => {
   const countWords = (text: string) => text.trim().split(/\s+/).length;
 
   return (
-    <div className="min-h-screen py-8 px-6">
+    <div className="seller-page-transition min-h-screen py-8 px-6">
       <div className="max-w-3xl mx-auto">
         {/* Header with Back Button */}
         <div className="mb-6">
@@ -130,7 +130,7 @@ const EditProfile = () => {
           </button>
 
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Edit Shop Profile</h1>
+            <h1 className="seller-gradient-title text-2xl font-semibold tracking-tight">Edit Shop Profile</h1>
             <p className="text-sm text-muted-foreground mt-0.5">Update your shop information and social links</p>
           </div>
         </div>

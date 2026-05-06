@@ -161,7 +161,7 @@ const OrdersTable = () => {
                 </Link>
             </div>
             <div className="overflow-hidden rounded-[12px] border border-[#f0f2e0]">
-                <table className="min-w-full text-sm">
+                <table className="seller-table min-w-full text-sm">
                     <thead className="border-b border-[#f0f2e0] bg-[#fafbf5]">
                         {table.getHeaderGroups().map((hg) => (
                             <tr key={hg.id}>
@@ -193,6 +193,7 @@ const OrdersTable = () => {
 const DashboardPage = () => {
     const [period, setPeriod] = useState("1M");
     const [activeDeviceIdx, setActiveDeviceIdx] = useState(-1);
+    const selectedDevice = activeDeviceIdx >= 0 ? deviceData[activeDeviceIdx] : undefined;
     return (
         <div className="space-y-6">
             <section className="seller-panel overflow-hidden rounded-[34px] p-6 md:p-7">
@@ -224,9 +225,9 @@ const DashboardPage = () => {
             </section>
 
             {/* KPI Cards */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="seller-stagger grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {KPI_METRICS.map(({ label, value, positive, spark, meta }) => (
-                    <Card key={label} className="rounded-[12px] border border-[#e8ebd4] bg-white p-5 shadow-[0_2px_8px_rgba(0,0,0,0.07)]">
+                    <Card key={label} className="seller-kpi-card rounded-[12px] p-5">
                         <p className="text-[13px] font-medium text-[#888]">{label}</p>
                         <div className="mt-1.5 flex items-end justify-between gap-2">
                             <p className="text-[2rem] font-bold leading-none tracking-tight text-[#111]">{value}</p>
@@ -284,8 +285,6 @@ const DashboardPage = () => {
                                     data={deviceData} dataKey="value" nameKey="name"
                                     cx="50%" cy="50%" innerRadius={52} outerRadius={75}
                                     paddingAngle={3} stroke="none" isAnimationActive
-                                    activeIndex={activeDeviceIdx}
-                                    activeOuterRadiusOffset={8}
                                     onMouseEnter={(_: any, i: number) => setActiveDeviceIdx(i)}
                                     onMouseLeave={() => setActiveDeviceIdx(-1)}
                                 >
@@ -301,14 +300,14 @@ const DashboardPage = () => {
                         </ResponsiveContainer>
                         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
                             <p className="text-[10px] text-muted-foreground leading-none transition-all">
-                                {activeDeviceIdx >= 0 ? deviceData[activeDeviceIdx].name : "All devices"}
+                                {selectedDevice?.name ?? "All devices"}
                             </p>
                             <p className="text-[20px] font-bold text-[#17320f] leading-tight transition-all">
-                                {activeDeviceIdx >= 0 ? `${deviceData[activeDeviceIdx].value}%` : "100%"}
+                                {selectedDevice ? `${selectedDevice.value}%` : "100%"}
                             </p>
                         </div>
                     </div>
-                    <div className="mt-3 space-y-2">
+                    <div className="seller-stagger-list mt-3 space-y-2">
                         {deviceData.map(({ name, value }, i) => (
                             <div
                                 key={name}
@@ -353,7 +352,7 @@ const DashboardPage = () => {
                             View all <ArrowRight size={11} />
                         </Link>
                     </div>
-                    <div className="space-y-1">
+                    <div className="seller-stagger-list space-y-1">
                         {TOP_PRODUCTS.map((p, i) => (
                             <div key={p.name} className="flex items-center gap-3 rounded-xl px-3 py-2.5 hover:bg-[#fafbf5] transition-colors">
                                 <span className="w-4 shrink-0 text-[11px] font-bold text-muted-foreground/40">{i + 1}</span>

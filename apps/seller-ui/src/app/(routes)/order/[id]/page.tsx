@@ -70,7 +70,7 @@ const Page = () => {
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-10">
+    <div className="seller-page-transition max-w-5xl mx-auto px-4 py-10">
       <div className="my-4">
         <span
           className="text-[#17320f] flex items-center gap-2 font-semibold cursor-pointer hover:text-[#86b81d] transition-colors"
@@ -81,7 +81,7 @@ const Page = () => {
         </span>
       </div>
 
-      <h1 className="text-2xl font-bold text-[#17320f] mb-4">
+      <h1 className="seller-gradient-title text-2xl font-bold text-[#17320f] mb-4">
         Order #{order.id.slice(-6)}
       </h1>
 

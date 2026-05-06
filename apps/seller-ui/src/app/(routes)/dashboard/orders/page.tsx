@@ -12,10 +12,14 @@ import {
   Eye,
   Download,
   Package,
+  Sparkles,
+  Truck,
+  Clock3,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/utils/axiosInstance";
 import Link from "next/link";
+import BreadCrumbs from "@/shared/components/breadcrumbs";
 import useSeller from "@/hooks/useSeller";
 import { Input } from "@workspace/ui/components/input";
 import { Card } from "@workspace/ui/components/card";
@@ -266,30 +270,64 @@ export default function OrdersPage() {
   });
 
   return (
-    <div className="space-y-6 pb-8">
-      {/* ── Page header ─────────────────────────────────── */}
+    <div className="seller-page-transition seller-compose-shell space-y-6 pb-8">
       <div className="seller-page-header">
-        <div>
-          <h1 className="text-3xl font-extrabold tracking-[-0.05em] text-[#17320f]">Orders</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Track and manage all customer orders
-          </p>
+        <div className="space-y-1.5">
+          <p className="seller-section-kicker">Live Order Monitor</p>
+          <h1 className="text-4xl font-extrabold tracking-[-0.055em] text-[#17320f]">Orders</h1>
+          <BreadCrumbs title="Orders" />
         </div>
-        <Button
-          size="sm"
-          variant="outline"
-          className="h-10 gap-1.5 rounded-2xl border-[#dde1bc] bg-white px-4 text-[#556244] hover:bg-[#f7f8ea] hover:text-[#17320f]"
-        >
-          <Download size={14} /> Export CSV
-        </Button>
+
+        <div className="flex flex-wrap items-center justify-end gap-3">
+          <div className="seller-soft-panel rounded-2xl px-4 py-2.5">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#6a7b4d]">
+              Fulfillment Pulse
+            </p>
+            <p className="text-xs text-[#55663c]">
+              Live order activity and delivery progression
+            </p>
+          </div>
+
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-10 gap-1.5 rounded-2xl border-[#dde1bc] bg-white px-4 text-[#556244] hover:bg-[#f7f8ea] hover:text-[#17320f]"
+          >
+            <Download size={14} /> Export CSV
+          </Button>
+        </div>
+      </div>
+
+      <div className="seller-stagger grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="seller-quick-stat">
+          <Sparkles size={16} />
+          <div>
+            <p>Action Queue</p>
+            <strong>{tabCounts.Pending ?? 0} pending orders need attention</strong>
+          </div>
+        </div>
+        <div className="seller-quick-stat">
+          <Truck size={16} />
+          <div>
+            <p>Fulfilled</p>
+            <strong>{tabCounts.Delivered ?? 0} orders delivered this cycle</strong>
+          </div>
+        </div>
+        <div className="seller-quick-stat">
+          <Clock3 size={16} />
+          <div>
+            <p>Pipeline</p>
+            <strong>{allOrders.length} total tracked orders in workspace</strong>
+          </div>
+        </div>
       </div>
 
       {/* ── KPI cards ───────────────────────────────────── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="seller-stagger grid grid-cols-2 lg:grid-cols-4 gap-4">
         {KPI_CARDS.map(({ label, value, badge, positive, spark }) => (
           <Card
             key={label}
-            className="rounded-[12px] border border-[#e8ebd4] bg-white p-5 shadow-[0_2px_8px_rgba(0,0,0,0.07)]"
+            className="seller-kpi-card rounded-[12px] p-5"
           >
             {/* label */}
             <p className="text-[13px] font-medium text-[#888]">{label}</p>
@@ -321,7 +359,19 @@ export default function OrdersPage() {
       </div>
 
       {/* ── Table card ──────────────────────────────────── */}
-      <Card className="seller-panel overflow-hidden rounded-[30px] border-0">
+      <Card className="seller-panel seller-compose-panel overflow-hidden rounded-[30px] border-0">
+
+        <div className="px-5 pb-2 pt-5">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[#d9deba] bg-white/90 text-[#6c9132] shadow-[0_10px_20px_rgba(128,158,67,0.18)]">
+              <Package size={17} />
+            </div>
+            <div>
+              <h2 className="text-sm font-bold uppercase tracking-[0.18em] text-[#4d5d34]">Orders Ledger</h2>
+              <p className="text-xs text-[#75835f]">Filter, inspect, and export order states with ease.</p>
+            </div>
+          </div>
+        </div>
 
         {/* Toolbar */}
         <div className="seller-toolbar space-y-3 px-5 py-3.5">
