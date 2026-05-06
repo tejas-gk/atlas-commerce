@@ -8,6 +8,9 @@ This template is for creating a monorepo with shadcn/ui.
 pnpm dlx shadcn@latest init
 ```
 
+
+## imp docker compose -f docker-compose.dev.yml logs -f
+
 ## Adding components
 
 To add components to your app, run the following command at the root of your `web` app:
