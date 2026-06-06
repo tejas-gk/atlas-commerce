@@ -55,13 +55,13 @@ export const useStore = create<Store>()(
             return {
               cart: state.cart.map((item) =>
                 item.id === product.id
-                  ? { ...item, quantity: (item.quantity ?? 1) + 1 }
+                  ? { ...item, quantity: (item.quantity ?? 1) + (product?.quantity ?? 1) }
                   : item
               ),
             };
           }
           return {
-            cart: [...state.cart, { ...product, quantity: product?.quantity }],
+            cart: [...state.cart, { ...product, quantity: product?.quantity ?? 1 }],
           };
         });
         // send kafka event

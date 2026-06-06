@@ -2,6 +2,7 @@
 import useDeviceTracking from "@/hooks/useDeviceTracking";
 import useLocationTracking from "@/hooks/useLocationTracking";
 import useUser from "@/hooks/useUser";
+import { useHydratedStore } from "@/hooks/useHydratedStore";
 import { useStore } from "@/store";
 import axiosInstance from "@/utils/axiosInstance";
 import { useQuery } from "@tanstack/react-query";
@@ -18,7 +19,7 @@ const CartPage = () => {
   const { user } = useUser();
   const location = useLocationTracking();
   const deviceInfo = useDeviceTracking();
-  const cart = useStore((state: any) => state.cart);
+  const { cart, isHydrated } = useHydratedStore();
   const [discountedProductId, setDiscountedProductId] = useState("");
   const [discountPercent, setDiscountPercent] = useState(0);
   const [discountAmount, setDiscountAmount] = useState(0);
@@ -116,7 +117,7 @@ const CartPage = () => {
   };
 
   const subtotal = cart.reduce(
-    (total: number, item: any) => total + item.quantity * item.sale_price,
+    (total: number, item: any) => total + (item.quantity ?? 1) * (item.sale_price ?? 0),
     0
   );
 
@@ -137,6 +138,14 @@ const CartPage = () => {
       }
     }
   }, [addresses, selectedAddressId]);
+
+  if (!isHydrated) {
+    return (
+      <div className="w-full bg-white min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent" />
+      </div>
+    );
+  }
 
   return (
     <div className="w-full bg-white">
@@ -171,8 +180,8 @@ const CartPage = () => {
                 {cart?.map((item: any) => (
                   <tr key={item.id} className="border-b border-b-[#0000000e]">
                     <td className="flex items-center gap-4 p-4">
-                      <Image
-                        src={item?.images[0]?.url}
+                      <img
+                        src={item?.images?.[0]?.url || 'https://via.placeholder.com/80'}
                         alt={item.title}
                         width={80}
                         height={80}
@@ -184,7 +193,7 @@ const CartPage = () => {
                           <div className="text-sm text-gray-500">
                             {item?.selectedOptions?.color && (
                               <span>
-                                Color: {}
+                                Color:{' '}
                                 <span
                                   style={{
                                     backgroundColor:
@@ -193,6 +202,7 @@ const CartPage = () => {
                                     height: "12px",
                                     borderRadius: "100%",
                                     display: "inline-block",
+                                    marginLeft: "4px",
                                   }}
                                 />
                               </span>
@@ -210,12 +220,12 @@ const CartPage = () => {
                       {item?.id === discountedProductId ? (
                         <div className="flex flex-col items-center">
                           <span className="line-through text-gray-500 text-sm">
-                            ${item.sale_price.toFixed(2)}
+                            ${(item?.sale_price ?? 0).toFixed(2)}
                           </span>{" "}
                           <span className="text-green-600 font-semibold">
                             $
                             {(
-                              (item.sale_price * (100 - discountPercent)) /
+                              ((item?.sale_price ?? 0) * (100 - discountPercent)) /
                               100
                             ).toFixed(2)}
                           </span>
@@ -224,7 +234,7 @@ const CartPage = () => {
                           </span>
                         </div>
                       ) : (
-                        <span>${item.sale_price.toFixed(2)}</span>
+                        <span>${(item?.sale_price ?? 0).toFixed(2)}</span>
                       )}
                     </td>
                     <td>
@@ -305,7 +315,7 @@ const CartPage = () => {
                     <select
                       className="w-full p-2 border border-gray-200 rounded-md focus:outline-none focus:border-blue-500"
                       value={selectedAddressId}
-                      onChange={(e:any) => setSelectedAddressId(e.target.value)}
+                      onChange={(e: any) => setSelectedAddressId(e.target.value)}
                     >
                       {addresses?.map((address: any) => (
                         <option key={address.id} value={address.id}>

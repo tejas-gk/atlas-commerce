@@ -1,11 +1,11 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import CartIcon from "apps/user-ui/src/assets/svgs/cart-icon";
-import ProfileIcon from "apps/user-ui/src/assets/svgs/profile-icon";
-import { navItems } from "apps/user-ui/src/configs/constants";
-import useUser from "apps/user-ui/src/hooks/useUser";
-import { useStore } from "apps/user-ui/src/store";
-import axiosInstance from "apps/user-ui/src/utils/axiosInstance";
+import CartIcon from "../../../assets/svgs/cart-icon";
+import ProfileIcon from "../../../assets/svgs/profile-icon";
+import { navItems } from "../../configs/constants";
+import useUser from "@/hooks/useUser";
+import { useStore } from "@/store";
+import axiosInstance from "@/utils/axiosInstance";
 import { AlignLeft, ChevronDown, ChevronRight, HeartIcon } from "lucide-react";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
@@ -43,22 +43,19 @@ const HeaderBottom = () => {
 
   return (
     <div
-      className={`w-full transition-all duration-300 ${
-        isSticky
+      className={`w-full transition-all duration-300 ${isSticky
           ? "fixed top-0 left-0 z-[100] bg-white shadow-lg"
           : "shadow-sm relative"
-      }`}
+        }`}
     >
       <div
-        className={`w-[80%] relative m-auto md:flex hidden items-center justify-between ${
-          isSticky ? "pt-3" : "py-0"
-        }`}
+        className={`w-[80%] relative m-auto md:flex hidden items-center justify-between ${isSticky ? "pt-3" : "py-0"
+          }`}
       >
         {/* All Dropdowns */}
         <div
-          className={`w-[260px] ${
-            isSticky && "-mb-2"
-          } cursor-pointer flex items-center justify-between px-5 h-[50px] bg-[#3489ff]`}
+          className={`w-[260px] ${isSticky && "-mb-2"
+            } cursor-pointer flex items-center justify-between px-5 h-[50px] bg-[#3489ff]`}
           onClick={() => setShow(!show)}
         >
           <div className="flex items-center gap-2">
@@ -70,9 +67,8 @@ const HeaderBottom = () => {
 
         {show && (
           <div
-            className={`absolute left-0 ${
-              isSticky ? "top-[70px]" : "top-[50px]"
-            } w-[260px] max-h-[400px] overflow-y-auto bg-white shadow-lg z-[999]`}
+            className={`absolute left-0 ${isSticky ? "top-[70px]" : "top-[50px]"
+              } w-[260px] max-h-[400px] overflow-y-auto bg-white shadow-lg z-[999]`}
           >
             {data?.categories?.length > 0 ? (
               data.categories.map((cat: string, i: number) => {

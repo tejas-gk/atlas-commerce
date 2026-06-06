@@ -214,14 +214,13 @@ const ChatPage = () => {
                   <button
                     key={chat.conversationId}
                     onClick={() => handleChatSelect(chat)}
-                    className={`w-full text-left px-4 py-3 transition-colors ${
-                      isActive ? "bg-[#f8fbe8] border-l-2 border-l-[#86b81d]" : "hover:bg-[#fafbf5]"
-                    }`}
+                    className={`w-full text-left px-4 py-3 transition-colors ${isActive ? "bg-[#f8fbe8] border-l-2 border-l-[#86b81d]" : "hover:bg-[#fafbf5]"
+                      }`}
                   >
                     <div className="flex items-center gap-3">
                       <div className="relative shrink-0">
                         <img
-                          src={chat.user?.avatar || "https://ik.imagekit.io/shahriarbecodemy/avatar/6_t8b5y8t3U.png"}
+                          src={chat.user?.avatar || "https://ik.imagekit.io/shahriarpenderghast/avatar/6_t8b5y8t3U.png"}
                           alt={chat.user?.name}
                           className="rounded-full w-9 h-9 object-cover border border-[#e8ebd4]"
                         />
@@ -258,7 +257,7 @@ const ChatPage = () => {
               <div className="flex items-center gap-3 px-5 py-3.5 border-b border-[#f0f2e0] bg-white shrink-0">
                 <div className="relative shrink-0">
                   <img
-                    src={selectedChat.user?.avatar || "https://ik.imagekit.io/shahriarbecodemy/avatar/6_t8b5y8t3U.png"}
+                    src={selectedChat.user?.avatar || "https://ik.imagekit.io/shahriarpenderghast/avatar/6_t8b5y8t3U.png"}
                     alt={selectedChat.user.name}
                     className="rounded-full w-9 h-9 object-cover border border-[#e8ebd4]"
                   />
@@ -285,11 +284,10 @@ const ChatPage = () => {
                     className={`flex ${msg.senderType === "seller" ? "justify-end" : "justify-start"}`}
                   >
                     <div
-                      className={`max-w-[72%] px-4 py-2 rounded-2xl text-sm shadow-sm ${
-                        msg.senderType === "seller"
+                      className={`max-w-[72%] px-4 py-2 rounded-2xl text-sm shadow-sm ${msg.senderType === "seller"
                           ? "bg-[#86b81d] text-white rounded-br-sm"
                           : "bg-white text-[#17320f] border border-[#e8ebd4] rounded-bl-sm"
-                      }`}
+                        }`}
                     >
                       <p>{msg.content}</p>
                       <p className={`text-[10px] mt-1 text-right ${msg.senderType === "seller" ? "text-white/70" : "text-muted-foreground/50"}`}>

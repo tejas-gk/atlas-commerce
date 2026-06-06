@@ -17,10 +17,10 @@ export async function generateMetadata({
   const product = await fetchProductDetails(slug);
 
   return {
-    title: `${product?.title} | Becodemy Marketplace`,
+    title: `${product?.title} | penderghast Marketplace`,
     description:
       product?.short_description ||
-      "Discover high-quality products on Becodemy Marketplace.",
+      "Discover high-quality products on penderghast Marketplace.",
     openGraph: {
       title: product?.title,
       description: product?.short_description || "",

@@ -209,7 +209,7 @@ const ChatPage = () => {
                         <img
                           src={
                             chat.seller?.avatar ||
-                            "https://ik.imagekit.io/shahriarbecodemy/avatar/6_t8b5y8t3U.png"
+                            "https://ik.imagekit.io/shahriarpenderghast/avatar/6_t8b5y8t3U.png"
                           }
                           alt={chat.seller?.name}
                           width={36}
@@ -250,7 +250,7 @@ const ChatPage = () => {
                   <img
                     src={
                       selectedChat.seller?.avatar ||
-                      "https://ik.imagekit.io/shahriarbecodemy/avatar/6_t8b5y8t3U.png"
+                      "https://ik.imagekit.io/shahriarpenderghast/avatar/6_t8b5y8t3U.png"
                     }
                     alt={selectedChat.seller?.name}
                     width={40}
@@ -285,22 +285,22 @@ const ChatPage = () => {
                     <div
                       key={idx}
                       className={`flex flex-col ${msg.senderType === "user"
-                          ? "items-end ml-auto"
-                          : "items-start"
+                        ? "items-end ml-auto"
+                        : "items-start"
                         } max-w-[80%]`}
                     >
                       <div
                         className={`${msg.senderType === "user"
-                            ? "bg-blue-600 text-white"
-                            : "bg-white text-gray-800"
+                          ? "bg-blue-600 text-white"
+                          : "bg-white text-gray-800"
                           } px-4 py-2 rounded-lg shadow-sm w-fit`}
                       >
                         {msg.text || msg.content}
                       </div>
                       <div
                         className={`text-[11px] text-gray-400 mt-1 flex items-center gap-1 ${msg.senderType === "user"
-                            ? "mr-1 justify-end"
-                            : "ml-1"
+                          ? "mr-1 justify-end"
+                          : "ml-1"
                           }`}
                       >
                         {msg.time ||

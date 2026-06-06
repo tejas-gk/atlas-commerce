@@ -10,6 +10,7 @@ pnpm dlx shadcn@latest init
 
 
 ## imp docker compose -f docker-compose.dev.yml logs -f
+pnpm run dev --concurrency=25
 
 ## Adding components
 

@@ -159,7 +159,7 @@ const Signup = () => {
               <label className="block text-gray-700 mb-1">Email</label>
               <input
                 type="email"
-                placeholder="support@becodemy.com"
+                placeholder="support@penderghast.com"
                 className="w-full p-2 border border-gray-300 outline-0 !rounded mb-1"
                 {...register("email", {
                   required: "Email is required",

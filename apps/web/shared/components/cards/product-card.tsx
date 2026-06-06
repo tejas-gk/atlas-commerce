@@ -79,12 +79,14 @@ const ProductCard = ({
         />
       </Link>
 
-      <Link
-        href={`/shop/${product?.Shop?.id}`}
-        className="block text-blue-500 text-sm font-medium my-2 px-2"
-      >
-        {product?.Shop?.name}
-      </Link>
+      {product?.Shop && (
+        <Link
+          href={`/shop/${product?.Shop?.id}`}
+          className="block text-blue-500 text-sm font-medium my-2 px-2"
+        >
+          {product?.Shop?.name || 'Shop'}
+        </Link>
+      )}
       <Link href={`/product/${product?.slug}`}>
         <h3 className="text-base font-semibold px-2 text-gray-800 line-clamp-2">
           {product?.title}
@@ -98,14 +100,14 @@ const ProductCard = ({
       <div className="mt-3 flex justify-between items-center px-2">
         <div className="flex items-center gap-2">
           <span className="text-lg font-bold text-gray-900">
-            ${product?.sale_price}
+            ${product?.sale_price ?? 0}
           </span>
           <span className="text-sm line-through text-gray-400">
-            ${product?.regular_price}
+            ${product?.regular_price ?? 0}
           </span>
         </div>
         <span className="text-green-500 text-sm font-medium">
-          {product.totalSales} sold
+          {product?.totalSales ?? 0} sold
         </span>
       </div>
 
@@ -127,11 +129,11 @@ const ProductCard = ({
               isWishlisted
                 ? removeFromWishlist(product.id, user, location, deviceInfo)
                 : addToWishlist(
-                    { ...product, quantity: 1 },
-                    user,
-                    location,
-                    deviceInfo
-                  )
+                  { ...product, quantity: 1 },
+                  user,
+                  location,
+                  deviceInfo
+                )
             }
             stroke={isWishlisted ? "red" : "#4B5563"}
           />

@@ -49,7 +49,7 @@ const Page = () => {
           </h1>
           <Input
             label="Email"
-            placeholder="support@becodemy.com"
+            placeholder="support@penderghast.com"
             {...register("email", {
               required: "Email is required",
               pattern: {

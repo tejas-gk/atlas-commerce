@@ -51,6 +51,33 @@ const isDecodedToken = (
   value: DecodedToken | ExpiredToken | null
 ): value is DecodedToken => Boolean(value && "role" in value);
 
+const clearAuthCookies = (res: Response) => {
+  res.clearCookie("access_token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    path: "/",
+  });
+  res.clearCookie("refresh_token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    path: "/",
+  });
+  res.clearCookie("seller-access-token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    path: "/",
+  });
+  res.clearCookie("seller-refresh-token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    path: "/",
+  });
+};
+
 const isAuthenticated = async (req: any, res: Response, next: NextFunction) => {
   try {
     const authHeaderToken = req.headers.authorization?.split(" ")[1];
@@ -71,6 +98,7 @@ const isAuthenticated = async (req: any, res: Response, next: NextFunction) => {
       isExpiredToken(decodedFromSellerCookie);
 
     if (!decoded) {
+      clearAuthCookies(res);
       if (hasExpiredToken) {
         return res.status(401).json({ message: "Unauthorized! Token expired." });
       }
@@ -98,12 +126,12 @@ const isAuthenticated = async (req: any, res: Response, next: NextFunction) => {
       const primaryShop = getPrimaryShop(account?.shops, activeShopId);
       req.seller = account
         ? {
-            ...account,
-            activeShopId: primaryShop?.id ?? null,
-            isDeleted: primaryShop?.isDeleted ?? account.isDeleted,
-            deletedAt: primaryShop?.deletedAt ?? account.deletedAt,
-            shop: primaryShop,
-          }
+          ...account,
+          activeShopId: primaryShop?.id ?? null,
+          isDeleted: primaryShop?.isDeleted ?? account.isDeleted,
+          deletedAt: primaryShop?.deletedAt ?? account.deletedAt,
+          shop: primaryShop,
+        }
         : null;
     }
 
@@ -115,6 +143,7 @@ const isAuthenticated = async (req: any, res: Response, next: NextFunction) => {
 
     return next();
   } catch (error) {
+    clearAuthCookies(res);
     if (error instanceof TokenExpiredError) {
       return res.status(401).json({ message: "Unauthorized! Token expired." });
     }

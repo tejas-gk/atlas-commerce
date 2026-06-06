@@ -78,13 +78,35 @@ export const applySellerSession = (res: Response, seller: { id: string }) => {
 };
 
 export const clearUserSession = (res: Response) => {
-    res.clearCookie("access_token");
-    res.clearCookie("refresh_token");
+    const isProduction = process.env.NODE_ENV === "production";
+    res.clearCookie("access_token", {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
+        path: "/",
+    });
+    res.clearCookie("refresh_token", {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
+        path: "/",
+    });
 };
 
 export const clearSellerSession = (res: Response) => {
-    res.clearCookie("seller-access-token");
-    res.clearCookie("seller-refresh-token");
+    const isProduction = process.env.NODE_ENV === "production";
+    res.clearCookie("seller-access-token", {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
+        path: "/",
+    });
+    res.clearCookie("seller-refresh-token", {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
+        path: "/",
+    });
 };
 
 export const clearOppositeSession = (

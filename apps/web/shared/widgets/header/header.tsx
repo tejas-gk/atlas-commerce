@@ -2,20 +2,20 @@
 import Link from "next/link";
 import React, { useState } from "react";
 import { Search } from "lucide-react";
-import axiosInstance from "apps/user-ui/src/utils/axiosInstance";
+import axiosInstance from "@/utils/axiosInstance";
 import ProfileIcon from "../../../assets/svgs/profile-icon";
 import HeartIcon from "../../../assets/svgs/heart-icon";
 import CartIcon from "../../../assets/svgs/cart-icon";
 import HeaderBottom from "./header-bottom";
-import useUser from "apps/user-ui/src/hooks/useUser";
+import useUser from "@/hooks/useUser";
+import { useHydratedStore } from "@/hooks/useHydratedStore";
 import Image from "next/image";
-import { useStore } from "apps/user-ui/src/store";
-import useLayout from "apps/user-ui/src/hooks/useLayout";
+import { useStore } from "@/store";
+import useLayout from "@/hooks/useLayout";
 
 const Header = () => {
   const { user, isLoading } = useUser();
-  const wishlist = useStore((state: any) => state.wishlist);
-  const cart = useStore((state: any) => state.cart);
+  const { wishlist, cart } = useHydratedStore();
   const { layout } = useLayout();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -33,6 +33,12 @@ const Header = () => {
     } catch (err) {
     } finally {
       setLoadingSuggestions(false);
+    }
+  };
+
+  const handleSearchKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSearchClick();
     }
   };
 
@@ -60,6 +66,7 @@ const Header = () => {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyPress={handleSearchKeyPress}
             placeholder="Search for products..."
             className="w-full px-4 font-Poppins font-medium border-[2.5px] border-[#3489FF] outline-none h-[55px]"
           />

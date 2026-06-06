@@ -137,7 +137,7 @@ const Footer = () => {
       {/* Footer Bottom */}
       <div className="w-[90%] lg:w-[80%] mx-auto border-t border-gray-200 mt-10 pt-4 flex flex-col lg:flex-row items-center justify-between">
         <p className="text-sm">
-          © 2025 All Rights Reserved | Becodemy Private Ltd
+          © 2025 All Rights Reserved | penderghast Private Ltd
         </p>
 
         {/* Back to Top Button */}

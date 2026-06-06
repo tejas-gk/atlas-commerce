@@ -1,9 +1,9 @@
 "use client";
 
-import { categories } from "apps/user-ui/src/configs/categories";
-import ShopCard from "apps/user-ui/src/shared/components/cards/shop.card";
+import { categories } from "@/shared/configs/categories";
+import ShopCard from "@/shared/components/cards/shop.card";
 import axiosInstance from "@/utils/axiosInstance";
-import { countries } from "apps/user-ui/src/utils/countries";
+import { countries } from "@/utils/countries";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -163,8 +163,8 @@ const Page = () => {
                     key={i + 1}
                     onClick={() => setPage(i + 1)}
                     className={`px-3 py-1 !rounded border border-gray-200 text-sm ${page === i + 1
-                        ? "bg-blue-600 text-white"
-                        : "bg-white text-black"
+                      ? "bg-blue-600 text-white"
+                      : "bg-white text-black"
                       }`}
                   >
                     {i + 1}

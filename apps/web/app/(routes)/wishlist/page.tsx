@@ -1,8 +1,8 @@
 "use client";
-import useDeviceTracking from "apps/user-ui/src/hooks/useDeviceTracking";
-import useLocationTracking from "apps/user-ui/src/hooks/useLocationTracking";
-import useUser from "apps/user-ui/src/hooks/useUser";
-import { useStore } from "apps/user-ui/src/store";
+import useDeviceTracking from "@/hooks/useDeviceTracking";
+import useLocationTracking from "@/hooks/useLocationTracking";
+import useUser from "@/hooks/useUser";
+import { useStore } from "@/store";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
