@@ -40,9 +40,8 @@ const ColorSelector = ({ control, errors }: any) => {
                         : [...(field.value || []), color]
                     )
                   }
-                  className={`w-7 h-7 p-2 rounded-md my-1 flex items-center justify-center border-2 transition ${
-                    isSelected ? "scale-110 border-white" : "border-transparent"
-                  } ${isLightColor ? "border-[#dde1bc]" : ""}`}
+                  className={`w-7 h-7 p-2 rounded-md my-1 flex items-center justify-center border-2 transition ${isSelected ? "scale-110 border-white" : "border-transparent"
+                    } ${isLightColor ? "border-[#dde1bc]" : ""}`}
                   style={{ backgroundColor: color }}
                 />
               );
@@ -72,7 +71,7 @@ const ColorSelector = ({ control, errors }: any) => {
                     setCustomColors([...customColors, newColor]);
                     setShowColorPicker(false);
                   }}
-                  className="px-3 py-1 bg-[#86b81d] text-white rounded-md text-sm"
+                  className="px-3 py-1  text-white rounded-md text-sm"
                 >
                   Add
                 </button>

@@ -122,7 +122,7 @@ const CustomDomains = () => {
             )}
             <button
               type="submit"
-              className="mt-4 bg-[#86b81d] hover:bg-[#6a9317] text-white px-4 py-2 rounded-md flex items-center gap-2"
+              className="mt-4  hover:bg-[#6a9317] text-white px-4 py-2 rounded-md flex items-center gap-2"
               disabled={addDomainMutation.isPending}
             >
               {addDomainMutation.isPending ? (

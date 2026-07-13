@@ -149,7 +149,7 @@ export default function AllEventsPage() {
       cell: ({ row }: any) => {
         const stock = row.original.stock ?? 0;
         return (
-            <span className={`text-sm tabular-nums ${stock < 10 ? "text-red-600" : "text-muted-foreground"}`}>
+          <span className={`text-sm tabular-nums ${stock < 10 ? "text-red-600" : "text-muted-foreground"}`}>
             {stock} left
           </span>
         );
@@ -220,7 +220,7 @@ export default function AllEventsPage() {
           <h1 className="text-3xl font-extrabold tracking-[-0.05em] text-[#17320f]">All Events</h1>
           <p className="text-sm text-muted-foreground mt-0.5">Manage time-limited deals and flash events</p>
         </div>
-        <Button asChild size="sm" className="h-10 gap-1.5 rounded-2xl border-0 bg-[#86b81d] px-4 font-semibold text-white hover:bg-[#77a51b]">
+        <Button asChild size="sm" className="h-10 gap-1.5 rounded-2xl border-0  px-4 font-semibold ">
           <Link href="/dashboard/create-event"><Plus size={14} /> Create Event</Link>
         </Button>
       </div>
@@ -240,9 +240,8 @@ export default function AllEventsPage() {
               </div>
             </div>
             <div className="mt-2.5">
-              <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
-                positive ? "bg-[#e6f9f0] text-[#16a34a]" : "bg-orange-50 text-orange-600"
-              }`}>
+              <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${positive ? "bg-[#e6f9f0] text-[#16a34a]" : "bg-orange-50 text-orange-600"
+                }`}>
                 {positive ? "↗" : "↘"} {badge}
               </span>
             </div>
@@ -258,8 +257,8 @@ export default function AllEventsPage() {
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`h-8 rounded-xl px-3 text-xs font-semibold transition-all duration-150 ${activeTab === tab
-                    ? "seller-tab-active"
-                    : "seller-tab hover:text-foreground"
+                  ? "seller-tab-active"
+                  : "seller-tab hover:text-foreground"
                   }`}
               >
                 {tab}

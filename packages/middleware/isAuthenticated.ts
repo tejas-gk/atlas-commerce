@@ -14,7 +14,7 @@ type ExpiredToken = {
 const getPrimaryShop = (shops: any[] = [], activeShopId?: string) => {
   if (activeShopId) {
     const activeShop = shops.find(
-      (shop) => shop.id === activeShopId && !shop.isDeleted
+      (shop) => shop.id === activeShopId && !shop.isDeleted,
     );
     if (activeShop) {
       return activeShop;
@@ -24,7 +24,9 @@ const getPrimaryShop = (shops: any[] = [], activeShopId?: string) => {
   return shops.find((shop) => !shop.isDeleted) ?? shops[0] ?? null;
 };
 
-const getDecodedToken = (token?: string | null): DecodedToken | ExpiredToken | null => {
+const getDecodedToken = (
+  token?: string | null,
+): DecodedToken | ExpiredToken | null => {
   if (!token) {
     return null;
   }
@@ -44,11 +46,11 @@ const getDecodedToken = (token?: string | null): DecodedToken | ExpiredToken | n
 };
 
 const isExpiredToken = (
-  value: DecodedToken | ExpiredToken | null
+  value: DecodedToken | ExpiredToken | null,
 ): value is ExpiredToken => Boolean(value && "expired" in value);
 
 const isDecodedToken = (
-  value: DecodedToken | ExpiredToken | null
+  value: DecodedToken | ExpiredToken | null,
 ): value is DecodedToken => Boolean(value && "role" in value);
 
 const clearAuthCookies = (res: Response) => {
@@ -100,7 +102,9 @@ const isAuthenticated = async (req: any, res: Response, next: NextFunction) => {
     if (!decoded) {
       clearAuthCookies(res);
       if (hasExpiredToken) {
-        return res.status(401).json({ message: "Unauthorized! Token expired." });
+        return res
+          .status(401)
+          .json({ message: "Unauthorized! Token expired." });
       }
 
       return res.status(401).json({ message: "Unauthorized! Token missing." });
@@ -116,22 +120,37 @@ const isAuthenticated = async (req: any, res: Response, next: NextFunction) => {
     } else if (decoded.role === "seller") {
       account = await db.users.findUnique({
         where: { id: decoded.id },
-        include: { shops: true },
+        include: { shops: true, shopMembers: { include: { shop: true } } },
       });
       const activeShopId =
         req.cookies["seller-active-shop-id"] ||
         req.headers["x-shop-id"] ||
         req.query?.shopId ||
         req.body?.shopId;
-      const primaryShop = getPrimaryShop(account?.shops, activeShopId);
+      const memberShops = (account?.shopMembers ?? []).map(
+        (membership: any) => ({
+          ...membership.shop,
+          memberRole: membership.role,
+          membershipId: membership.id,
+        }),
+      );
+      const accessibleShops = [
+        ...(account?.shops ?? []),
+        ...memberShops,
+      ].filter(
+        (shop, index, all) =>
+          all.findIndex((candidate) => candidate.id === shop.id) === index,
+      );
+      const primaryShop = getPrimaryShop(accessibleShops, activeShopId);
       req.seller = account
         ? {
-          ...account,
-          activeShopId: primaryShop?.id ?? null,
-          isDeleted: primaryShop?.isDeleted ?? account.isDeleted,
-          deletedAt: primaryShop?.deletedAt ?? account.deletedAt,
-          shop: primaryShop,
-        }
+            ...account,
+            shops: accessibleShops,
+            activeShopId: primaryShop?.id ?? null,
+            isDeleted: primaryShop?.isDeleted ?? account.isDeleted,
+            deletedAt: primaryShop?.deletedAt ?? account.deletedAt,
+            shop: primaryShop,
+          }
         : null;
     }
 

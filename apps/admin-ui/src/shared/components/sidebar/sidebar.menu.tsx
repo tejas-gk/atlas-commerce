@@ -1,17 +1,4 @@
 import React from "react";
-
-interface Props {
-  title: string;
-  children: React.ReactNode;
+export default function SidebarMenu({ title, children }: { title: string; children: React.ReactNode }) {
+  return <section className="mt-5"><h3 className="mb-2 px-3 text-[10px] font-bold uppercase tracking-[.18em] text-[#989d7d]">{title}</h3><div className="space-y-1">{children}</div></section>;
 }
-
-const SidebarMenu = ({ title, children }: Props) => {
-  return (
-    <div className="block">
-      <h3 className="text-xs tracking-[0.04rem] pl-1">{title}</h3>
-      {children}
-    </div>
-  );
-};
-
-export default SidebarMenu;

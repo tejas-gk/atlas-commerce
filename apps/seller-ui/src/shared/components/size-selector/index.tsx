@@ -25,11 +25,10 @@ const SizeSelector = ({ control, errors }: any) => {
                         : [...(field.value || []), size]
                     )
                   }
-                  className={`px-3 py-1 rounded-lg font-Poppins transition-colors ${
-                    isSelected
-                      ? "bg-[#86b81d] text-white border border-[#86b81d]"
+                  className={`px-3 py-1 rounded-lg font-Poppins transition-colors ${isSelected
+                      ? " text-white border border-[#86b81d]"
                       : "bg-[#f7f8ea] text-[#17320f] border border-[#dde1bc]"
-                  }`}
+                    }`}
                 >
                   {size}
                 </button>

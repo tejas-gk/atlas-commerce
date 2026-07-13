@@ -2,6 +2,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider } from "@workspace/ui/components/tooltip";
 import React, { useState } from "react";
+import { ThemeProvider } from "next-themes";
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
   const [queryClient] = useState(
@@ -13,14 +14,19 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
             staleTime: 1000 * 60 * 5,
           },
         },
-      })
+      }),
   );
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        {children}
-      </TooltipProvider>
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
+      >
+        <TooltipProvider>{children}</TooltipProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 };

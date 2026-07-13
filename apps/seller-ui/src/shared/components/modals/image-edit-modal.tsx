@@ -180,7 +180,7 @@ const ImageEditModal = ({ editType, onClose }: ImageEditModalProps) => {
                 <button
                   key={effect}
                   className={`p-2 rounded-md flex items-center gap-2 ${activeEffect === effect
-                    ? "bg-[#86b81d] text-white"
+                    ? " text-white"
                     : "bg-[#f7f8ea] hover:bg-[#eef0d5] text-[#17320f]"
                     }`}
                   onClick={() => applyTransformation(effect)}
@@ -213,7 +213,7 @@ const ImageEditModal = ({ editType, onClose }: ImageEditModalProps) => {
           </button>
 
           <button
-            className="bg-[#86b81d] hover:bg-[#6a9317] px-4 py-2 rounded-md text-white disabled:opacity-50 disabled:cursor-not-allowed"
+            className=" hover:bg-[#6a9317] px-4 py-2 rounded-md text-white disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={handleUpdate}
             disabled={!imageUrl || processing}
           >

@@ -3,14 +3,17 @@ import db from "@repo/db";
 export const sellerRepository = {
   findSellerWithShops: (sellerId: string) =>
     db.users.findFirst({
-      where: { id: sellerId, role: "seller" },
-      include: { shops: true },
+      where: {
+        id: sellerId,
+        OR: [{ role: "seller" }, { shopMembers: { some: {} } }],
+      },
+      include: { shops: true, shopMembers: { include: { shop: true } } },
     }),
 
   findAccessibleShop: (sellerId: string, requestedShopId?: string) =>
     db.shops.findFirst({
       where: {
-        sellerId,
+        OR: [{ sellerId }, { shopMembers: { some: { userId: sellerId } } }],
         ...(requestedShopId ? { id: requestedShopId } : {}),
       },
     }),
@@ -242,7 +245,11 @@ export const sellerRepository = {
       },
     }),
 
-  findConflictingWebsiteSlug: (shopId: string, slug: string, websiteId: string) =>
+  findConflictingWebsiteSlug: (
+    shopId: string,
+    slug: string,
+    websiteId: string,
+  ) =>
     db.shopWebsites.findFirst({
       where: {
         shopId,

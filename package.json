@@ -58,7 +58,7 @@
   "dependencies": {
     "@stripe/react-stripe-js": "^6.1.0",
     "@stripe/stripe-js": "^9.0.1",
-    "@tanstack/react-query": "^5.0.0",
+    "@tanstack/react-query": "^5.95.2",
     "@tanstack/react-table": "^8.21.3",
     "@tensorflow/tfjs": "^4.22.0",
     "@tensorflow/tfjs-backend-cpu": "^4.22.0",
@@ -67,6 +67,7 @@
     "@types/nodemailer": "^7.0.11",
     "axios": "^1.13.6",
     "bcryptjs": "^3.0.3",
+    "class-variance-authority": "^0.7.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",

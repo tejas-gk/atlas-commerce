@@ -1,27 +1,12 @@
 import Link from "next/link";
 import React from "react";
 
-interface Props {
-  title: string;
-  icon: React.ReactNode;
-  isActive?: boolean;
-  href: string;
-}
-
-const SidebarItem = ({ icon, title, isActive, href }: Props) => {
+export default function SidebarItem({ icon, title, isActive, href, onClick }: { title: string; icon: React.ReactNode; isActive?: boolean; href: string; onClick?: () => void }) {
   return (
-    <Link href={href} className="my-2 block">
-      <div
-        className={`flex gap-2 w-full min-h-12 h-full items-center px-[13px] rounded-lg cursor-pointer transition hover:bg-[#2b2f31] ${
-          isActive &&
-          "scale-[.98] bg-[#0f3158] fill-blue-200 hover:!bg-[#0f3158d6]"
-        }`}
-      >
-        {icon}
-        <h5 className="text-slate-200 text-lg">{title}</h5>
-      </div>
+    <Link href={href} onClick={onClick} className={`group flex h-11 items-center gap-3 rounded-xl px-3 text-[13px] font-semibold transition-all ${isActive ? "bg-[#17320f] text-white shadow-[0_10px_24px_rgba(23,50,15,.16)]" : "text-[#687259] hover:bg-white hover:text-[#17320f]"}`}>
+      <span className={`grid h-7 w-7 place-items-center rounded-lg transition ${isActive ? "bg-white/12 text-lime-300" : "text-[#7c8669] group-hover:bg-lime-100 group-hover:text-lime-700"}`}>{icon}</span>
+      <span>{title}</span>
+      {isActive && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-lime-400" />}
     </Link>
   );
-};
-
-export default SidebarItem;
+}

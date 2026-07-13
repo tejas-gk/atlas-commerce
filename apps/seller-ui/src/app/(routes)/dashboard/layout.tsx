@@ -1,7 +1,10 @@
 import React from "react";
 import SellerSidebar from "@/shared/components/sidebar/sidebar";
 import { SellerSiteHeader } from "@/shared/components/header/site-header";
-import { SidebarProvider, SidebarInset } from "@workspace/ui/components/sidebar";
+import {
+  SidebarProvider,
+  SidebarInset,
+} from "@workspace/ui/components/sidebar";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -9,10 +12,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       <SellerSidebar />
       <SidebarInset className="seller-app-shell overflow-y-auto">
         <SellerSiteHeader />
-        <main className="flex flex-1 flex-col px-4 pb-8 pt-5 md:px-6 md:pb-10">
-          <div className="mx-auto w-full max-w-[1480px]">
-            {children}
-          </div>
+        <main className="flex flex-1 flex-col px-4 pb-10 pt-6 md:px-8 lg:px-10">
+          <div className="mx-auto w-full max-w-[1440px]">{children}</div>
         </main>
       </SidebarInset>
     </SidebarProvider>

@@ -205,7 +205,7 @@ export default function AllProductsPage() {
           <h1 className="text-3xl font-extrabold tracking-[-0.05em] text-[#17320f]">All Products</h1>
           <p className="mt-1 text-sm text-muted-foreground">Manage and track your product catalog</p>
         </div>
-        <Button asChild size="sm" className="h-10 gap-1.5 rounded-2xl border-0 bg-[#86b81d] px-4 font-semibold text-white hover:bg-[#77a51b]">
+        <Button asChild size="sm" className="h-10 gap-1.5 rounded-2xl border-0  px-4 font-semibold ">
           <Link href="/dashboard/create-product"><Plus size={14} /> Add Product</Link>
         </Button>
       </div>
@@ -224,9 +224,8 @@ export default function AllProductsPage() {
               </div>
             </div>
             <div className="mt-2.5">
-              <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
-                positive ? "bg-[#e6f9f0] text-[#16a34a]" : "bg-orange-50 text-orange-600"
-              }`}>
+              <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${positive ? "bg-[#e6f9f0] text-[#16a34a]" : "bg-orange-50 text-orange-600"
+                }`}>
                 {positive ? "↗" : "↘"} {badge}
               </span>
             </div>

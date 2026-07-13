@@ -73,11 +73,11 @@ const SAMPLE_NOTIFICATIONS = [
 ];
 
 const TYPE_META: Record<string, { Icon: any; bg: string; color: string }> = {
-  order:   { Icon: ShoppingBag,   bg: "bg-[#e6f9f0]", color: "text-emerald-600" },
-  stock:   { Icon: AlertTriangle, bg: "bg-amber-50",   color: "text-amber-500" },
-  promo:   { Icon: Megaphone,     bg: "bg-violet-50",  color: "text-violet-500" },
-  payment: { Icon: DollarSign,    bg: "bg-blue-50",    color: "text-blue-500" },
-  system:  { Icon: Bell,          bg: "bg-[#f0f4d8]",  color: "text-[#556244]" },
+  order: { Icon: ShoppingBag, bg: "bg-[#e6f9f0]", color: "text-emerald-600" },
+  stock: { Icon: AlertTriangle, bg: "bg-amber-50", color: "text-amber-500" },
+  promo: { Icon: Megaphone, bg: "bg-violet-50", color: "text-violet-500" },
+  payment: { Icon: DollarSign, bg: "bg-blue-50", color: "text-blue-500" },
+  system: { Icon: Bell, bg: "bg-[#f0f4d8]", color: "text-[#556244]" },
 };
 
 const FILTER_TABS = ["All", "Unread", "Orders", "System"];
@@ -110,9 +110,9 @@ const Page = () => {
   }));
 
   const filtered = notifications.filter((n) => {
-    if (activeTab === "Unread")  return n.status === "Unread";
-    if (activeTab === "Orders")  return n.type === "order";
-    if (activeTab === "System")  return ["system", "stock", "payment"].includes(n.type);
+    if (activeTab === "Unread") return n.status === "Unread";
+    if (activeTab === "Orders") return n.type === "order";
+    if (activeTab === "System") return ["system", "stock", "payment"].includes(n.type);
     return true;
   });
 
@@ -134,7 +134,7 @@ const Page = () => {
           <div className="flex items-center gap-3">
             <h1 className="text-3xl font-extrabold tracking-[-0.05em] text-[#17320f]">Notifications</h1>
             {unreadCount > 0 && (
-              <span className="rounded-full bg-[#86b81d] px-2.5 py-0.5 text-xs font-bold text-white">
+              <span className="rounded-full  px-2.5 py-0.5 text-xs font-bold text-white">
                 {unreadCount}
               </span>
             )}
@@ -161,13 +161,12 @@ const Page = () => {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`relative h-8 rounded-xl px-4 text-xs font-semibold transition-all ${
-              activeTab === tab ? "seller-tab-active" : "seller-tab hover:text-foreground"
-            }`}
+            className={`relative h-8 rounded-xl px-4 text-xs font-semibold transition-all ${activeTab === tab ? "seller-tab-active" : "seller-tab hover:text-foreground"
+              }`}
           >
             {tab}
             {tab === "Unread" && unreadCount > 0 && (
-              <span className="ml-1.5 rounded-full bg-[#86b81d] px-1.5 py-0.5 text-[10px] font-bold text-white align-middle">
+              <span className="ml-1.5 rounded-full  px-1.5 py-0.5 text-[10px] font-bold text-white align-middle">
                 {unreadCount}
               </span>
             )}
@@ -197,9 +196,8 @@ const Page = () => {
                 key={n.id}
                 href={n.redirect_link || "#"}
                 onClick={() => isUnread && markAsRead(n.id)}
-                className={`flex items-start gap-4 px-5 py-4 border-b border-[#f0f2e0] last:border-0 transition-colors ${
-                  isUnread ? "bg-[#f8fbe8] hover:bg-[#f2f7d2]" : "hover:bg-[#fafbf3]"
-                }`}
+                className={`flex items-start gap-4 px-5 py-4 border-b border-[#f0f2e0] last:border-0 transition-colors ${isUnread ? "bg-[#f8fbe8] hover:bg-[#f2f7d2]" : "hover:bg-[#fafbf3]"
+                  }`}
               >
                 <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl mt-0.5 ${meta.bg}`}>
                   <meta.Icon size={15} className={meta.color} />
@@ -215,7 +213,7 @@ const Page = () => {
                   </div>
                   <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{n.message}</p>
                 </div>
-                {isUnread && <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-[#86b81d]" />}
+                {isUnread && <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full " />}
               </Link>
             );
           })}

@@ -8,17 +8,23 @@ import { SellerRequest } from "../types/seller.types";
 const WEBSITE_ALLOWED_STATUSES = new Set(["draft", "published", "archived"]);
 
 export const getPrimaryShop = (seller: any, requestedShopId?: string) => {
-  if (!seller?.shops?.length) {
+  const memberShops = (seller?.shopMembers ?? []).map(
+    (membership: any) => membership.shop
+  );
+  const shops = [...(seller?.shops ?? []), ...memberShops].filter(
+    (shop, index, all) =>
+      all.findIndex((candidate) => candidate.id === shop.id) === index
+  );
+
+  if (!shops.length) {
     return null;
   }
 
   if (requestedShopId) {
-    return seller.shops.find((shop: any) => shop.id === requestedShopId) ?? null;
+    return shops.find((shop: any) => shop.id === requestedShopId) ?? null;
   }
 
-  return (
-    seller.shops.find((shop: any) => !shop.isDeleted) ?? seller.shops[0] ?? null
-  );
+  return shops.find((shop: any) => !shop.isDeleted) ?? shops[0] ?? null;
 };
 
 export const getRequestedShopId = (req: SellerRequest) =>

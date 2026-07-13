@@ -351,7 +351,7 @@ const EditProfile = () => {
             <Button
               type="submit"
               disabled={isPending}
-              className="gap-2 bg-[#86b81d] hover:bg-[#77a51b] text-white border-0 rounded-2xl"
+              className="gap-2   text-white border-0 rounded-2xl"
             >
               {isPending ? (
                 <>

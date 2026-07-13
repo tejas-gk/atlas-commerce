@@ -28,8 +28,9 @@ export const SalesChart = ({
         easing: "linear",
         speed: 300,
       },
-      fontFamily: "Inter, sans-serif",
-      foreColor: "#ECEDEE",
+      fontFamily: "Poppins, sans-serif",
+      foreColor: "#687259",
+      background: "transparent",
       toolbar: { show: false },
       zoom: { enabled: false },
     },
@@ -42,13 +43,13 @@ export const SalesChart = ({
       labels: {
         show: true,
         style: {
-          colors: "#9ba1a6",
-          fontFamily: "Inter, sans-serif",
+          colors: "#8c9380",
+          fontFamily: "Poppins, sans-serif",
         },
       },
       axisBorder: {
         show: true,
-        color: "#ffffff26",
+        color: "#e7ead6",
       },
       axisTicks: {
         show: false,
@@ -61,7 +62,9 @@ export const SalesChart = ({
       axisTicks: { show: false },
     },
     grid: {
-      show: false,
+      show: true,
+      borderColor: "#eef0df",
+      strokeDashArray: 4,
     },
     tooltip: {
       enabled: true,
@@ -76,12 +79,18 @@ export const SalesChart = ({
     stroke: {
       curve: "smooth",
       width: 3,
+      colors: ["#84cc16"],
     },
     markers: {
       size: 0,
     },
     dataLabels: {
       enabled: false,
+    },
+    colors: ["#84cc16"],
+    fill: {
+      type: "gradient",
+      gradient: { shadeIntensity: 0, opacityFrom: 0.3, opacityTo: 0.02, stops: [0, 95, 100] },
     },
   };
 
@@ -99,7 +108,7 @@ export const SalesChart = ({
             options={chartOptions}
             series={chartSeries}
             type="area"
-            height={425}
+            height={330}
           />
         </div>
       </Box>

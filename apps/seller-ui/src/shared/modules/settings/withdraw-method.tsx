@@ -136,7 +136,7 @@ const WithdrawMethod = () => {
             <button
               type="button"
               onClick={() => connectStripe(seller?.id)}
-              className="bg-[#86b81d] hover:bg-[#6a9317] text-white px-4 py-2 rounded-md flex items-center gap-2"
+              className=" hover:bg-[#6a9317] text-white px-4 py-2 rounded-md flex items-center gap-2"
             >
               <Link size={18} /> Connect Stripe
             </button>

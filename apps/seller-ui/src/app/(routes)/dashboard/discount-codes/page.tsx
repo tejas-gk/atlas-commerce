@@ -74,7 +74,7 @@ export default function DiscountCodesPage() {
   };
 
   const percentCount = discountCodes.filter((c) => c.discountType === "percentage").length;
-  const flatCount    = discountCodes.filter((c) => c.discountType === "flat").length;
+  const flatCount = discountCodes.filter((c) => c.discountType === "flat").length;
 
   return (
     <div className="space-y-6 pb-8">
@@ -87,7 +87,7 @@ export default function DiscountCodesPage() {
         <Button
           onClick={() => setShowModal(true)}
           size="sm"
-          className="gap-1.5 rounded-2xl border-0 bg-[#86b81d] text-white font-semibold hover:bg-[#77a51b]"
+          className="gap-1.5 rounded-2xl border-0  text-white font-semibold "
         >
           <Plus size={15} /> Add Code
         </Button>
@@ -101,7 +101,7 @@ export default function DiscountCodesPage() {
         const avgValue = discountCodes.length ? Math.round(totalValue / discountCodes.length) : 0;
         const suffix = percentCount >= flatCount ? "%" : "$";
         const highest = discountCodes.length ? Math.max(...discountCodes.map((c: any) => Number(c.discountValue))) : 0;
-        const lowest  = discountCodes.length ? Math.min(...discountCodes.map((c: any) => Number(c.discountValue))) : 0;
+        const lowest = discountCodes.length ? Math.min(...discountCodes.map((c: any) => Number(c.discountValue))) : 0;
         const splitPct = discountCodes.length ? Math.round((percentCount / discountCodes.length) * 100) : 0;
         const R = 18, CIRC = 2 * Math.PI * R;
         const dash = (usedPct / 100) * CIRC;
@@ -193,7 +193,7 @@ export default function DiscountCodesPage() {
           </div>
           <p className="text-sm text-muted-foreground">No discount codes yet</p>
           <p className="text-xs text-muted-foreground/50 mt-1">Create your first promotional code</p>
-          <Button size="sm" onClick={() => setShowModal(true)} className="mt-5 gap-1.5 rounded-xl border-0 bg-[#86b81d] text-white hover:bg-[#77a51b]">
+          <Button size="sm" onClick={() => setShowModal(true)} className="mt-5 gap-1.5 rounded-xl border-0  ">
             <Plus size={14} /> Add Code
           </Button>
         </Card>
@@ -227,11 +227,10 @@ export default function DiscountCodesPage() {
                 </span>
               </div>
               <div>
-                <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
-                  code.discountType === "percentage"
-                    ? "bg-[#e6f9f0] text-[#16a34a]"
-                    : "bg-blue-50 text-blue-600"
-                }`}>
+                <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${code.discountType === "percentage"
+                  ? "bg-[#e6f9f0] text-[#16a34a]"
+                  : "bg-blue-50 text-blue-600"
+                  }`}>
                   {code.discountType === "percentage" ? <Percent size={10} /> : <DollarSign size={10} />}
                   {code.discountType === "percentage" ? "Percentage" : "Flat"}
                 </span>
@@ -288,7 +287,7 @@ export default function DiscountCodesPage() {
               <Button type="button" variant="outline" onClick={() => setShowModal(false)}
                 className="flex-1 rounded-xl border-[#dde1bc] bg-white hover:bg-[#f6f8ea]">Cancel</Button>
               <Button type="submit"
-                className="flex-1 rounded-xl border-0 bg-[#86b81d] text-white font-semibold hover:bg-[#77a51b]">Create</Button>
+                className="flex-1 rounded-xl border-0  text-white font-semibold ">Create</Button>
             </div>
           </form>
         </DialogContent>

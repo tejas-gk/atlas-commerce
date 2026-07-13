@@ -17,15 +17,18 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
             staleTime: 1000 * 60 * 5,
           },
         },
-      })
+      }),
   );
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
-        <ProvidersWithWebSocket>
-          {children}
-        </ProvidersWithWebSocket>
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
+      >
+        <ProvidersWithWebSocket>{children}</ProvidersWithWebSocket>
         <Toaster />
       </ThemeProvider>
     </QueryClientProvider>
@@ -44,9 +47,7 @@ const ProvidersWithWebSocket = ({
   return (
     <>
       {seller && (
-        <WebSocketProvider seller={seller}>
-          {children}
-        </WebSocketProvider>
+        <WebSocketProvider seller={seller}>{children}</WebSocketProvider>
       )}
       {!seller && children}
     </>

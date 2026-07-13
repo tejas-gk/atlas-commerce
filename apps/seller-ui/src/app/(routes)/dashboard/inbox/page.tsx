@@ -232,7 +232,7 @@ const ChatPage = () => {
                         <div className="flex items-center justify-between">
                           <span className="text-sm font-semibold text-[#17320f] truncate">{chat.user?.name}</span>
                           {chat?.unreadCount > 0 && (
-                            <span className="ml-1 shrink-0 text-[10px] bg-[#86b81d] text-white rounded-full px-1.5 py-0.5">
+                            <span className="ml-1 shrink-0 text-[10px]  text-white rounded-full px-1.5 py-0.5">
                               {chat.unreadCount}
                             </span>
                           )}
@@ -285,8 +285,8 @@ const ChatPage = () => {
                   >
                     <div
                       className={`max-w-[72%] px-4 py-2 rounded-2xl text-sm shadow-sm ${msg.senderType === "seller"
-                          ? "bg-[#86b81d] text-white rounded-br-sm"
-                          : "bg-white text-[#17320f] border border-[#e8ebd4] rounded-bl-sm"
+                        ? " text-white rounded-br-sm"
+                        : "bg-white text-[#17320f] border border-[#e8ebd4] rounded-bl-sm"
                         }`}
                     >
                       <p>{msg.content}</p>

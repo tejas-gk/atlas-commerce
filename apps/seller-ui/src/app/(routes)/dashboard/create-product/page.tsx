@@ -147,7 +147,7 @@ const Page = () => {
         <Button
           type="submit"
           disabled={loading}
-          className="h-11 rounded-2xl border-0 bg-[#86b81d] px-5 font-semibold text-white hover:bg-[#77a51b] disabled:opacity-60"
+          className="h-11 rounded-2xl border-0  px-5 font-semibold  disabled:opacity-60"
         >
           {loading ? "Creating..." : "Create Product"}
         </Button>
@@ -295,7 +295,7 @@ const Page = () => {
                   />
                   <button
                     type="button"
-                    className="absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-xl bg-[#86b81d] text-white transition-colors hover:bg-[#77a51b]"
+                    className="absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-xl  text-white transition-colors "
                     onClick={async () => {
                       const title = getValues("title");
                       if (!title) { toast.error("Enter a title first"); return; }
@@ -462,8 +462,8 @@ const Page = () => {
                       key={code.id}
                       type="button"
                       className={`rounded-xl border px-3 py-1 text-xs font-semibold transition-colors ${watch("discountCodes")?.includes(code.id)
-                          ? "border-lime-400 bg-lime-500 text-white"
-                          : "border-[#dde1bc] bg-white text-muted-foreground hover:border-[#cdd48e] hover:text-foreground"
+                        ? "border-lime-400 bg-lime-500 text-white"
+                        : "border-[#dde1bc] bg-white text-muted-foreground hover:border-[#cdd48e] hover:text-foreground"
                         }`}
                       onClick={() => {
                         const cur = watch("discountCodes") || [];

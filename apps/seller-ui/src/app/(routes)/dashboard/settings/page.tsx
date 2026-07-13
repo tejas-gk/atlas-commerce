@@ -113,11 +113,10 @@ const SettingsPage = () => {
             <button
               key={key}
               onClick={() => setActive(key)}
-              className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-left transition-all ${
-                active === key
-                  ? "bg-white shadow-sm text-[#17320f] border border-[#e5e9cc]"
-                  : "text-muted-foreground hover:bg-white/70 hover:text-[#17320f]"
-              }`}
+              className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-left transition-all ${active === key
+                ? "bg-white shadow-sm text-[#17320f] border border-[#e5e9cc]"
+                : "text-muted-foreground hover:bg-white/70 hover:text-[#17320f]"
+                }`}
             >
               <Icon size={14} />
               {label}
@@ -194,7 +193,7 @@ const SettingsPage = () => {
                       className="w-full rounded-xl border border-[#dde1bc] bg-[#fafbf3] px-3 py-2 text-sm text-[#17320f] placeholder:text-muted-foreground outline-none resize-none focus:border-lime-400"
                     />
                   </div>
-                  <Button type="submit" size="sm" className="gap-2 rounded-xl border-0 bg-[#86b81d] text-white hover:bg-[#77a51b]">
+                  <Button type="submit" size="sm" className="gap-2 rounded-xl border-0  ">
                     <Save size={13} /> Save Profile
                   </Button>
                 </form>
@@ -225,7 +224,7 @@ const SettingsPage = () => {
                         <p className="text-red-400 text-xs mt-1.5">{errors.lowStockThreshold.message as string}</p>
                       )}
                     </div>
-                    <Button type="submit" size="sm" className="gap-2 rounded-xl border-0 bg-[#86b81d] text-white hover:bg-[#77a51b]">
+                    <Button type="submit" size="sm" className="gap-2 rounded-xl border-0  ">
                       <Save size={13} /> Save
                     </Button>
                   </form>
@@ -254,7 +253,7 @@ const SettingsPage = () => {
                         <option value="all" className="bg-white">All channels</option>
                       </select>
                     </div>
-                    <Button type="submit" size="sm" className="gap-2 rounded-xl border-0 bg-[#86b81d] text-white hover:bg-[#77a51b]">
+                    <Button type="submit" size="sm" className="gap-2 rounded-xl border-0  ">
                       <Save size={13} /> Save
                     </Button>
                   </form>
@@ -275,7 +274,7 @@ const SettingsPage = () => {
                 <Button
                   size="sm"
                   onClick={() => setShowDeleteModal(true)}
-                  className={`rounded-xl border-0 text-white ${seller?.isDeleted ? "bg-[#86b81d] hover:bg-[#77a51b]" : "bg-red-600 hover:bg-red-700"}`}
+                  className={`rounded-xl border-0 text-white ${seller?.isDeleted ? " " : "bg-red-600 hover:bg-red-700"}`}
                 >
                   {seller?.isDeleted ? "Restore Shop" : "Delete Shop"}
                 </Button>
@@ -327,7 +326,7 @@ const SettingsPage = () => {
                 <p className="text-xs text-muted-foreground/70">
                   These links appear in your storefront footer and checkout flow.
                 </p>
-                <Button type="submit" size="sm" className="gap-2 rounded-xl border-0 bg-[#86b81d] text-white hover:bg-[#77a51b]">
+                <Button type="submit" size="sm" className="gap-2 rounded-xl border-0  ">
                   <Save size={13} /> Save Policies
                 </Button>
               </form>
@@ -369,7 +368,7 @@ const SettingsPage = () => {
               <Button
                 size="sm"
                 onClick={deleteShopHandler}
-                className={`rounded-xl border-0 text-white ${seller?.isDeleted ? "bg-[#86b81d] hover:bg-[#77a51b]" : "bg-red-600 hover:bg-red-700"}`}
+                className={`rounded-xl border-0 text-white ${seller?.isDeleted ? " " : "bg-red-600 hover:bg-red-700"}`}
               >
                 {seller?.isDeleted ? "Restore Shop" : "Delete Shop"}
               </Button>

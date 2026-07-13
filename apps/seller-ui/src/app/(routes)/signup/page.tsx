@@ -56,7 +56,7 @@ const Signup = () => {
         {[1, 2, 3].map((step) => (
           <div key={step}>
             <div
-              className={`w-10 h-10 relative z-20 flex items-center justify-center rounded-full text-white font-bold ${step <= activeStep ? "bg-[#86b81d]" : "bg-[#c5c9a3]"
+              className={`w-10 h-10 relative z-20 flex items-center justify-center rounded-full text-white font-bold ${step <= activeStep ? "" : "bg-[#c5c9a3]"
                 }`}
             >
               {step}
@@ -85,7 +85,7 @@ const Signup = () => {
             </p>
             <Link
               href="/login"
-              className="inline-flex items-center justify-center w-full text-lg bg-[#86b81d] hover:bg-[#77a51b] text-white py-2 rounded-xl transition-colors"
+              className="inline-flex items-center justify-center w-full text-lg   text-white py-2 rounded-xl transition-colors"
             >
               Login with Existing Account
             </Link>
@@ -104,7 +104,7 @@ const Signup = () => {
               between them from the dashboard sidebar.
             </p>
             <button
-              className="w-full m-auto flex items-center justify-center gap-3 text-lg bg-[#86b81d] hover:bg-[#77a51b] text-white py-2 rounded-xl transition-colors"
+              className="w-full m-auto flex items-center justify-center gap-3 text-lg   text-white py-2 rounded-xl transition-colors"
               onClick={connectStripe}
             >
               Connect Stripe <Home />

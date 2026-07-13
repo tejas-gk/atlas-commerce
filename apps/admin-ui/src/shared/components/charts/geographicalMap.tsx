@@ -16,11 +16,11 @@ const countryData = [
 
 const getColor = (countryName: string) => {
   const country = countryData.find((c) => c.name === countryName);
-  if (!country) return "#1e293b";
+  if (!country) return "#eef0df";
   const total = country.users + country.sellers;
-  if (total > 100) return "#22c55e";
-  if (total > 0) return "#3b82f6";
-  return "#1e293b";
+  if (total > 100) return "#84cc16";
+  if (total > 0) return "#facc15";
+  return "#eef0df";
 };
 
 const GeographicalMap = () => {
@@ -40,8 +40,8 @@ const GeographicalMap = () => {
   if (!isMounted) {
     return (
       <div className="relative w-full px-0 py-5 overflow-visible">
-        <div className="w-full h-[35vh] bg-slate-800 rounded-lg flex items-center justify-center">
-          <span className="text-slate-400">Loading map...</span>
+        <div className="w-full h-[35vh] bg-[#f7f8ed] rounded-2xl flex items-center justify-center">
+          <span className="text-[#8c9380]">Loading map...</span>
         </div>
       </div>
     );
@@ -101,14 +101,14 @@ const GeographicalMap = () => {
                   }}
                   onMouseLeave={() => setHovered(null)}
                   fill={baseColor}
-                  stroke="#334155"
+                  stroke="#d9ddc4"
                   style={{
                     default: {
                       outline: "none",
                       transition: "fill 0.3s ease-in-out",
                     },
                     hover: {
-                      fill: match ? baseColor : "#facc15",
+                      fill: match ? baseColor : "#d9e7af",
                       outline: "none",
                       transition: "fill 0.3s ease-in-out",
                     },

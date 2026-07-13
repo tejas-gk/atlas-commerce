@@ -80,7 +80,7 @@ const ChatInput = ({
       {/* Send Button */}
       <button
         type="submit"
-        className="bg-[#86b81d] hover:bg-[#6a9317] transition text-white p-2 rounded-md"
+        className=" hover:bg-[#6a9317] transition text-white p-2 rounded-md"
       >
         <Send className="w-4 h-4" />
       </button>

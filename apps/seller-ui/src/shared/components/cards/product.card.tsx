@@ -98,7 +98,7 @@ const ProductCard = ({ product }: { product: any }) => {
         {/* View Details Button */}
         <Link
           href={`${process.env.NEXT_PUBLIC_USER_UI_LINK}/product/${product?.slug}`}
-          className="mt-3 block bg-[#86b81d] text-center text-white py-2 rounded-xl hover:bg-[#77a51b] transition"
+          className="mt-3 block  text-center text-white py-2 rounded-xl  transition"
         >
           View Details
         </Link>
